@@ -5,3 +5,11 @@ authors = ["ManifoldFR <manifoldfr@outlook.com>"]
 
 [dependencies]
 rand = "^0.5"
+
+[lib]
+name = "pointprocesses"
+path = "src/lib.rs"
+
+[[bin]]
+name = "app"
+path = "src/main.rs"
