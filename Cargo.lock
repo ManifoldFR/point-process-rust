@@ -39,7 +39,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "point-process"
+name = "point_process"
 version = "0.1.0"
 dependencies = [
  "plotlib 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
