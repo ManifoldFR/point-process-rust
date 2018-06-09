@@ -1,5 +1,6 @@
 use std::fmt;
 
+/// Model for events appearing along the process.
 #[derive(Clone, Debug)]
 pub struct Event {
     pub timestamp: f64,
@@ -40,8 +41,7 @@ impl Event {
         self.children.push(par);
     }
 
-    pub fn intensity(&self) -> f64 {
-        assert!(self.intensity.is_some());
-        self.intensity.unwrap()
+    pub fn intensity(&self) -> Result<f64,&'static str> {
+        self.intensity.ok_or("No intensity here.")
     }
 }

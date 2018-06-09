@@ -18,7 +18,3 @@ plotlib = "^0.3"
 [lib]
 name = "pointprocesses"
 path = "src/lib.rs"
-
-[[example]]
-name = "variable_poisson"
-

@@ -12,7 +12,7 @@ pub fn poisson_process(t: f64, lambda: f64) -> Vec<Event> {
     
     assert!(lambda >= 0.0);
 
-    let num_events = Poisson::new(lambda).sample(&mut rng);
+    let num_events = Poisson::new(t*lambda).sample(&mut rng);
 
     let mut result = vec!();
     for _ in 0..num_events {
@@ -27,7 +27,7 @@ pub fn variable_poisson(t: f64, lambda: fn(f64) -> f64, max_lambda: f64) -> Vec<
     let mut rng = thread_rng();
 
     // Number of events before thinning
-    let num_events = Poisson::new(max_lambda*t).sample(&mut rng);
+    let num_events = Poisson::new(t*max_lambda).sample(&mut rng);
 
     let mut result = vec!();
 

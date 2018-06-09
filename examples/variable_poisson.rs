@@ -8,7 +8,7 @@ use plotlib::scatter;
 use plotlib::scatter::Scatter;
 
 use pointprocesses::event::Event;
-use pointprocesses::{poisson_process,variable_poisson};
+use pointprocesses::variable_poisson;
 
 
 
@@ -28,7 +28,7 @@ fn main() {
     let mut ty: Vec<(f64,f64)> = vec!();
     for i in 0..variable_events.len() {
         let event = &variable_events[i];
-        ty.push((event.timestamp, event.intensity()));
+        ty.push((event.timestamp, event.intensity().unwrap()));
     }
 
     let ty_scatter = Scatter::from_vec(&ty)
