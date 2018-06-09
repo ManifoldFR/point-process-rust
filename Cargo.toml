@@ -2,6 +2,9 @@
 name = "point-process"
 version = "0.1.0"
 authors = ["ManifoldFR <manifoldfr@outlook.com>"]
+exclude = [
+    "test.svg"
+]
 
 [dependencies]
 rand = "^0.5"

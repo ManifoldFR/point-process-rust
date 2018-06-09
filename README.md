@@ -9,9 +9,11 @@ To run the examples, do for instance
 cargo run --example variable_poisson
 ```
 
+For now, only one-dimensional point processes have been implemented.
+
 ## Poisson point process
 
-
+A Poisson process on the real line is a stochastic process that can be used to model the arrival of random events.
 
 ## Hawkes point process
 
