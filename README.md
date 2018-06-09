@@ -5,7 +5,7 @@
 
 Point processes are used in seismology, social network analysis, and prediction of financial events.
 
-![variablepoisson](test.png)
+![variablepoisson](coverimg.png)
 
 This repository implements an algorithm to simulate point processes inside the [Rust programming language](https://rust-lang.org).
 
