@@ -15,8 +15,8 @@ use pointprocesses::{poisson_process,variable_poisson};
 fn main() {
     
     let tmax = 60.0;
-    let f: fn(f64) -> f64 = |t| 1.0+(1.1+0.5*t.sin())*(-0.05*t).exp();
-    let variable_events: Vec<Event> = variable_poisson(tmax, f, 1.5);
+    let f: fn(f64) -> f64 = |t| 1.0 + (0.5*t).sin()*(-0.05*t).exp();
+    let variable_events: Vec<Event> = variable_poisson(tmax, f, 2.0);
 
     println!("{:#?}", variable_events);
 

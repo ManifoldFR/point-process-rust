@@ -5,12 +5,14 @@ authors = ["ManifoldFR <manifoldfr@outlook.com>"]
 
 [dependencies]
 rand = "^0.5"
+
+[dev-dependencies]
 plotlib = "^0.3"
 
 [lib]
 name = "pointprocesses"
 path = "src/lib.rs"
 
-[[bin]]
-name = "app"
-path = "src/bin/main.rs"
+[[example]]
+name = "variable_poisson"
+
