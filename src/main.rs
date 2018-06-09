@@ -1,17 +1,33 @@
 extern crate rand;
 
-mod models;
+mod event;
 
-use models::Event;
+use event::Event;
 
+use rand::prelude::*;
+use rand::distributions::Poisson;
+
+fn gen_events(t: f64, lambda: f64) -> Vec<Event> {
+    let mut rng = thread_rng();
+    
+    assert!(lambda >= 0.0);
+
+    let num_events = Poisson::new(lambda).sample(&mut rng);
+
+    let mut result = vec!();
+    for _ in 0..num_events {
+        let timestamp= t*rand::random::<f64>();
+        result.push(Event::new(timestamp, "Donald"));
+    };
+    result
+}
 
 fn main() {
-    let ev = Event::new(1.0, "Donny");
-    println!("Hello, world!");
-    println!("data: {}", ev);
+    
+    let lambda = 3.0;
 
-    let mut ev2 = Event::new(2.0, "Bill");
-    ev2.add_child(ev);
+    let events: Vec<Event> = gen_events(30.0, lambda);
 
-    println!("data: {}", ev2);
+    println!("{:#?}", events);
+
 }

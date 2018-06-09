@@ -1,5 +1,5 @@
 [package]
-name = "hawkes-sim"
+name = "point-process"
 version = "0.1.0"
 authors = ["ManifoldFR <manifoldfr@outlook.com>"]
 

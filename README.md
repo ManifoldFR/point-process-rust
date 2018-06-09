@@ -1,6 +1,11 @@
-# Rust implementation of Hawkes processes
+# Rust implementation of Point processes
 
-Hawkes processes are used in seismology, social network analysis, and prediction of financial events.
+Point processes are used in seismology, social network analysis, and prediction of financial events.
 
-This repository implements an algorithm to simulate Hawkes processes inside the [Rust programming language](https://rust-lang.org).
+This repository implements an algorithm to simulate point processes inside the [Rust programming language](https://rust-lang.org).
 
+## Poisson process
+
+
+
+## Hawkes process

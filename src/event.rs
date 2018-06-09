@@ -24,9 +24,9 @@ impl fmt::Display for Event {
 
 
 impl Event {
-    pub fn new(ti: f64, auth: &str) -> Event {
+    pub fn new(timestamp: f64, auth: &str) -> Event {
         Event {
-            timestamp: ti,
+            timestamp,
             author: String::from(auth),
             children: vec!()
         }
