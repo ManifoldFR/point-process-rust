@@ -5,7 +5,7 @@ authors = ["ManifoldFR <manifoldfr@outlook.com>"]
 description = "A crate for simulating random point processes."
 license = "MIT"
 exclude = [
-    "test.svg"
+    "test.(svg|png)"
 ]
 
 [dependencies]
