@@ -1,0 +1,7 @@
+[package]
+name = "hawkes-app"
+version = "0.1.0"
+authors = ["ManifoldFR <manifoldfr@outlook.com>"]
+
+[dependencies]
+rand = "^0.5"
