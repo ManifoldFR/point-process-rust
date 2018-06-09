@@ -3,6 +3,7 @@ name = "point_process"
 version = "0.1.0"
 authors = ["ManifoldFR <manifoldfr@outlook.com>"]
 description = "A crate for simulating random point processes."
+licence = "MIT"
 exclude = [
     "test.svg"
 ]
