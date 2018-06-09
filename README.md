@@ -1,4 +1,7 @@
-# Rust implementation of Point processes
+# Rust implementation of Point processes 
+
+[![Crates.io Status](https://meritbadge.herokuapp.com/point_process)](https://crates.io/crates/point_process)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/ManifoldFR/point-process-rust/master/LICENSE)
 
 Point processes are used in seismology, social network analysis, and prediction of financial events.
 

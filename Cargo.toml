@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["ManifoldFR <manifoldfr@outlook.com>"]
 description = "A crate for simulating random point processes."
 license = "MIT"
+readme = "README.md"
 exclude = [
     "test.(svg|png)"
 ]
