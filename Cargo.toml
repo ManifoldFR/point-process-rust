@@ -5,6 +5,7 @@ authors = ["ManifoldFR <manifoldfr@outlook.com>"]
 
 [dependencies]
 rand = "^0.5"
+plotlib = "^0.3"
 
 [lib]
 name = "pointprocesses"

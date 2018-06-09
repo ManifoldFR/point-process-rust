@@ -2,8 +2,8 @@ use std::fmt;
 
 #[derive(Clone, Debug)]
 pub struct Event {
-    timestamp: f64,
-    author: Option<String>,
+    pub timestamp: f64,
+    intensity: Option<f64>,
     children: Vec<Event>
 }
 
@@ -27,12 +27,21 @@ impl Event {
     pub fn new(timestamp: f64) -> Event {
         Event {
             timestamp,
-            author: None,
+            intensity: None,
             children: vec!()
         }
     }
 
+    pub fn add_intensity(&mut self, intensity: f64) {
+        self.intensity.get_or_insert(intensity);
+    }
+
     pub fn add_child(&mut self, par: Event) {
         self.children.push(par);
+    }
+
+    pub fn intensity(&self) -> f64 {
+        assert!(self.intensity.is_some());
+        self.intensity.unwrap()
     }
 }
