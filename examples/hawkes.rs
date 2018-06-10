@@ -4,29 +4,51 @@ extern crate gnuplot;
 use gnuplot::{Figure,Caption,Color,PointSymbol,PointSize};
 use gnuplot::AxesCommon;
 
-use pointprocesses::variable_poisson;
+use pointprocesses::event::Event;
+use pointprocesses::hawkes_exponential;
 
 fn main() {
     
-    let tmax = 60.0;
-    let f: fn(f64) -> f64 = |t| {
-        1.0 + (0.5*t).sin()*(-0.05*t).exp()
-    };
-    let events = variable_poisson(tmax, f, 2.0);
+    let tmax = 20.0;
+    let alpha = 0.6;
+    let beta = 0.8;
+    let lambda0 = 1.0;
+
+    let events = hawkes_exponential(tmax, alpha, beta, lambda0);
 
     println!("{:#?}", events);
     
     // Plotting
+    let kernel = |t: f64| {
+        if t >= 0.0 {
+            alpha*(-beta*t).exp()
+        } else {
+            0.0
+        }
+    };
+
+    let intensity_func = |events: &[Event], t: f64| {
+        let result: f64 = events
+            .iter()
+            .take_while(|ev| ev.timestamp < t)
+            .map(|ev| {
+            kernel(t - ev.timestamp)
+        }).sum();
+        result + lambda0
+    };
+
     let num_points = 100;
-    let times: Vec<f64> = (0..num_points).map(|x| {
-        tmax*x as f64/num_points as f64
+    let times: Vec<f64> = (0..num_points).map(|i| {
+        tmax*i as f64/num_points as f64
     }).collect();
 
-    let lambda_values: Vec<f64> = times.iter()
-        .map(|&x| f(x)).collect();
+    let lambda_values: Vec<f64> = times
+        .iter()
+        .map(|&t| intensity_func(&events, t))
+        .collect();
 
-    let mut event_times: Vec<f64> = vec!();
-    let mut event_intens: Vec<f64> = vec!();
+    let mut event_times: Vec<f64> = vec![];
+    let mut event_intens: Vec<f64> = vec![];
     for i in 0..events.len() {
         let event = &events[i];
         event_times.push(event.timestamp);

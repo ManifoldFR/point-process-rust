@@ -1,10 +1,7 @@
 extern crate pointprocesses;
-extern crate plotlib;
+extern crate gnuplot;
 
-use plotlib::style::{Line,Point};
-use plotlib::page::Page;
-use plotlib::scatter;
-use plotlib::scatter::Scatter;
+use gnuplot::{Figure,Caption,Color,PointSymbol,PointSize};
 
 use pointprocesses::event::Event;
 use pointprocesses::poisson_process;
@@ -18,24 +15,28 @@ fn main() {
 
     let events: Vec<Event> = poisson_process(tmax, lambda);
 
-    println!("{:#?}", events);
+    println!("{:?}", events);
     
-    let mut ty: Vec<(f64,f64)> = vec!();
+
+    let mut event_times: Vec<f64> = vec!();
+    let mut event_intens: Vec<f64> = vec!();
     for i in 0..events.len() {
-        ty.push((events[i].timestamp, 0.001*i as f64));
+        let event = &events[i];
+        event_times.push(event.timestamp);
+        event_intens.push(event.intensity().unwrap());
     }
 
-    let ty_scatter = Scatter::from_vec(&ty)
-        .style(scatter::Style::new()
-            .colour("brown")
-            .marker(plotlib::style::Marker::Circle)
-            .size(2.0));
-    
-    let myview = plotlib::view::View::new()
-        .add(&ty_scatter)
-        .x_label("Temps t")
-        .y_label("Intensité")
-        .y_range(-0.1, 0.1);
-    
-    Page::single(&myview).save("test.svg");
+    let mut fg = Figure::new();
+    fg.set_terminal("wxt", "");
+    fg.axes2d()
+        .points(&event_times, &event_intens, 
+            &[
+                Caption("Événements"),
+                Color("black"),
+                PointSymbol('O'),
+                PointSize(0.8)]);
+    fg.show();
+    fg.echo_to_file("test.gnuplot");
+
+
 }

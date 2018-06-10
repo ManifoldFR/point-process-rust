@@ -1,19 +1,19 @@
 [package]
 name = "point_process"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["ManifoldFR <manifoldfr@outlook.com>"]
 description = "A crate for simulating random point processes."
 license = "MIT"
 readme = "README.md"
 exclude = [
-    "test.(svg|png)"
+    "test.*"
 ]
 
 [dependencies]
 rand = "^0.5"
 
 [dev-dependencies]
-plotlib = "^0.3"
+gnuplot = "*"
 
 [lib]
 name = "pointprocesses"
