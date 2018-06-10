@@ -15,7 +15,7 @@ To run the examples, do for instance
 cargo run --example variable_poisson
 ```
 
-You can grab a plot using [gnuplot](http://www.gnuplot.info/):
+On Windows (see SiegeLord/RustGnuplot#29), running `cargo run` is broken. You can grab a plot using [gnuplot](http://www.gnuplot.info/):
 
 ```bash
 gnuplot -p < test.gnuplot
