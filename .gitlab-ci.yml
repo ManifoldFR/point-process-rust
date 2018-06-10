@@ -1,0 +1,21 @@
+image: rust:latest
+
+stages:
+  - build
+  - run-examples
+
+build:
+  stage: build
+  script:
+    - cargo build --release
+  cache:
+    paths:
+      - target/
+  artifacts:
+    paths:
+      - target/release
+
+examples:
+  stage: run-examples
+  script:
+    - cargo run --examples
