@@ -1,4 +1,4 @@
-# Rust implementation of Point processes
+# Point processes in Rust
 
 [![Crates.io Status](https://meritbadge.herokuapp.com/point_process)](https://crates.io/crates/point_process)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/ManifoldFR/point-process-rust/master/LICENSE)
