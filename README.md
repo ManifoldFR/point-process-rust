@@ -26,6 +26,8 @@ For now, only one-dimensional point processes have been implemented.
 Are implemented:
 
 * Poisson point process (homogeneous and inhomogeneous)
-* Hawkes processes
+* Hawkes processes see [@DassiosZhao]
 
 The examples show how to use the API.
+
+[@DassiosZhao13]: http://eprints.lse.ac.uk/51370/1/Dassios_exact_simulation_hawkes.pdf "Exact simulation of Hawkes process with exponentially decaying intensity"
