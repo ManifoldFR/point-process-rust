@@ -5,6 +5,7 @@ authors = ["ManifoldFR <manifoldfr@outlook.com>"]
 description = "A crate for simulating random point processes."
 license = "MIT"
 readme = "README.md"
+repository = "https://github.com/ManifoldFR/point-process-rust"
 exclude = [
     "test.*"
 ]
@@ -13,7 +14,7 @@ exclude = [
 rand = "^0.5"
 
 [dev-dependencies]
-gnuplot = "*"
+gnuplot = "^0.0.26"
 
 [lib]
 name = "pointprocesses"

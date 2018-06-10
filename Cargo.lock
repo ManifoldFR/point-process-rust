@@ -37,7 +37,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "point_process"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "gnuplot 0.0.26 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
