@@ -18,4 +18,4 @@ build:
 examples:
   stage: run-examples
   script:
-    - cargo run --examples
+    - cargo run --example variable_poisson -- --terminal pngcairo
