@@ -17,5 +17,7 @@ build:
 
 examples:
   stage: run-examples
+  before_script:
+    - apt-get install gnuplot -y
   script:
     - cargo run --example variable_poisson -- --terminal pngcairo
