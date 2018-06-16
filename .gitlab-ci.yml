@@ -18,6 +18,7 @@ build:
 examples:
   stage: run-examples
   before_script:
+    - apt-get update
     - apt-get install gnuplot-x11 -y
   script:
     - cargo run --example variable_poisson -- --terminal pngcairo
