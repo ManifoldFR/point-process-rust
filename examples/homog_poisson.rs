@@ -27,7 +27,7 @@ fn main() {
     }
 
     let mut fg = Figure::new();
-    fg.set_terminal("wxt", "");
+    
     fg.axes2d()
         .points(&event_times, &event_intens, 
             &[

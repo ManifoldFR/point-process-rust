@@ -34,8 +34,6 @@ fn main() {
     }
 
     let mut fg = Figure::new();
-    
-    fg.set_terminal("wxt", "");
 
     fg.axes2d()
         .lines(&times, &lambda_values,
