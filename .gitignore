@@ -1,3 +1,4 @@
 /target
 **/*.rs.bk
-test.(svg|png|gnuplot)
+test.gnuplot
+test.svg
