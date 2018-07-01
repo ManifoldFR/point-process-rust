@@ -1,5 +1,6 @@
 extern crate pointprocesses;
 extern crate gnuplot;
+extern crate serde_json;
 
 use gnuplot::{Figure,Caption,Color,PointSymbol,PointSize};
 use gnuplot::AxesCommon;
