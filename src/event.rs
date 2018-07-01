@@ -1,28 +1,13 @@
 use std::fmt;
+use serde_json;
 
 /// Model for events appearing along the process.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Event {
     pub timestamp: f64,
     intensity: Option<f64>,
     children: Vec<Event>
 }
-
-
-impl fmt::Display for Event {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        
-        if self.children.len() > 0 {
-            write!(f, "Event({},{})", self.timestamp, self.children.iter().fold(
-                String::new(),
-                |acc, ev| acc + &ev.to_string()
-            ))
-        } else {
-            write!(f, "Event({})", self.timestamp)
-        }
-    }
-}
-
 
 impl Event {
     pub fn new(timestamp: f64) -> Event {
@@ -41,7 +26,15 @@ impl Event {
         self.children.push(par);
     }
 
-    pub fn intensity(&self) -> Result<f64,&'static str> {
-        self.intensity.ok_or("No intensity here.")
+    pub fn intensity(&self) -> Result<f64,String> {
+        self.intensity.ok_or(String::from("Event has no associated intensity."))
+    }
+}
+
+impl fmt::Display for Event {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let serial_string = serde_json::to_string_pretty(self).unwrap();
+
+        write!(f, "{}", serial_string)
     }
 }

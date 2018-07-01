@@ -1,11 +1,11 @@
 extern crate pointprocesses;
 extern crate gnuplot;
+extern crate serde_json;
 
 use gnuplot::{Figure,Caption,Color,PointSymbol,PointSize};
 
 use pointprocesses::event::Event;
 use pointprocesses::poisson_process;
-
 
 
 fn main() {
@@ -15,7 +15,9 @@ fn main() {
 
     let events: Vec<Event> = poisson_process(tmax, lambda);
 
-    println!("{:?}", events);
+    println!("{}",
+        serde_json::to_string_pretty(&events).unwrap()
+    );
     
 
     let mut event_times: Vec<f64> = vec!();

@@ -28,7 +28,7 @@ For now, only one-dimensional point processes have been implemented.
 Are implemented:
 
 * Poisson point process (homogeneous and inhomogeneous)
-* Hawkes processes see [@DassiosZhao13]
+* Hawkes processes (see [@DassiosZhao13])
 
 The examples show how to use the API.
 

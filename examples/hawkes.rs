@@ -1,5 +1,6 @@
 extern crate pointprocesses;
 extern crate gnuplot;
+extern crate serde_json;
 
 use gnuplot::{Figure,Caption,Color,PointSymbol,PointSize};
 use gnuplot::AxesCommon;
@@ -16,7 +17,7 @@ fn main() {
 
     let events = hawkes_exponential(tmax, alpha, beta, lambda0);
 
-    println!("{:#?}", events);
+    println!("{}", serde_json::to_string_pretty(&events).unwrap());
     
     // Plotting
     let kernel = |t: f64| {

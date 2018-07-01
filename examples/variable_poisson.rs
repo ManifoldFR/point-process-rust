@@ -14,7 +14,7 @@ fn main() {
     };
     let events = variable_poisson(tmax, f, 2.0);
 
-    println!("{:#?}", events);
+    println!("{}", serde_json::to_string_pretty(&events).unwrap());
     
     // Plotting
     let num_points = 100;

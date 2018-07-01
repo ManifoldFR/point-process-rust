@@ -1,4 +1,9 @@
 extern crate rand;
+extern crate serde;
+
+#[macro_use]
+extern crate serde_derive;
+extern crate serde_json;
 
 pub mod event;
 
@@ -93,6 +98,20 @@ pub fn hawkes_exponential(tmax: f64, alpha: f64, beta: f64, lambda0: f64) -> Vec
         result.push(new_event);
     }
 
-
     result
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn event_serialize() {
+        let mut event = Event::new(42.0);
+        event.add_intensity(15.02);
+
+        let event_serialized = serde_json::to_string_pretty(&event).unwrap();
+
+        println!("{}", event_serialized);
+    }
 }
