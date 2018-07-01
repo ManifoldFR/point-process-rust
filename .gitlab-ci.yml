@@ -18,7 +18,7 @@ build:
 tests:
   stage: tests
   script:
-    - cargo tests -- --nocapture
+    - cargo test -- --nocapture
 
 
 examples:
@@ -28,4 +28,4 @@ examples:
     - apt-get install gnuplot-x11 -y
   script:
     - cargo run --example variable_poisson -- --terminal pngcairo
-    - cargo run --example hawkes -- --terminal pngcairo
+    - cargo run --example hawkes_exponential -- --terminal pngcairo
