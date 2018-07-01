@@ -19,7 +19,7 @@ fn main() {
 
     println!("{}", serde_json::to_string_pretty(&events).unwrap());
     
-    // Plotting
+    // Kernel function. Only used for plotting.
     let kernel = |t: f64| {
         if t >= 0.0 {
             alpha*(-beta*t).exp()
