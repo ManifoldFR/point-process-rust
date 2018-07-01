@@ -24,7 +24,7 @@ fn main() {
     let mut event_intens: Vec<f64> = vec!();
     for i in 0..events.len() {
         let event = &events[i];
-        event_times.push(event.timestamp);
+        event_times.push(event.timestamp());
         event_intens.push(event.intensity());
     }
 

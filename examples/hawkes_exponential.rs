@@ -31,9 +31,9 @@ fn main() {
     let intensity_func = |events: &[Event], t: f64| {
         let result: f64 = events
             .iter()
-            .take_while(|ev| ev.timestamp < t)
+            .take_while(|&ev| ev.timestamp() < t)
             .map(|ev| {
-            kernel(t - ev.timestamp)
+            kernel(t - ev.timestamp())
         }).sum();
         result + lambda0
     };
@@ -52,7 +52,7 @@ fn main() {
     let mut event_intens: Vec<f64> = vec![];
     for i in 0..events.len() {
         let event = &events[i];
-        event_times.push(event.timestamp);
+        event_times.push(event.timestamp());
         event_intens.push(event.intensity());
     }
     

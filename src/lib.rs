@@ -12,6 +12,7 @@ use rand::distributions::Poisson;
 
 use event::Event;
 
+/// Simulates a homogeneous, constant-intensity Poisson process.
 pub fn poisson_process(tmax: f64, lambda: f64) -> Vec<Event> {
     let mut rng = thread_rng();
     
@@ -28,7 +29,7 @@ pub fn poisson_process(tmax: f64, lambda: f64) -> Vec<Event> {
     result
 }
 
-/// Simulate a variable Poisson process
+/// Simulate a Poisson process with variable intensity.
 pub fn variable_poisson(tmax: f64, lambda: fn(f64) -> f64, max_lambda: f64) -> Vec<Event> {
     let mut rng = thread_rng();
 
@@ -54,7 +55,7 @@ pub fn variable_poisson(tmax: f64, lambda: fn(f64) -> f64, max_lambda: f64) -> V
 }
 
 /// Simulate a Hawkes process with an exponential kernel
-/// by utilising Ogata's algorithm
+/// by utilising the linear time-complexity algorithm in [DassiosZhao13](http://eprints.lse.ac.uk/51370/1/Dassios_exact_simulation_hawkes.pdf)
 pub fn hawkes_exponential(tmax: f64, alpha: f64, beta: f64, lambda0: f64) -> Vec<Event> {
 
     let mut t = 0.0;

@@ -4,7 +4,7 @@ use serde_json;
 /// Model for events appearing along the process.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Event {
-    pub timestamp: f64,
+    timestamp: f64,
     intensity: f64,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     children: Vec<Event>
@@ -21,6 +21,10 @@ impl Event {
 
     pub fn add_child(&mut self, par: Event) {
         self.children.push(par);
+    }
+
+    pub fn timestamp(&self) -> f64 {
+        self.timestamp
     }
 
     pub fn intensity(&self) -> f64 {
