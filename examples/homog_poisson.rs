@@ -25,7 +25,7 @@ fn main() {
     for i in 0..events.len() {
         let event = &events[i];
         event_times.push(event.timestamp);
-        event_intens.push(event.intensity().unwrap());
+        event_intens.push(event.intensity());
     }
 
     let mut fg = Figure::new();

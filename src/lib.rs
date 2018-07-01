@@ -15,6 +15,7 @@ use event::Event;
 pub fn poisson_process(tmax: f64, lambda: f64) -> Vec<Event> {
     let mut rng = thread_rng();
     
+    /// A poisson process cannot have negative intensity.
     assert!(lambda >= 0.0);
 
     let num_events = Poisson::new(tmax*lambda).sample(&mut rng);
@@ -22,7 +23,7 @@ pub fn poisson_process(tmax: f64, lambda: f64) -> Vec<Event> {
     let mut result = vec![];
     for _ in 0..num_events {
         let timestamp= tmax*random::<f64>();
-        result.push(Event::new(timestamp));
+        result.push(Event::new(timestamp, lambda));
     };
     result
 }
@@ -44,8 +45,7 @@ pub fn variable_poisson(tmax: f64, lambda: fn(f64) -> f64, max_lambda: f64) -> V
         let lambda_val = random::<f64>()*max_lambda;
 
         if lambda_val < lambda(timestamp) {
-            let mut event = Event::new(timestamp);
-            event.add_intensity(lambda_val);
+            let mut event = Event::new(timestamp, lambda_val);
             result.push(event);
         }
     }
@@ -92,9 +92,8 @@ pub fn hawkes_exponential(tmax: f64, alpha: f64, beta: f64, lambda0: f64) -> Vec
 
         last_lambda = lambda0 + alpha + (last_lambda - lambda0)*(-beta*(t-previous_t)).exp();
 
-        let mut new_event = Event::new(t);
-        new_event.add_intensity(last_lambda);
-
+        let new_event = Event::new(t, last_lambda);
+        
         result.push(new_event);
     }
 
@@ -107,8 +106,8 @@ mod tests {
 
     #[test]
     fn event_serialize() {
-        let mut event = Event::new(42.0);
-        event.add_intensity(15.02);
+        let event = Event::new(42.0, 15.02);
+
 
         let event_serialized = serde_json::to_string_pretty(&event).unwrap();
 

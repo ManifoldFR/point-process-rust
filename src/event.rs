@@ -5,29 +5,26 @@ use serde_json;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Event {
     pub timestamp: f64,
-    intensity: Option<f64>,
+    intensity: f64,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     children: Vec<Event>
 }
 
 impl Event {
-    pub fn new(timestamp: f64) -> Event {
+    pub fn new(timestamp: f64, intensity: f64) -> Event {
         Event {
             timestamp,
-            intensity: None,
+            intensity,
             children: vec!()
         }
-    }
-
-    pub fn add_intensity(&mut self, intensity: f64) {
-        self.intensity.get_or_insert(intensity);
     }
 
     pub fn add_child(&mut self, par: Event) {
         self.children.push(par);
     }
 
-    pub fn intensity(&self) -> Result<f64,String> {
-        self.intensity.ok_or(String::from("Event has no associated intensity."))
+    pub fn intensity(&self) -> f64 {
+        self.intensity
     }
 }
 
