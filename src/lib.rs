@@ -6,6 +6,7 @@ extern crate serde_derive;
 extern crate serde_json;
 
 pub mod event;
+pub mod generalized;
 
 use rand::prelude::*;
 use rand::distributions::Poisson;
@@ -100,6 +101,9 @@ pub fn hawkes_exponential(tmax: f64, alpha: f64, beta: f64, lambda0: f64) -> Vec
 
     result
 }
+
+
+
 
 #[cfg(test)]
 mod tests {
