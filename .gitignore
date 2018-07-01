@@ -2,3 +2,4 @@
 **/*.rs.bk
 test.gnuplot
 test.svg
+test.*
