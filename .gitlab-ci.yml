@@ -2,7 +2,7 @@ image: rust:latest
 
 stages:
   - build
-  - run-examples
+  - tests
 
 build:
   stage: build
@@ -15,8 +15,14 @@ build:
     paths:
       - target/release
 
+tests:
+  stage: tests
+  script:
+    - cargo tests -- --nocapture
+
+
 examples:
-  stage: run-examples
+  stage: tests
   before_script:
     - apt-get update
     - apt-get install gnuplot-x11 -y
