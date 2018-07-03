@@ -23,6 +23,15 @@ The API returns the process trajectories as a vector of a `struct` named `Events
 
 The crate provides the `generalized` submodule for higher-dimensional processes.
 
+For now, only homogeneous Poisson processes have been implemented with a function
+
+```rust
+fn poisson_process(lambda: f64, domain: &T)
+    where T: Measurable -> ndarray::Array<f64, Ix2>
+```
+
+which takes a reference to a _measurable domain_, that is a subset of d-dimensional space that is measurable, implemented with the `Measurable` trait (see API docs), and returns a 2-dimensional array which is a set of point events in d-dimensional space falling into the domain.
+
 ## Examples
 
 To run the examples, do for instance
