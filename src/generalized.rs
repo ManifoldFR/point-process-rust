@@ -1,64 +1,120 @@
 use rand::thread_rng;
+use rand::distributions::Uniform;
 use rand::distributions::Poisson;
 use rand::prelude::*;
 
-use ndarray as na;
 use ndarray::prelude::*;
 
-type Scalar = na::OwnedRepr<f64>;
 
-/// General n-dimensional hyperrectangle
-struct Rectangle<D: Dimension>(ArrayBase<Scalar, D>);
+/// Implement this trait to provide a method to check whether or not a vector lies in `self`.
+pub trait Set {
+    fn contains(&self, p: &Array<f64, Ix1>) -> bool;
 
-pub trait Set<D: Dimension> {
-    fn contains(&self, x: ArrayBase<Scalar,D>) -> bool
-        where D: Dimension;
+    /// returns a bounding box for the set
+    /// useful for Monte Carlo estimations of the area
+    /// and also for point process simulation by rejection
+    fn bounding_box(&self) -> Array<f64, Ix2>;
 }
 
 /// This trait must be implemented for elements of the Borel set, i.e. any measurable part in n-dimensional real space.
-pub trait Measurable<D: Dimension>: Set<D> {
+pub trait Measurable: Set {
     fn measure(&self) -> f64;
 }
 
-impl<D> Set<D> for Rectangle<D> where D: Dimension {
-    fn contains(&self, p: ArrayBase<Scalar,D>) -> bool {
-        let bounds = &self.0;
 
-        assert_eq!(bounds.len() % 2, 0);
-        let dim = bounds.len()/2;
+/// General n-dimensional hyperrectangle
+pub struct Rectangle {
+    /// `bounds[0]` is the closer extremety of the hyperrectangle
+    /// and `bounds[1]` is the far point.
+    bounds: Array<f64, Ix2>
+}
 
-        let p_dim = p.dim();
+impl Rectangle {
+    pub fn new(bounds: Array<f64, Ix2>) -> Rectangle {
 
-        
+        assert_eq!(bounds.shape()[0], 2);
 
-
-        true
-
+        Rectangle {
+            bounds
+        }
     }
 }
 
-impl<D: Dimension> Measurable<D> for Rectangle<D> {
+
+impl Set for Rectangle {
+    fn contains(&self, p: &Array<f64, Ix1>) -> bool {
+        let bounds = &self.bounds;
+
+        assert_eq!(p.len(), bounds.shape()[1]);
+        
+        // check if p is further away than the closer point
+        let further = bounds.slice(s![0,..]).iter().zip(p.iter())
+            .fold(true, |acc: bool, (v,w)| {
+                acc & (w > v)
+            });
+        
+        // check if p is closer than the far point
+        let closer = bounds.slice(s![1,..]).iter().zip(p.iter())
+            .fold(true, |acc: bool, (v,w)| {
+                acc & (w < v)
+            });
+
+        // if both conditions are true then we're in the rectangle
+        further & closer
+    }
+
+    fn bounding_box(&self) -> Array<f64, Ix2> {
+        self.bounds.clone()
+    }
+}
+
+impl Measurable for Rectangle {
     
     fn measure(&self) -> f64 {
-        let bounds = &self.0;
-
-        assert_eq!(bounds.len() % 2, 0);
-        let dim = bounds.len()/2;
+        let bounds = &self.bounds;
 
         let mut result = 1.0;
+
+        let n: usize = bounds.shape()[1];
+
+        for i in 0..n {
+            result *= bounds[[1,i]] - bounds[[0,i]];
+        }
 
         result
     }
 }
 
-pub fn poisson_process<T,D>(lambda: f64, domain: T) -> ArrayBase<Scalar, Dim<[usize; 1]>> 
-    where T: Measurable<D>,
-          D: Dimension {
+/// A higher-dimensional homogeneous Poisson process.
+pub fn poisson_process<T>(lambda: f64, domain: &T) -> Array<f64, Ix2> 
+    where T: Measurable {
     let area: f64 = domain.measure();
-    let ref mut rng = thread_rng();
-    let num_events = Poisson::new(lambda*area).sample(rng);
+    let bounds = domain.bounding_box();
+    let d: usize = bounds.shape()[1];
 
-    let res = array![0.0,0.0];
+    let ref mut rng = thread_rng();
+    let num_events = Poisson::new(lambda*area).sample(rng) as usize;
+
+    let mut res = Array::zeros((num_events, d));
+    
+    let mut counter = 0_usize;
+    while counter < num_events {
+
+        // generate a point inside the bounding box
+        let mut ev = Array::zeros((d,));
+
+        for i in 0..d {
+            ev[i] = rng.sample(Uniform::new(bounds[[0,i]], bounds[[1,i]]));
+        }
+
+        // if it's in, then keep it
+        if domain.contains(&ev) {
+            res.slice_mut(s![counter,..]).assign(&ev);
+            counter += 1;
+        }
+
+    }
+
     res
 }
 
@@ -68,10 +124,17 @@ mod tests {
 
     #[test]
     fn rectangle_test() {
-        let bounds = array![[0.0, 1.0], [1.0, 3.0]];
-        let rect = Rectangle(bounds);
+        let bounds = array![[0.0, 1.0], [1.0, 4.0]];
+        
+        let rect = Rectangle::new(bounds);
+        assert_eq!(rect.measure(), 3.0);
 
-        assert_eq!(rect.measure(), 2.0);
+        let p = array![0.5, 1.5];
+        assert!(rect.contains(&p));
+
+        let p = array![-1.0,2.0];
+        assert!(!rect.contains(&p));
 
     }
 }
+
