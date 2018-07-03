@@ -9,7 +9,7 @@ Point processes are stochastic processes with a wide range of applications in se
 
 This crate provides functions to simulate point processes in [Rust](https://rust-lang.org).
 
-For now, only some one-dimensional, time-dependent point processes have been implemented:
+The following time-dependent point processes have been implemented:
 
 * Poisson point process (homogeneous and inhomogeneous, with custom function)
 * Hawkes processes (exponential kernel, see [@DassiosZhao13])
