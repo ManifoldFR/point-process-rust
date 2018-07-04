@@ -75,6 +75,7 @@ dependencies = [
  "matrixmultiply 0.1.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-complex 0.1.43 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.1.43 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 1.0.69 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
