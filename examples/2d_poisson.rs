@@ -3,8 +3,6 @@ extern crate pointprocesses;
 #[macro_use]
 extern crate ndarray;
 
-use ndarray::prelude::*;
-
 use pointprocesses::generalized;
 
 fn main() {
