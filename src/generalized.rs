@@ -6,13 +6,14 @@ use rand::prelude::*;
 use ndarray::prelude::*;
 
 
-/// Implement this trait to provide a method to check whether or not a vector lies in `self`.
+/// `structs` implementing this trait represent regions in n-dimensional space,
+/// and check if a vector lies in it.
 pub trait Set {
     fn contains(&self, p: &Array<f64, Ix1>) -> bool;
 
-    /// returns a bounding box for the set
-    /// useful for Monte Carlo estimations of the area
-    /// and also for point process simulation by rejection
+    /// Returns a bounding box for the set.
+    /// This function is useful for Monte Carlo estimations of the area
+    /// and also for point process simulation by rejection.
     fn bounding_box(&self) -> Array<f64, Ix2>;
 }
 
@@ -22,39 +23,31 @@ pub trait Measurable: Set {
 }
 
 
-/// General n-dimensional hyperrectangle
-pub struct Rectangle {
-    /// `bounds[0]` is the closer extremety of the hyperrectangle
-    /// and `bounds[1]` is the far point.
-    bounds: Array<f64, Ix2>
-}
+/// General n-dimensional hyperrectangle.
+pub struct Rectangle(Array<f64, Ix1>, Array<f64, Ix1>);
 
 impl Rectangle {
-    pub fn new(bounds: Array<f64, Ix2>) -> Rectangle {
-
-        assert_eq!(bounds.shape()[0], 2);
-
-        Rectangle {
-            bounds
-        }
+    /// `close` is the point with smaller coordinates,
+    /// `far` is the further point delimiting the rectangle,
+    /// with the largest coordinates.
+    pub fn new(close: Array<f64, Ix1>, far: Array<f64, Ix1>) -> Rectangle {
+        Rectangle(close, far)
     }
 }
 
 
 impl Set for Rectangle {
     fn contains(&self, p: &Array<f64, Ix1>) -> bool {
-        let bounds = &self.bounds;
-
-        assert_eq!(p.len(), bounds.shape()[1]);
+        assert_eq!(p.len(), self.0.shape()[0]);
         
         // check if p is further away than the closer point
-        let further = bounds.slice(s![0,..]).iter().zip(p.iter())
+        let further = self.0.iter().zip(p.iter())
             .fold(true, |acc: bool, (v,w)| {
                 acc & (w > v)
             });
         
         // check if p is closer than the far point
-        let closer = bounds.slice(s![1,..]).iter().zip(p.iter())
+        let closer = self.1.iter().zip(p.iter())
             .fold(true, |acc: bool, (v,w)| {
                 acc & (w < v)
             });
@@ -64,24 +57,101 @@ impl Set for Rectangle {
     }
 
     fn bounding_box(&self) -> Array<f64, Ix2> {
-        self.bounds.clone()
+        let mut result = unsafe {
+            Array::uninitialized((self.0.shape()[0], 2))
+        };
+        
+        result.slice_mut(s![0,..]).assign(&self.0);
+        result.slice_mut(s![1,..]).assign(&self.1);
+        result
     }
 }
 
 impl Measurable for Rectangle {
-    
     fn measure(&self) -> f64 {
-        let bounds = &self.bounds;
+        let n: usize = self.0.shape()[0];
 
         let mut result = 1.0;
-
-        let n: usize = bounds.shape()[1];
-
         for i in 0..n {
-            result *= bounds[[1,i]] - bounds[[0,i]];
+            result *= self.1[i] - self.0[i];
         }
 
         result
+    }
+}
+
+pub struct Sphere {
+    center: Array<f64, Ix1>,
+    radius: f64
+}
+
+impl Sphere {
+    pub fn new(center: Array<f64, Ix1>, radius: f64) -> Sphere {
+        assert!(radius > 0.0);
+
+        Sphere {
+            center, radius
+        }
+    }
+}
+
+impl Set for Sphere {
+    fn contains(&self, p: &Array<f64, Ix1>) -> bool {
+        let diff = &self.center - p;
+        let distance = diff.dot(&diff).sqrt();
+        distance <= self.radius
+    }
+
+    fn bounding_box(&self) -> Array<f64, Ix2> {
+        // Dimension of current space
+        let n = self.center.shape()[0];
+
+        let mut res = unsafe {
+            Array::uninitialized((n, 2))
+        };
+
+        for i in 0..n {
+            res[[0,i]] = self.center[i] - self.radius;
+            res[[1,i]] = self.center[i] + self.radius;
+        }
+
+        res
+    }
+}
+
+impl Measurable for Sphere {
+    fn measure(&self) -> f64 {
+        use std::f64::consts::PI as PI;
+        const MONTE_CARLO_STEPS: u32 = 1000000;
+
+        let n = self.center.shape()[0];
+
+        match n {
+            0 => 0.0,
+            1 => 2.0*self.radius,
+            2 => PI*self.radius.powi(2),
+            3 => 4.0*PI*self.radius.powi(3)/3.0,
+            _ => {
+                let ref mut rng = thread_rng();
+                let bounds = self.bounding_box();
+                let mut count = 0;
+                for _ in 0..MONTE_CARLO_STEPS {
+                    let mut p = unsafe {
+                        Array::uninitialized((n,))
+                    };
+
+                    for i in 0..n {
+                        p[i] = rng.sample(Uniform::new(bounds[[0,i]], bounds[[1,i]]));
+                    }
+
+                    if self.contains(&p) {
+                        count += 1;
+                    }
+                }
+                count as f64/MONTE_CARLO_STEPS as f64
+            }
+        }
+
     }
 }
 
@@ -95,11 +165,12 @@ pub fn poisson_process<T>(lambda: f64, domain: &T) -> Array<f64, Ix2>
     let ref mut rng = thread_rng();
     let num_events = Poisson::new(lambda*area).sample(rng) as usize;
 
-    let mut res = Array::zeros((num_events, d));
+    let mut res = unsafe {
+        Array::uninitialized((num_events, d))
+    };
     
     let mut counter = 0_usize;
     while counter < num_events {
-
         // generate a point inside the bounding box
         let mut ev = Array::zeros((d,));
 
@@ -112,7 +183,6 @@ pub fn poisson_process<T>(lambda: f64, domain: &T) -> Array<f64, Ix2>
             res.slice_mut(s![counter,..]).assign(&ev);
             counter += 1;
         }
-
     }
 
     res
@@ -124,9 +194,10 @@ mod tests {
 
     #[test]
     fn rectangle_test() {
-        let bounds = array![[0.0, 1.0], [1.0, 4.0]];
+        let close = array![0.0, 1.0];
+        let far = array![1.0, 4.0];
         
-        let rect = Rectangle::new(bounds);
+        let rect = Rectangle::new(close, far);
         assert_eq!(rect.measure(), 3.0);
 
         let p = array![0.5, 1.5];

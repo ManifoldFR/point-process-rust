@@ -1,6 +1,5 @@
 .vscode
 /target
 **/*.rs.bk
-test.gnuplot
-test.svg
+*.gnuplot
 test.png
