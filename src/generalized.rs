@@ -80,22 +80,22 @@ impl Measurable for Rectangle {
     }
 }
 
-pub struct Sphere {
+pub struct Ball {
     center: Array<f64, Ix1>,
     radius: f64
 }
 
-impl Sphere {
-    pub fn new(center: Array<f64, Ix1>, radius: f64) -> Sphere {
+impl Ball {
+    pub fn new(center: Array<f64, Ix1>, radius: f64) -> Ball {
         assert!(radius > 0.0);
 
-        Sphere {
+        Ball {
             center, radius
         }
     }
 }
 
-impl Set for Sphere {
+impl Set for Ball {
     fn contains(&self, p: &Array<f64, Ix1>) -> bool {
         let diff = &self.center - p;
         let distance = diff.dot(&diff).sqrt();
@@ -119,18 +119,27 @@ impl Set for Sphere {
     }
 }
 
-impl Measurable for Sphere {
+impl Measurable for Ball {
     fn measure(&self) -> f64 {
         use std::f64::consts::PI as PI;
         const MONTE_CARLO_STEPS: u32 = 1000000;
 
         let n = self.center.shape()[0];
 
+        // compute the area, using the formulas for the first
+        // few dimensions and then a Monte-Carlo method.
         match n {
-            0 => 0.0,
+            0 => 1.0,
             1 => 2.0*self.radius,
             2 => PI*self.radius.powi(2),
             3 => 4.0*PI*self.radius.powi(3)/3.0,
+            4 => 0.5*PI.powi(2)*self.radius.powi(4),
+            5 => 8.0*PI.powi(2)*self.radius.powi(5)/15.0,
+            6 => PI.powi(3)*self.radius.powi(6)/6.0,
+            7 => 16.0*PI.powi(3)*self.radius.powi(7)/105.0,
+            8 => PI.powi(4)*self.radius.powi(8)/24.0,
+            9 => 32.0*PI.powi(4)*self.radius.powi(9)/945.0,
+            10 => PI.powi(5)*self.radius.powi(10)/120.0,
             _ => {
                 let ref mut rng = thread_rng();
                 let bounds = self.bounding_box();

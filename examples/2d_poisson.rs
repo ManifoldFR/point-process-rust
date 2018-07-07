@@ -49,7 +49,7 @@ fn circle_example() {
 
     let center = array![1.0,1.0];
     let radius = 1.0;
-    let domain = generalized::Sphere::new(center, radius);
+    let domain = generalized::Ball::new(center, radius);
 
     let events = generalized::poisson_process(lambda, &domain);
 
