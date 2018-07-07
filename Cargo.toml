@@ -1,6 +1,6 @@
 [package]
 name = "point_process"
-version = "0.2.3"
+version = "0.2.4"
 authors = ["ManifoldFR <manifoldfr@outlook.com>"]
 description = "A crate for simulating random point processes."
 license = "MIT"
