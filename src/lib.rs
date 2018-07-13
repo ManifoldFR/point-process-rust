@@ -106,8 +106,6 @@ pub fn hawkes_exponential(tmax: f64, alpha: f64, beta: f64, lambda0: f64) -> Vec
 }
 
 
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
