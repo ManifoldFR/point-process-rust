@@ -12,7 +12,7 @@ This crate provides functions to simulate point processes in [Rust](https://rust
 
 ## Time-dependent processes
 
-The following time-dependent point processes have been implemented:
+The following time-dependent point processes have been implemented within the `timedependent` module:
 
 * Poisson point process (homogeneous and inhomogeneous, with custom function)
 * Hawkes processes (exponential kernel, see [@DassiosZhao13])
@@ -21,16 +21,16 @@ The API returns the process trajectories as a vector of a `struct` named `Events
 
 ## Multidimensional processes
 
-The crate provides the `generalized` submodule for higher-dimensional processes.
+The crate provides the `generalized` module for higher-dimensional processes.
 
 For now, only homogeneous Poisson processes have been implemented with a function
 
 ```rust
 fn poisson_process(lambda: f64, domain: &T)
-    where T: Measurable -> ndarray::Array<f64, Ix2>
+    where T: Set -> ndarray::Array<f64, Ix2>
 ```
 
-which takes a reference to a _measurable domain_, that is a subset of d-dimensional space that is measurable, implemented with the `Measurable` trait (see API docs), and returns a 2-dimensional array which is a set of point events in d-dimensional space falling into the domain.
+which takes a reference to a _domain_, that is a subset of d-dimensional space implemented with the `Set` trait (see API docs), and returns a 2-dimensional array which is a set of point events in d-dimensional space falling into the domain.
 
 ## Examples
 
