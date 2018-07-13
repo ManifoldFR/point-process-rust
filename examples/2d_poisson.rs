@@ -7,6 +7,7 @@ extern crate ndarray;
 use gnuplot::{Figure,Caption,Color,PointSymbol,PointSize};
 
 use pointprocesses::generalized;
+use pointprocesses::generalized::Set;
 
 fn main() {
     
@@ -17,7 +18,7 @@ fn main() {
 }
 
 fn square_example() {
-    let lambda = 50.0;
+    let lambda = 20.0;
 
     let close = array![0.0,0.0];
     let far = array![1.0,1.0];
@@ -25,7 +26,9 @@ fn square_example() {
 
     let events = generalized::poisson_process(lambda, &domain);
 
-    println!("{:?}", events);
+    // println!("{:?}", events);
+    println!("Bounding box: {:?}", domain.bounding_box());
+    println!("Simulated {} events.", events.shape()[0]);
 
     let mut fg = Figure::new();
 
@@ -42,10 +45,11 @@ fn square_example() {
         );
     
     fg.echo_to_file("2d_poisson_square.gnuplot");
+    fg.show();
 }
 
 fn circle_example() {
-    let lambda = 500.0;
+    let lambda = 100.0;
 
     let center = array![1.0,1.0];
     let radius = 1.0;
@@ -53,7 +57,10 @@ fn circle_example() {
 
     let events = generalized::poisson_process(lambda, &domain);
 
-    println!("{:?}", events);
+    // not printing this, the stdout gets flooded with all these evts
+    // println!("{:?}", events);
+    println!("Bounding box: {:?}", domain.bounding_box());
+    println!("Simulated {} events.", events.shape()[0]);
 
     let mut fg = Figure::new();
 
