@@ -40,6 +40,6 @@ fn main() {
         .x_label("Temps t")
         .y_label("Intensité λ(t)");
     
-    Page::single(&v).save("examples/variable_poisson.svg");
+    Page::single(&v).save("examples/images/variable_poisson.svg");
     
 }

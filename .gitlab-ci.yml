@@ -30,3 +30,6 @@ examples:
     - cargo run --example variable_poisson
     - cargo run --example hawkes_exp
     - cargo run --example 2d_poisson
+  artifacts:
+    paths:
+      - examples/images/*

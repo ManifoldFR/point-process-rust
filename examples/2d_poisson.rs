@@ -62,7 +62,7 @@ fn square_example() {
         .y_label("y");
 
     
-    page::Page::single(&v).save("examples/2d_poisson.rect.svg");
+    page::Page::single(&v).save("examples/images/2d_poisson.rect.svg");
     
 }
 
@@ -98,5 +98,5 @@ fn circle_example() {
         .y_label("y");
 
     // A page with a single view is then saved to an SVG file
-    page::Page::single(&v).save("examples/2d_poisson.circle.svg");
+    page::Page::single(&v).save("examples/images/2d_poisson.circle.svg");
 }

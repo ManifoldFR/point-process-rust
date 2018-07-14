@@ -65,5 +65,5 @@ fn main() {
         .add(&intens_plot)
         .add(&sc);
     
-    page::Page::single(&v).save("examples/hawkes_exp.svg");
+    page::Page::single(&v).save("examples/images/hawkes_exp.svg");
 }
