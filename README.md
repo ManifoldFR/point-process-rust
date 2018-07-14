@@ -42,13 +42,7 @@ To run the examples, do for instance
 cargo run --example variable_poisson
 ```
 
-Some examples display a plot using [gnuplot](http://www.gnuplot.info/) with SiegeLord's [RustGnuplot](https://github.com/SiegeLord/RustGnuplot).
-
-On Windows (see [issue here](https://github.com/SiegeLord/RustGnuplot#29)), `cargo run` is broken. You can grab a plot with:
-
-```bash
-gnuplot -p < test.gnuplot
-```
+Some will produce SVG image files in the `examples` directory.
 
 The examples show how to use the API.
 
