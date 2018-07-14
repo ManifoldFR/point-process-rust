@@ -28,5 +28,5 @@ examples:
   script:
     - cargo run --example homog_time_poisson
     - cargo run --example variable_poisson
-    - cargo run --example hawkes_exponential
+    - cargo run --example hawkes_exp
     - cargo run --example 2d_poisson
