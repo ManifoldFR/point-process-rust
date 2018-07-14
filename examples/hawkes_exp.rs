@@ -53,13 +53,13 @@ fn main() {
             (e.timestamp(), e.intensity())
         }).collect();
     
-    let sc = Scatter::from_vec(&ev_tupl)
+    let sc = Scatter::from_slice(&ev_tupl)
         .style(scatter::Style::new().size(2.0)
             .colour("#E0A536")
             .marker(Marker::Cross)
         );
 
-    let v = view::View::new()
+    let v = view::ContinuousView::new()
         .x_label("Temps t")
         .y_label("Intensité λ(t)")
         .add(&intens_plot)

@@ -23,4 +23,5 @@ name = "pointprocesses"
 path = "src/lib.rs"
 
 [dev-dependencies]
-plotlib = "0.3.0"
+plotlib = { git = "https://github.com/milliams/plotlib" }
+svg = "0.5.11"

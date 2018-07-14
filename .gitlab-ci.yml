@@ -18,6 +18,7 @@ build:
 tests:
   stage: tests
   script:
+    - tree target
     - cargo test -- --nocapture
 
 

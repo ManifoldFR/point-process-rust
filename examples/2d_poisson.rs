@@ -1,13 +1,17 @@
 extern crate pointprocesses;
 extern crate plotlib;
+extern crate svg;
 
 #[macro_use]
 extern crate ndarray;
 
-use plotlib::style::Point;
-use plotlib::style::Marker;
+use svg::Node;
+
+use std::path::Path;
+
+use plotlib::style::{Point, Marker};
 use plotlib::view;
-use plotlib::page;
+use plotlib::view::View;
 use plotlib::scatter;
 use plotlib::scatter::Scatter;
 
@@ -30,7 +34,7 @@ fn cast_to_tuples(arr: Array<f64,Ix2>) -> Vec<(f64,f64)> {
 }
 
 fn square_example() {
-    let lambda = 20.0;
+    let lambda = 200.0;
 
     let close = array![0.0,0.0];
     let far = array![1.0,1.0];
@@ -47,27 +51,29 @@ fn square_example() {
 
     let data = cast_to_tuples(events);
 
-    // We create our scatter plot from the data
-    let s1 = Scatter::from_vec(&data)
+    // We create our scatter plot from the data$
+    let s1 = Scatter::from_slice(&data)
         .style(scatter::Style::new()
             .marker(Marker::Circle) // setting the marker to be a square
             .colour("#DD3355")
             .size(2.5)); // and a custom colour 
     
-    let v = view::View::new()
+    let v = view::ContinuousView::new()
         .add(&s1)
         .x_range(0., 1.)
         .y_range(0., 1.)
         .x_label("x")
         .y_label("y");
 
-    
-    page::Page::single(&v).save("examples/images/2d_poisson.rect.svg");
-    
+    let mut document = svg::Document::new().set("viewBox", (0,0,600,600));
+    let savepath = Path::new("examples/images/2d_poisson.rect.svg");
+    document.append(v.to_svg(520., 520.).set("transform", format!("translate({}, {})", 50, 550)));
+    svg::save(savepath, &document).unwrap();
 }
 
+
 fn circle_example() {
-    let lambda = 100.0;
+    let lambda = 400.0;
 
     let center = array![1.0,1.0];
     let radius = 1.0;
@@ -83,20 +89,23 @@ fn circle_example() {
     let data = cast_to_tuples(events);
 
     // We create our scatter plot from the data
-    let s = Scatter::from_vec(&data)
+    let s = Scatter::from_slice(&data)
         .style(scatter::Style::new()
             .marker(Marker::Circle) // setting the marker to be a square
             .colour("#0971B2")
             .size(2.0)); // and a custom colour 
     
     // The 'view' describes what set of data is drawn
-    let v = view::View::new()
+    let v = view::ContinuousView::new()
         .add(&s)
         .x_range(0., 2.)
         .y_range(0., 2.)
         .x_label("x")
         .y_label("y");
 
-    // A page with a single view is then saved to an SVG file
-    page::Page::single(&v).save("examples/images/2d_poisson.circle.svg");
+    let mut document = svg::Document::new().set("viewBox", (0,0,600,600));
+    let savepath = Path::new("examples/images/2d_poisson.circle.svg");
+    document.append(v.to_svg(520., 520.).set("transform", format!("translate({}, {})", 50, 550)));
+    svg::save(savepath, &document).unwrap();
+    
 }

@@ -5,7 +5,7 @@ extern crate serde_json;
 use plotlib::function;
 use plotlib::scatter;
 use plotlib::style::{Line, Marker, Point};
-use plotlib::view::View;
+use plotlib::view;
 use plotlib::page::Page;
 
 use pointprocesses::event::Event;
@@ -34,7 +34,7 @@ fn main() {
             .marker(Marker::Cross)
             .colour("#E0A536"));
     
-    let v = View::new()
+    let v = view::ContinuousView::new()
         .add(&s)
         .add(&intens_plot)
         .x_label("Temps t")
