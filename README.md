@@ -6,7 +6,7 @@
 
 Point processes are stochastic processes with a wide range of applications in seismology, epidemiology, or financial mathematics. They are utilized to model the arrival of random events as a function of time.
 
-![variablepoisson](coverimg.png)
+![variablepoisson](variable_poisson.png)
 
 This crate provides functions to simulate point processes in [Rust](https://rust-lang.org).
 
@@ -20,6 +20,8 @@ The following time-dependent point processes have been implemented within the `t
 The API returns the process trajectories as a vector of a `struct` named `Events`, which has the following fields: a timestamp, the current process intensity and a vector holding any children events (for processes with this property, *coming soon*).
 
 ## Multidimensional processes
+
+![2dpoisson_circle](2d_poisson.circle.png)
 
 The crate provides the `generalized` module for higher-dimensional processes.
 
@@ -40,13 +42,7 @@ To run the examples, do for instance
 cargo run --example variable_poisson
 ```
 
-Some examples display a plot using [gnuplot](http://www.gnuplot.info/) with SiegeLord's [RustGnuplot](https://github.com/SiegeLord/RustGnuplot).
-
-On Windows (see [issue here](https://github.com/SiegeLord/RustGnuplot#29)), `cargo run` is broken. You can grab a plot with:
-
-```bash
-gnuplot -p < test.gnuplot
-```
+Some will produce SVG image files in the `examples` directory.
 
 The examples show how to use the API.
 

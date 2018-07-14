@@ -25,9 +25,11 @@ examples:
   stage: tests
   before_script:
     - apt-get update
-    - apt-get install gnuplot-x11 -y
   script:
-    - cargo run --example homog_time_poisson -- --terminal pngcairo
-    - cargo run --example variable_poisson -- --terminal pngcairo
-    - cargo run --example hawkes_exponential -- --terminal pngcairo
+    - cargo run --example homog_time_poisson
+    - cargo run --example variable_poisson
+    - cargo run --example hawkes_exp
     - cargo run --example 2d_poisson
+  artifacts:
+    paths:
+      - examples/images/*
