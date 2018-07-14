@@ -28,7 +28,7 @@ fn main() {
         .map(|e: Event| (e.timestamp(), e.intensity()))
         .collect();
 
-    let s = scatter::Scatter::from_vec(&event_data)
+    let s = scatter::Scatter::from_slice(&event_data)
         .style(scatter::Style::new()
             .size(2.5)
             .marker(Marker::Cross)
