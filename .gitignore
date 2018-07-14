@@ -1,5 +1,11 @@
+## Images
+*.gnuplot
+examples/*.svg
+test.png
+
+## vscode config
 .vscode
+
+## Compiled assets
 /target
 **/*.rs.bk
-*.gnuplot
-test.png

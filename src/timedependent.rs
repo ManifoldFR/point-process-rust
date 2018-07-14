@@ -13,13 +13,11 @@ pub fn poisson_process(tmax: f64, lambda: f64) -> Vec<Event> {
     assert!(lambda >= 0.0);
 
     let num_events = Poisson::new(tmax*lambda).sample(&mut rng);
-
-    let mut result = vec![];
-    for _ in 0..num_events {
-        let timestamp= tmax*random::<f64>();
-        result.push(Event::new(timestamp, lambda));
-    };
-    result
+    
+    (0..num_events).map(|_| {
+        let timestamp = tmax*random::<f64>();
+        Event::new(timestamp, lambda)
+    }).collect()
 }
 
 /// Simulate a Poisson process with variable intensity.
@@ -39,7 +37,7 @@ pub fn variable_poisson(tmax: f64, lambda: fn(f64) -> f64, max_lambda: f64) -> V
         let lambda_val = random::<f64>()*max_lambda;
 
         if lambda_val < lambda(timestamp) {
-            let mut event = Event::new(timestamp, lambda_val);
+            let event = Event::new(timestamp, lambda_val);
             result.push(event);
         }
     }
@@ -54,7 +52,7 @@ pub fn hawkes_exponential(tmax: f64, alpha: f64, beta: f64, lambda0: f64) -> Vec
     let mut t = 0.0;
     let mut previous_t: f64;
     let mut last_lambda = lambda0;
-    let mut result: Vec<Event> = vec![];
+    let mut result = Vec::<Event>::new();
 
     while t < tmax {
         let u0 = random::<f64>();
@@ -87,6 +85,7 @@ pub fn hawkes_exponential(tmax: f64, alpha: f64, beta: f64, lambda0: f64) -> Vec
         last_lambda = lambda0 + alpha + (last_lambda - lambda0)*(-beta*(t-previous_t)).exp();
 
         let new_event = Event::new(t, last_lambda);
+
         
         result.push(new_event);
     }

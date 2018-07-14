@@ -7,19 +7,20 @@ license = "MIT"
 readme = "README.md"
 repository = "https://github.com/ManifoldFR/point-process-rust"
 exclude = [
-    "test.*"
+    "test.*",
+    "examples/*.svg"
 ]
 
 [dependencies]
-serde = "1.0"
-serde_derive = "1.0"
-serde_json = "1.0"
-rand = "^0.5"
-ndarray = { version = "^0.11", features = ["serde-1"] }
-
-[dev-dependencies]
-gnuplot = "^0.0.26"
+serde = "1.0.70"
+serde_derive = "1.0.70"
+serde_json = "1.0.22"
+rand = "0.5.4"
+ndarray = { version = "0.11.2", features = ["serde-1"] }
 
 [lib]
 name = "pointprocesses"
 path = "src/lib.rs"
+
+[dev-dependencies]
+plotlib = "0.3.0"
