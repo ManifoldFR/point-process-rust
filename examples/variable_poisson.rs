@@ -11,6 +11,8 @@ use plotlib::page::Page;
 use pointprocesses::event::Event;
 use pointprocesses::variable_poisson;
 
+use std::fs;
+
 fn main() {
     
     let tmax = 60.0;
@@ -40,6 +42,7 @@ fn main() {
         .x_label("Temps t")
         .y_label("Intensité λ(t)");
     
+    fs::create_dir("examples/images").unwrap_or_default();
     Page::single(&v).save("examples/images/variable_poisson.svg");
     
 }

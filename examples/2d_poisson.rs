@@ -7,6 +7,7 @@ extern crate ndarray;
 
 use svg::Node;
 
+use std::fs;
 use std::path::Path;
 
 use plotlib::style::{Point, Marker};
@@ -65,6 +66,7 @@ fn square_example() {
         .x_label("x")
         .y_label("y");
 
+    fs::create_dir("examples/images").unwrap_or_default();
     let mut document = svg::Document::new().set("viewBox", (0,0,600,600));
     let savepath = Path::new("examples/images/2d_poisson.rect.svg");
     document.append(v.to_svg(520., 520.).set("transform", format!("translate({}, {})", 50, 550)));
@@ -103,6 +105,7 @@ fn circle_example() {
         .x_label("x")
         .y_label("y");
 
+    fs::create_dir("examples/images").unwrap_or_default();
     let mut document = svg::Document::new().set("viewBox", (0,0,600,600));
     let savepath = Path::new("examples/images/2d_poisson.circle.svg");
     document.append(v.to_svg(520., 520.).set("transform", format!("translate({}, {})", 50, 550)));

@@ -2,6 +2,8 @@ extern crate pointprocesses;
 extern crate plotlib;
 extern crate serde_json;
 
+use std::fs;
+
 use plotlib::style::{Point, Marker, Line};
 use plotlib::view;
 use plotlib::page;
@@ -64,6 +66,7 @@ fn main() {
         .y_label("Intensité λ(t)")
         .add(&intens_plot)
         .add(&sc);
-    
+
+    fs::create_dir("examples/images").unwrap_or_default();
     page::Page::single(&v).save("examples/images/hawkes_exp.svg");
 }
