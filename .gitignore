@@ -1,6 +1,6 @@
 ## Images
 *.gnuplot
-examples/*.svg
+examples/images/*.svg
 test.png
 
 ## vscode config
