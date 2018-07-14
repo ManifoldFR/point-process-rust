@@ -50,7 +50,8 @@ pub fn variable_poisson(tmax: f64, lambda: fn(f64) -> f64, max_lambda: f64) -> V
 }
 
 /// Simulate a Hawkes process with an exponential kernel
-/// by utilising the linear time-complexity algorithm in [DassiosZhao13](http://eprints.lse.ac.uk/51370/1/Dassios_exact_simulation_hawkes.pdf)
+/// by utilising the linear time-complexity algorithm in [DassiosZhao13](http://eprints.lse.ac.uk/51370/1/Dassios_exact_simulation_hawkes.pdf).
+/// Returns the intensity process.
 pub fn hawkes_exponential(tmax: f64, alpha: f64, beta: f64, lambda0: f64) -> Vec<Event> {
 
     let mut t = 0.0;
@@ -59,39 +60,31 @@ pub fn hawkes_exponential(tmax: f64, alpha: f64, beta: f64, lambda0: f64) -> Vec
     let mut result = Vec::<Event>::new();
 
     while t < tmax {
-        let u0 = random::<f64>();
-        let s0 = -1.0/lambda0*u0.ln();
+        // variables U_1 and S_{k+1}^(1) from the paper @DassiosZhao13
+        let u1 = random::<f64>();
+        let s1 = -1.0/beta*u1.ln();
 
         let d = if last_lambda > lambda0 {
-            1.0 + beta*u0.ln()/(last_lambda - lambda0)
+            1.0 + beta*u1.ln()/(last_lambda - lambda0)
         } else { ::std::f64::NEG_INFINITY };
         
-        let s1: f64;
+        let s2 = -1.0/lambda0*random::<f64>().ln();
         
         previous_t = t;
 
-        
-        t += if d > 0.0 {
-            s1 = -1.0/lambda0*random::<f64>().ln();
-            if s0 <= s1 {
-                s0
-            } else {
-                s1
-            }
+        t += if d < 0.0 {
+            s2
         } else {
-            s0
+            s1.min(s2)
         };
 
-        if t > tmax {
-            break;
-        }
-
-        last_lambda = lambda0 + alpha + (last_lambda - lambda0)*(-beta*(t-previous_t)).exp();
+        last_lambda = lambda0 + (last_lambda - lambda0)*(-beta*(t-previous_t)).exp();
 
         let new_event = Event::new(t, last_lambda);
-
-        
         result.push(new_event);
+
+        last_lambda += alpha;
+
     }
 
     result

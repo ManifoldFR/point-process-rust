@@ -7,7 +7,8 @@ use std::fs;
 use plotlib::style::{Point, Marker, Line};
 use plotlib::view;
 use plotlib::page;
-use plotlib::function;
+//use plotlib::function;
+use plotlib::line;
 use plotlib::scatter;
 use plotlib::scatter::Scatter;
 
@@ -17,7 +18,7 @@ use pointprocesses::hawkes_exponential;
 fn main() {
     
     let tmax = 20.0;
-    let alpha = 0.6;
+    let alpha = 0.5;
     let beta = 0.8;
     let lambda0 = 1.0;
 
@@ -38,17 +39,37 @@ fn main() {
         let result: f64 = events
             .iter()
             .take_while(|&ev| ev.timestamp() < t)
-            .map(|ev| {
-            kernel(t - ev.timestamp())
-        }).sum();
+            .fold(0.0, |acc, ev| {
+            acc+kernel(t - ev.timestamp())
+        });
         result + lambda0
     };
 
+    let samples = 1000;
+    let times = (0..samples).map(|i| {
+        i as f64*tmax/samples as f64
+    });
+    let mut intens_data: Vec<(f64,f64)> = Vec::new();
+
+    for t in times {
+        let lam = intensity_func(&events, t);
+        //intens_data.push((t-0.0001/samples as f64, lam-alpha));
+        intens_data.push((t, lam));
+    };
+
+    let intens_plot = line::Line::new(&intens_data)
+        .style(line::Style::new()
+            .width(1.5)
+            .colour("#4C36EB")
+        );
+
+    /*
     let intens_plot = function::Function::new(
         |t| intensity_func(&events, t), 0.0, tmax)
         .style(function::Style::new()
             .width(1.5)
             .colour("#4C36EB"));
+    */
 
     let ev_tupl: Vec<(f64,f64)> = events.into_iter()
         .map(|e: Event| {

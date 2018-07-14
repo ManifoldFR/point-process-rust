@@ -15,16 +15,16 @@ use std::fs;
 
 fn main() {
     
-    let tmax = 60.0;
+    let tmax = 30.0;
     let f: fn(f64) -> f64 = |t| {
-        1.0 + (0.5*t).sin()*(-0.05*t).exp()
+        4.0*(30.0 - 0.95*t).ln()*(1.0 + 0.1*(0.5*t).sin())
     };
-    let events: Vec<Event> = variable_poisson(tmax, f, 2.0);
+    let events: Vec<Event> = variable_poisson(tmax, f, 17.0);
 
     println!("{}", serde_json::to_string_pretty(&events).unwrap());
     
     let intens_plot = function::Function::new(f, 0.0, tmax)
-        .style(function::Style::new().colour("#4C36EB").width(1.5));
+        .style(function::Style::new().colour("#FF720C").width(1.5));
     
     let event_data: Vec<(f64,f64)> = events.into_iter()
         .map(|e: Event| (e.timestamp(), e.intensity()))
@@ -34,7 +34,7 @@ fn main() {
         .style(scatter::Style::new()
             .size(2.5)
             .marker(Marker::Cross)
-            .colour("#E0A536"));
+            .colour("#1932E8"));
     
     let v = view::ContinuousView::new()
         .add(&s)
