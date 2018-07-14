@@ -25,7 +25,9 @@ pub fn poisson_process(tmax: f64, lambda: f64) -> Vec<Event> {
 }
 
 /// Simulate a Poisson process with variable intensity.
-pub fn variable_poisson(tmax: f64, lambda: fn(f64) -> f64, max_lambda: f64) -> Vec<Event> {
+pub fn variable_poisson<F>(tmax: f64, lambda: F, max_lambda: f64) -> Vec<Event>
+where F: Fn(f64) -> f64
+{
     let mut rng = thread_rng();
 
     // Number of events before thinning
@@ -45,7 +47,6 @@ pub fn variable_poisson(tmax: f64, lambda: fn(f64) -> f64, max_lambda: f64) -> V
             result.push(event);
         }
     }
-
     result
 }
 
@@ -53,7 +54,6 @@ pub fn variable_poisson(tmax: f64, lambda: fn(f64) -> f64, max_lambda: f64) -> V
 /// by utilising the linear time-complexity algorithm in [DassiosZhao13](http://eprints.lse.ac.uk/51370/1/Dassios_exact_simulation_hawkes.pdf).
 /// Returns the intensity process.
 pub fn hawkes_exponential(tmax: f64, alpha: f64, beta: f64, lambda0: f64) -> Vec<Event> {
-
     let mut t = 0.0;
     let mut previous_t: f64;
     let mut last_lambda = lambda0;

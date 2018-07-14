@@ -19,20 +19,29 @@ The following time-dependent point processes have been implemented within the `t
 
 The API returns the process trajectories as a vector of a `struct` named `Events`, which has the following fields: a timestamp, the current process intensity and a vector holding any children events (for processes with this property, *coming soon*).
 
-## Multidimensional processes
+## n-dimensional processes
 
-![2dpoisson_circle](2d_poisson.circle.png)
+![2dpoisson_circle](2d_poisson.variable.circle.png)
 
-The crate provides the `generalized` module for higher-dimensional processes.
+The `generalized` module provides functions for higher-dimensional processes, using [`ndarray`](https://github.com/bluss/ndarray).
 
-For now, only homogeneous Poisson processes have been implemented with a function
+For now, only Poisson processes have been implemented.
 
 ```rust
 fn poisson_process(lambda: f64, domain: &T)
-    where T: Set -> ndarray::Array<f64, Ix2>
+where T: Set -> ndarray::Array<f64, Ix2> {
+    ...
+}
+
+fn variable_poisson<F, T>(lambda: F,max_lambda: f64,domain: &T) -> Array2<f64>
+where F: Fn(&Array1<f64>) -> f64,
+      T: Set
+{
+    ...
+}
 ```
 
-which takes a reference to a _domain_, that is a subset of d-dimensional space implemented with the `Set` trait (see API docs), and returns a 2-dimensional array which is a set of point events in d-dimensional space falling into the domain.
+which takes a reference to a _domain_, that is a subset of n-dimensional space implemented with the `Set` trait (see API docs), and returns a 2-dimensional array which is a set of point events in d-dimensional space falling into the domain.
 
 ## Examples
 

@@ -1,6 +1,6 @@
 [package]
 name = "point_process"
-version = "0.3.1"
+version = "0.3.2"
 authors = ["ManifoldFR <manifoldfr@outlook.com>"]
 description = "A crate for simulating random point processes."
 license = "MIT"
@@ -10,6 +10,9 @@ exclude = [
     "test.*",
     "examples/*.svg"
 ]
+keywords = ["mathematics", "simulation", "statistics"]
+categories = ["algorithms", "simulation", "science"]
+maintenance = { status = "actively-developed" }
 
 [dependencies]
 serde = "1.0.70"
