@@ -39,8 +39,8 @@ fn main() {
     let v = view::ContinuousView::new()
         .add(&s)
         .add(&intens_plot)
-        .x_label("Temps t")
-        .y_label("Intensité λ(t)");
+        .x_label("Time t")
+        .y_label("Intensity λ(t)");
     
     fs::create_dir("examples/images").unwrap_or_default();
     Page::single(&v).save("examples/images/variable_poisson.svg");

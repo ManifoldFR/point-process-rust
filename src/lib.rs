@@ -12,5 +12,5 @@ pub mod event;
 pub mod generalized;
 pub mod timedependent;
 
-// Time dependent processes are reexported.
+/// Time dependent processes are available from the crate root.
 pub use timedependent::*;
