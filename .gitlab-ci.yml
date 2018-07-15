@@ -7,9 +7,11 @@ stages:
 build:
   stage: build
   script:
+    - git clone https://github.com/milliams/plotlib.git
     - cargo build --release
   cache:
     paths:
+      - plotlib/
       - target/
   artifacts:
     paths:

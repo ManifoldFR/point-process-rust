@@ -13,7 +13,6 @@ exclude = [
 ]
 keywords = ["mathematics", "simulation", "statistics"]
 categories = ["algorithms", "simulation", "science"]
-maintenance = { status = "actively-developed" }
 
 [dependencies]
 serde = "1.0.70"

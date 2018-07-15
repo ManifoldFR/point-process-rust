@@ -15,7 +15,7 @@ This crate provides functions to simulate point processes in [Rust](https://rust
 The following time-dependent point processes have been implemented within the `timedependent` module:
 
 * Poisson point process (homogeneous and inhomogeneous, with custom function)
-* Hawkes processes, with the exponential kernel (refer to Dassios and Zhao's 2013 paper [(1)]) ![hawkesexp](hawkes_exp.png)
+* Hawkes processes, with an exponential kernel (refer to Dassios and Zhao's 2013 paper [(1)]) ![hawkesexp](hawkes_exp.gamma_dist.png)
 
 The API returns the process trajectories as a vector of a `struct` named `Events`, which has the following fields: a timestamp, the current process intensity and a vector holding any children events (for processes with this property, *coming soon*).
 

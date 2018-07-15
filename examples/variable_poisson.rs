@@ -27,7 +27,7 @@ fn main() {
         .style(function::Style::new().colour("#FF720C").width(1.5));
     
     let event_data: Vec<(f64,f64)> = events.into_iter()
-        .map(|e: Event| (e.timestamp(), e.intensity()))
+        .map(|e: Event| (e.get_timestamp(), e.get_intensity()))
         .collect();
 
     let s = scatter::Scatter::from_slice(&event_data)

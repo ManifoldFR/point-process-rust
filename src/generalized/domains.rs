@@ -110,6 +110,5 @@ mod tests {
 
         let p = array![-1.0,2.0];
         assert!(!rect.contains(&p));
-
     }
 }

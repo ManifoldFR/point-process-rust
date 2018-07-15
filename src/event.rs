@@ -7,7 +7,9 @@ pub struct Event {
     timestamp: f64,
     intensity: f64,
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    children: Vec<Event>
+    children: Vec<Event>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    jump: Option<f64>
 }
 
 impl Event {
@@ -15,7 +17,8 @@ impl Event {
         Event {
             timestamp,
             intensity,
-            children: vec!()
+            children: vec!(),
+            jump: None
         }
     }
 
@@ -23,11 +26,20 @@ impl Event {
         self.children.push(par);
     }
 
-    pub fn timestamp(&self) -> f64 {
+    pub fn jump(mut self, jump: f64) -> Self {
+        self.jump.get_or_insert(jump);
+        self
+    }
+
+    pub fn get_jump(&self) -> f64 {
+        self.jump.unwrap()
+    }
+
+    pub fn get_timestamp(&self) -> f64 {
         self.timestamp
     }
 
-    pub fn intensity(&self) -> f64 {
+    pub fn get_intensity(&self) -> f64 {
         self.intensity
     }
 }
