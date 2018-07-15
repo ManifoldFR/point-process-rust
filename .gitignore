@@ -9,3 +9,6 @@ test.png
 ## Compiled assets
 /target
 **/*.rs.bk
+
+## Local plotlib checkout
+plotlib/

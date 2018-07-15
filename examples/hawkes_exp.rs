@@ -22,10 +22,11 @@ fn main() {
     
     let tmax = 90.0;
     let alpha = 0.8;
+    let mut jumps = std::iter::repeat(alpha);
     let beta = 1.0;
     let lambda0 = 0.9;
 
-    let events: Vec<Event> = hawkes_exponential(tmax, alpha, beta, lambda0);
+    let events: Vec<Event> = hawkes_exponential(tmax, beta, lambda0, &mut jumps);
 
     println!("{}", serde_json::to_string_pretty(&events).unwrap());
     

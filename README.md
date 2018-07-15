@@ -45,6 +45,13 @@ which takes a reference to a _domain_, that is a subset of n-dimensional space i
 
 ## Examples
 
+Some examples require milliams' [plotlib](https://github.com/milliams/plotlib) graphing library. To compile them, you'll need to checkout plotlib locally:
+
+```bash
+git clone https://github.com/milliams/plotlib
+cargo build --example 2d_poisson
+```
+
 To run the examples, do for instance
 
 ```bash

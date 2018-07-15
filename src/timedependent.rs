@@ -53,7 +53,10 @@ where F: Fn(f64) -> f64
 /// Simulate a Hawkes process with an exponential kernel
 /// by utilising the linear time-complexity algorithm in [DassiosZhao13](http://eprints.lse.ac.uk/51370/1/Dassios_exact_simulation_hawkes.pdf).
 /// Returns the intensity process.
-pub fn hawkes_exponential(tmax: f64, alpha: f64, beta: f64, lambda0: f64) -> Vec<Event> {
+/// Will consume the `jumps` iterator supplied !
+pub fn hawkes_exponential<T>(tmax: f64, beta: f64, lambda0: f64, jumps: &mut T) -> Vec<Event>
+where T: Iterator<Item = f64>
+{
     let mut t = 0.0;
     let mut previous_t: f64;
     let mut last_lambda = lambda0;
@@ -82,8 +85,12 @@ pub fn hawkes_exponential(tmax: f64, alpha: f64, beta: f64, lambda0: f64) -> Vec
 
         let new_event = Event::new(t, last_lambda);
         result.push(new_event);
-
-        last_lambda += alpha;
+        
+        if let Some(alpha) = jumps.next() {
+            last_lambda += alpha;
+        } else {
+            panic!("Hawkes process ran out of jumps!");
+        }
 
     }
 

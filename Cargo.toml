@@ -1,6 +1,6 @@
 [package]
 name = "point_process"
-version = "0.3.2"
+version = "0.4.0"
 authors = ["ManifoldFR <manifoldfr@outlook.com>"]
 description = "A crate for simulating random point processes."
 license = "MIT"
@@ -8,7 +8,8 @@ readme = "README.md"
 repository = "https://github.com/ManifoldFR/point-process-rust"
 exclude = [
     "test.*",
-    "examples/*.svg"
+    "examples/*.svg",
+    "plotlib/"
 ]
 keywords = ["mathematics", "simulation", "statistics"]
 categories = ["algorithms", "simulation", "science"]
@@ -26,5 +27,5 @@ name = "pointprocesses"
 path = "src/lib.rs"
 
 [dev-dependencies]
-plotlib = { git = "https://github.com/milliams/plotlib" }
+plotlib = { path = "plotlib/" }
 svg = "0.5.11"
