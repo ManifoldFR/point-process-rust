@@ -12,9 +12,8 @@ build:
   cache:
     paths:
       - plotlib/
-      - target/
   artifacts:
-    paths:
+      - plotlib/
       - target/release
 
 tests:
