@@ -27,5 +27,5 @@ name = "pointprocesses"
 path = "src/lib.rs"
 
 [dev-dependencies]
-plotlib = { path = "plotlib/" }
+plotlib = { path = "plotlib/", version = "0.4.0" }
 svg = "0.5.11"
