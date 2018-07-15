@@ -1,6 +1,9 @@
+/*!
+ * Traits and some base structs for use with n-dimensional processes.
+ */
 use ndarray::prelude::*;
 
-/// `structs` implementing this trait represent regions in n-dimensional space.
+/// Structs implementing this trait represent regions in n-dimensional space.
 pub trait Set {
     /// Returns whether or not a given vector `p` lies in the instance.
     fn contains(&self, p: &Array1<f64>) -> bool;

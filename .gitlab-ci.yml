@@ -11,19 +11,24 @@ build:
     - cargo build --release
   cache:
     paths:
-      - plotlib/
+      - plotlib
   artifacts:
-      - plotlib/
+    paths:
+      - plotlib
       - target/release
 
 tests:
   stage: tests
+  dependencies:
+    - build
   script:
     - cargo test -- --nocapture
 
 
 examples:
   stage: tests
+  dependencies:
+    - build
   before_script:
     - apt-get update
   script:
