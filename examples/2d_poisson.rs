@@ -13,6 +13,7 @@ use std::path::Path;
 use plotlib::style::{Point, Marker};
 use plotlib::view;
 use plotlib::view::View;
+use plotlib::page;
 use plotlib::scatter;
 use plotlib::scatter::Scatter;
 
@@ -21,6 +22,7 @@ use ndarray::{Array1, Array2};
 use pointprocesses::generalized::*;
 
 fn main() {
+    fs::create_dir("examples/images").unwrap_or_default();
     square_example();
     circle_example();
     variable_circle_example();
@@ -65,12 +67,10 @@ fn square_example() {
         .y_range(0., 1.)
         .x_label("x")
         .y_label("y");
-
-    fs::create_dir("examples/images").unwrap_or_default();
-    let mut document = svg::Document::new().set("viewBox", (0,0,600,600));
-    let savepath = Path::new("examples/images/2d_poisson.rect.svg");
-    document.append(v.to_svg(520., 520.).set("transform", format!("translate({}, {})", 50, 550)));
-    svg::save(savepath, &document).unwrap();
+    
+    page::Page::single(&v)
+        .dimensions(600, 600)
+        .save("examples/images/2d_poisson.rect.svg");
 }
 
 
@@ -104,11 +104,9 @@ fn circle_example() {
         .x_label("x")
         .y_label("y");
 
-    fs::create_dir("examples/images").unwrap_or_default();
-    let mut document = svg::Document::new().set("viewBox", (0,0,600,600));
-    let savepath = Path::new("examples/images/2d_poisson.circle.svg");
-    document.append(v.to_svg(520., 520.).set("transform", format!("translate({}, {})", 50, 550)));
-    svg::save(savepath, &document).unwrap();
+    page::Page::single(&v)
+        .dimensions(600, 600)
+        .save("examples/images/2d_poisson.circle.svg");
 }
 
 
@@ -152,10 +150,8 @@ fn variable_circle_example() {
         .y_range(0., 2.)
         .x_label("x")
         .y_label("y");
-
-    fs::create_dir("examples/images").unwrap_or_default();
-    let mut document = svg::Document::new().set("viewBox", (0,0,600,600));
-    let savepath = Path::new("examples/images/2d_poisson.variable.circle.svg");
-    document.append(v.to_svg(520., 520.).set("transform", format!("translate({}, {})", 50, 550)));
-    svg::save(savepath, &document).unwrap();
+    
+    page::Page::single(&v)
+        .dimensions(600, 600)
+        .save("examples/images/2d_poisson.variable.circle.svg");
 }

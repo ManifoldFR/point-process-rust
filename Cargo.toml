@@ -8,8 +8,7 @@ readme = "README.md"
 repository = "https://github.com/ManifoldFR/point-process-rust"
 exclude = [
     "test.*",
-    "examples/*.svg",
-    "plotlib/"
+    "examples/*.svg"
 ]
 keywords = ["mathematics", "simulation", "statistics"]
 categories = ["algorithms", "simulation", "science"]
@@ -26,5 +25,5 @@ name = "pointprocesses"
 path = "src/lib.rs"
 
 [dev-dependencies]
-plotlib = { path = "plotlib/", version = "0.3.0" }
+plotlib = { path = "../plotlib/", version = "0.3.0" }
 svg = "0.5.11"

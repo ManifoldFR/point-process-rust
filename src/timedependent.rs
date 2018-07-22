@@ -1,13 +1,11 @@
 /*!
-This module implements a set of time-dependent point processes, such as Poisson or Hawkes processes, on the real half-line *R^+*.
+This module implements a set of time-dependent point processes, such as Poisson or Hawkes processes, on the real half-line [0,∞[.
 */
 
 use rand::prelude::*;
 use rand::distributions::Poisson;
 
 use event::Event;
-
-use serde_json;
 
 /// Simulates a homogeneous, constant-intensity Poisson process.
 pub fn poisson_process(tmax: f64, lambda: f64) -> Vec<Event> {

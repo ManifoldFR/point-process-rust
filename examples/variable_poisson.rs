@@ -43,6 +43,7 @@ fn main() {
         .y_label("Intensity λ(t)");
     
     fs::create_dir("examples/images").unwrap_or_default();
-    Page::single(&v).save("examples/images/variable_poisson.svg");
+    Page::single(&v)
+        .save("examples/images/variable_poisson.svg");
     
 }

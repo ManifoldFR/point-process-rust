@@ -13,6 +13,7 @@ use plotlib::style::{Point, Marker, Line};
 use plotlib::view;
 use plotlib::view::View;
 use plotlib::line;
+use plotlib::page;
 use plotlib::scatter;
 use plotlib::scatter::Scatter;
 
@@ -20,6 +21,7 @@ use pointprocesses::event::Event;
 use pointprocesses::hawkes_exponential;
 
 fn main() {
+    fs::create_dir("examples/images").unwrap_or_default();
     fixed_jump();
     random_jumps();
 }
@@ -90,11 +92,9 @@ fn fixed_jump() {
         .add(&intens_plot)
         .add(&sc);
 
-    fs::create_dir("examples/images").unwrap_or_default();
-    let mut document = svg::Document::new().set("viewBox", (0,0,900,400));
-    let savepath = Path::new("examples/images/hawkes_exp.fixed.svg");
-    document.append(v.to_svg(850., 350.).set("transform", format!("translate({}, {})", 40, 360)));
-    svg::save(savepath, &document).unwrap();
+    page::Page::single(&v)
+        .dimensions(900, 400)
+        .save("examples/images/hawkes_exp.fixed.svg");
 }
 
 fn random_jumps() {
@@ -172,9 +172,7 @@ fn random_jumps() {
         .add(&intens_plot)
         .add(&sc);
 
-    fs::create_dir("examples/images").unwrap_or_default();
-    let mut document = svg::Document::new().set("viewBox", (0,0,900,400));
-    let savepath = Path::new("examples/images/hawkes_exp.gamma_dist.svg");
-    document.append(v.to_svg(850., 350.).set("transform", format!("translate({}, {})", 40, 360)));
-    svg::save(savepath, &document).unwrap();
+    page::Page::single(&v)
+        .dimensions(900, 400)
+        .save("examples/images/hawkes_exp.gamma_dist.svg");
 }
