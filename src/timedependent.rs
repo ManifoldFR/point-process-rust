@@ -104,7 +104,6 @@ mod tests {
     fn event_serialize() {
         let event = Event::new(42.0, 15.02);
 
-
         let event_serialized = serde_json::to_string_pretty(&event).unwrap();
 
         println!("{}", event_serialized);
