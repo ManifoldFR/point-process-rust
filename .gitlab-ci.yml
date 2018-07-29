@@ -1,4 +1,4 @@
-image: rust:latest
+image: rustlang/rust:nightly-slim
 
 stages:
   - build
@@ -7,14 +7,15 @@ stages:
 build:
   stage: build
   script:
+    - apt install git
     - git clone https://github.com/milliams/plotlib.git ../plotlib
     - cargo build --release
   cache:
     paths:
-      - plotlib
+      - ../plotlib
   artifacts:
     paths:
-      - plotlib
+      - ../plotlib
       - target/release
 
 tests:

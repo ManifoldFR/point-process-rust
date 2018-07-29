@@ -1,0 +1,6 @@
+## Compiled library
+target/
+build/
+dist/
+*.egg-info/
+.eggs/

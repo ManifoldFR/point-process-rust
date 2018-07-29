@@ -12,3 +12,6 @@ test.png
 
 ## Local plotlib checkout
 plotlib/
+
+## Python environment
+venv/
