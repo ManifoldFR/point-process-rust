@@ -1,0 +1,15 @@
+[package]
+name = "point_processes_py"
+version = "0.1.0"
+
+[dependencies]
+point_process = { path = "../" }
+
+[dependencies.pyo3]
+version = "0.3.2"
+features = ["extension-module"]
+
+[lib]
+name = "pointprocessespy"
+path = "src/pylib.rs"
+crate-type = ["cdylib"]
