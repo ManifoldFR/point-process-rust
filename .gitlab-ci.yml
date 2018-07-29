@@ -11,10 +11,10 @@ build:
     - cargo build --release
   cache:
     paths:
-      - plotlib
+      - ../plotlib
   artifacts:
     paths:
-      - plotlib
+      - ../plotlib
       - target/release
 
 tests:
