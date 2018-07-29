@@ -7,7 +7,7 @@ stages:
 build:
   stage: build
   script:
-    - apt-get update && apt-get install git
+    - apt-get update -qy && apt-get install git -qy
     - git clone https://github.com/milliams/plotlib.git ../plotlib
     - cargo build --release
   cache:
