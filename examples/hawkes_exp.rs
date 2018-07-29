@@ -5,13 +5,9 @@ extern crate serde_json;
 extern crate rand;
 
 use std::fs;
-use std::path::Path;
-
-use svg::Node;
 
 use plotlib::style::{Point, Marker, Line};
 use plotlib::view;
-use plotlib::view::View;
 use plotlib::line;
 use plotlib::page;
 use plotlib::scatter;

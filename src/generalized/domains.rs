@@ -9,7 +9,7 @@ pub trait Set {
     fn contains(&self, p: &Array1<f64>) -> bool;
 
     /// Returns a bounding box for the set.
-    /// This function is used for point process simulation by rejection, but can also be used to implement a Monte Carlo estimation of the set"s measure.
+    /// This function is used for point process simulation by rejection, but can also be used to implement a Monte Carlo estimation of the set's measure.
     fn bounding_box(&self) -> Array2<f64>;
 }
 
