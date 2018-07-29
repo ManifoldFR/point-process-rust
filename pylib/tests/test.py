@@ -1,4 +1,6 @@
 import pointprocesses
 
-print(pointprocesses.__name__)
-print(pointprocesses.__doc__)
+result = pointprocesses.poisson_process(10.0, 4.0)
+print(result)
+
+print("Simulated %d events." % len(result))

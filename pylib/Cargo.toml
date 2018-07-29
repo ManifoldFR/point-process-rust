@@ -1,6 +1,7 @@
 [package]
-name = "point_processes_py"
+name = "pointprocessespy"
 version = "0.1.0"
+authors = ["ManifoldFR <manifoldfr@outlook.com>"]
 
 [dependencies]
 point_process = { path = "../" }
@@ -11,5 +12,5 @@ features = ["extension-module"]
 
 [lib]
 name = "pointprocessespy"
-path = "src/pylib.rs"
+path = "src/lib.rs"
 crate-type = ["cdylib"]

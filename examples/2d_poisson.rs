@@ -5,14 +5,10 @@ extern crate svg;
 #[macro_use]
 extern crate ndarray;
 
-use svg::Node;
-
 use std::fs;
-use std::path::Path;
 
 use plotlib::style::{Point, Marker};
 use plotlib::view;
-use plotlib::view::View;
 use plotlib::page;
 use plotlib::scatter;
 use plotlib::scatter::Scatter;
