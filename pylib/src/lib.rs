@@ -33,7 +33,7 @@ fn pointprocesses(py: Python, m: &PyModule) -> PyResult<()> {
         let elements = poisson_process(tmax, lambda);
         elements.into_iter().map(|ev| EventWrapper(ev)).collect()
     }
-
+    
     // TODO
     /*
     #[pyfn(m, "variable_poisson")]

@@ -2,6 +2,7 @@
 
 extern crate rand;
 extern crate serde;
+extern crate rayon;
 
 #[macro_use]
 extern crate ndarray;

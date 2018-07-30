@@ -5,6 +5,9 @@ This module implements a set of time-dependent point processes, such as Poisson 
 use rand::prelude::*;
 use rand::distributions::Poisson;
 
+use rayon::prelude::*;
+use std::sync::Arc;
+
 use event::Event;
 
 /// Simulates a homogeneous, constant-intensity Poisson process.
@@ -24,28 +27,29 @@ pub fn poisson_process(tmax: f64, lambda: f64) -> Vec<Event> {
 
 /// Simulate a Poisson process with variable intensity.
 pub fn variable_poisson<F>(tmax: f64, lambda: F, max_lambda: f64) -> Vec<Event>
-where F: Fn(f64) -> f64
+where F: Fn(f64) -> f64 + Send + Sync
 {
     let mut rng = thread_rng();
 
     // Number of events before thinning
     let num_events = Poisson::new(tmax*max_lambda).sample(&mut rng);
 
-    let mut result = vec![];
+    let lambda = Arc::from(lambda);
 
     // Get timestamp and intensity values of events distributed
     // according to a homogeneous Poisson process
     // and keep those who are under the intensity curve
-    for _ in 0..num_events {
+    (0..num_events).into_par_iter().filter_map(|_| {
         let timestamp = random::<f64>()*tmax;
         let lambda_val = random::<f64>()*max_lambda;
 
         if lambda_val < lambda(timestamp) {
             let event = Event::new(timestamp, lambda_val);
-            result.push(event);
+            Some(event)
+        } else {
+            None
         }
-    }
-    result
+    }).collect()
 }
 
 /// Simulate a Hawkes process with an exponential kernel
