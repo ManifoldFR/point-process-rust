@@ -47,12 +47,11 @@ impl Set for Rectangle {
     }
 
     fn bounding_box(&self) -> Array<f64, Ix2> {
-        let mut result = unsafe {
-            Array::uninitialized((self.0.shape()[0], 2))
-        };
-        
-        result.slice_mut(s![0,..]).assign(&self.0);
-        result.slice_mut(s![1,..]).assign(&self.1);
+        let d = self.0.shape()[0];
+        let result = stack![
+            Axis(0),
+            self.0.view().into_shape((1,d)).unwrap(),
+            self.1.view().into_shape((1,d)).unwrap()];
         result
     }
 }

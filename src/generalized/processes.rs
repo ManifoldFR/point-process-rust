@@ -8,16 +8,19 @@ use rand::distributions::Uniform;
 use rand::distributions::Poisson;
 use rand::prelude::*;
 
+use std::sync::Arc;
+use rayon::prelude::*;
+
 /// A higher-dimensional homogeneous Poisson process.
 pub fn poisson_process<T>(lambda: f64, domain: &T) -> Array2<f64> 
     where T: Set {
     let bounds = domain.bounding_box();
     let mut area = 1.0;
 
-    let n = bounds.shape()[0];
+    // dimension of space
     let d = bounds.shape()[1];
 
-    for i in 0..n {
+    for i in 0..d {
         area *= bounds[[1,i]] - bounds[[0,i]];
     }
 
@@ -52,16 +55,15 @@ pub fn poisson_process<T>(lambda: f64, domain: &T) -> Array2<f64>
 
 /// Poisson process on a d-dimensional region with variable intensity, using a rejection sampling algorithm.
 pub fn variable_poisson<F, T>(lambda: F, max_lambda: f64, domain: &T) -> Array2<f64>
-where F: Fn(&Array1<f64>) -> f64,
+where F: Fn(&Array1<f64>) -> f64 + Sync + Send,
       T: Set
 {
     let bounds = domain.bounding_box();
     let mut area = 1.0;
 
-    let n = bounds.shape()[0];
     let d = bounds.shape()[1];
 
-    for i in 0..n {
+    for i in 0..d {
         area *= bounds[[1,i]] - bounds[[0,i]];
     }
 
@@ -86,10 +88,11 @@ where F: Fn(&Array1<f64>) -> f64,
         // if the point lies in the domain and the simulated intensity
         // fits, then add it.
         if domain.contains(&ev) && intens < lambda(&ev) {
-            res = stack(
+            res = stack![
                 Axis(0), 
-                &[res.view(), ev.into_shape((1,d)).unwrap().view()]
-                ).unwrap();
+                res.view(),
+                ev.view().into_shape((1,d)).unwrap()
+            ];
         }
     }
 
