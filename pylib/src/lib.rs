@@ -12,7 +12,9 @@ struct EventWrapper(event::Event);
 impl ToPyObject for EventWrapper {
     fn to_object(&self, py: Python) -> PyObject {
         let res = PyDict::new(py);
-        (self.0.get_timestamp(), self.0.get_intensity()).into()
+        res.set_item("timestamp", self.0.get_timestamp()).unwrap();
+        res.set_item("intensity", self.0.get_intensity()).unwrap();
+        res.into()
     }
 }
 
@@ -28,8 +30,9 @@ fn pointprocesses(py: Python, m: &PyModule) -> PyResult<()> {
 
     #[pyfn(m, "poisson_process")]
     fn poisson_process_py(_py: Python, tmax: f64, lambda: f64) -> Vec<EventWrapper> {
-        let elements = poisson_process(tmax, lambda);
-        elements.into_iter().map(|ev| EventWrapper(ev)).collect()
+        poisson_process(tmax, lambda)
+            .into_iter()
+            .map(|ev| EventWrapper(ev)).collect()    
     }
     
     // TODO
