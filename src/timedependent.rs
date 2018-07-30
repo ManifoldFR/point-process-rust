@@ -19,7 +19,7 @@ pub fn poisson_process(tmax: f64, lambda: f64) -> Vec<Event> {
 
     let num_events = Poisson::new(tmax*lambda).sample(&mut rng);
     
-    (0..num_events).map(|_| {
+    (0..num_events).into_par_iter().map(|_| {
         let timestamp = tmax*random::<f64>();
         Event::new(timestamp, lambda)
     }).collect()
