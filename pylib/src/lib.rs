@@ -12,9 +12,7 @@ struct EventWrapper(event::Event);
 impl ToPyObject for EventWrapper {
     fn to_object(&self, py: Python) -> PyObject {
         let res = PyDict::new(py);
-        res.set_item("timestamp", self.0.get_timestamp()).unwrap();
-        res.set_item("intensity", self.0.get_intensity()).unwrap();
-        res.into()
+        (self.0.get_timestamp(), self.0.get_intensity()).into()
     }
 }
 
