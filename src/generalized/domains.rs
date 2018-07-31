@@ -30,20 +30,12 @@ impl Set for Rectangle {
     fn contains(&self, p: &Array1<f64>) -> bool {
         assert_eq!(p.len(), self.0.shape()[0]);
         
-        // check if p is further away than the closer point
-        let further = self.0.iter().zip(p.iter())
-            .fold(true, |acc: bool, (v,w)| {
-                acc & (w > v)
-            });
-        
-        // check if p is closer than the far point
-        let closer = self.1.iter().zip(p.iter())
-            .fold(true, |acc: bool, (v,w)| {
-                acc & (w < v)
-            });
-
-        // if both conditions are true then we're in the rectangle
-        further & closer
+        for (x,(l,h)) in p.iter().zip(self.0.iter().zip(self.1.iter())) {
+            if (x < l) | (x > h) {
+                return false
+            }
+        }
+        true
     }
 
     fn bounding_box(&self) -> Array<f64, Ix2> {
