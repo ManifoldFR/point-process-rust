@@ -3,6 +3,7 @@ This module implements a set of time-dependent point processes, such as Poisson 
 */
 
 use rand::prelude::*;
+use rand::distributions::Uniform;
 use rand::distributions::Poisson;
 
 use rayon::prelude::*;
@@ -10,17 +11,18 @@ use std::sync::Arc;
 
 use event::Event;
 
-/// Simulates a homogeneous, constant-intensity Poisson process.
+/// Simulate a homogeneous, constant-intensity Poisson process.
 pub fn poisson_process(tmax: f64, lambda: f64) -> Vec<Event> {
-    let mut rng = thread_rng();
-    
     /// A poisson process cannot have negative intensity.
     assert!(lambda >= 0.0);
-
+    let mut rng = thread_rng();
     let num_events = Poisson::new(tmax*lambda).sample(&mut rng);
     
     (0..num_events).into_par_iter().map(|_| {
-        let timestamp = tmax*random::<f64>();
+        // get reference to local thread rng
+        let mut rng = thread_rng();
+        let u = Uniform::new(0.0, tmax);
+        let timestamp = u.sample(&mut rng);
         Event::new(timestamp, lambda)
     }).collect()
 }
@@ -29,9 +31,8 @@ pub fn poisson_process(tmax: f64, lambda: f64) -> Vec<Event> {
 pub fn variable_poisson<F>(tmax: f64, lambda: F, max_lambda: f64) -> Vec<Event>
 where F: Fn(f64) -> f64 + Send + Sync
 {
-    let mut rng = thread_rng();
-
     // Number of events before thinning
+    let mut rng = thread_rng();
     let num_events = Poisson::new(tmax*max_lambda).sample(&mut rng);
 
     let lambda = Arc::from(lambda);
@@ -40,8 +41,14 @@ where F: Fn(f64) -> f64 + Send + Sync
     // according to a homogeneous Poisson process
     // and keep those who are under the intensity curve
     (0..num_events).into_par_iter().filter_map(|_| {
-        let timestamp = random::<f64>()*tmax;
-        let lambda_val = random::<f64>()*max_lambda;
+        let mut rng = thread_rng();
+        let u = Uniform::new(0.0, 1.0);
+        let timestamp = {
+            tmax*u.sample(&mut rng)
+        };
+        let lambda_val = {
+            max_lambda*u.sample(&mut rng)
+        };
 
         if lambda_val < lambda(timestamp) {
             let event = Event::new(timestamp, lambda_val);
