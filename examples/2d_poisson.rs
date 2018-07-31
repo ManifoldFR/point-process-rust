@@ -17,6 +17,8 @@ use ndarray::{Array1, Array2};
 
 use pointprocesses::generalized::*;
 
+static MARKER_COLOR: &str = "#C93E3E";
+
 fn main() {
     fs::create_dir("examples/images").unwrap_or_default();
     square_example();
@@ -54,7 +56,7 @@ fn square_example() {
     let s1 = Scatter::from_slice(&data)
         .style(scatter::Style::new()
             .marker(Marker::Circle) // setting the marker to be a square
-            .colour("#DD3355")
+            .colour(MARKER_COLOR)
             .size(2.5)); // and a custom colour 
     
     let v = view::ContinuousView::new()
@@ -89,7 +91,7 @@ fn circle_example() {
     let s = Scatter::from_slice(&data)
         .style(scatter::Style::new()
             .marker(Marker::Circle) // setting the marker to be a square
-            .colour("#0971B2")
+            .colour(MARKER_COLOR)
             .size(2.0)); // and a custom colour 
     
     // The 'view' describes what set of data is drawn
@@ -135,8 +137,8 @@ fn variable_circle_example() {
     // We create our scatter plot from the data
     let s = Scatter::from_slice(&data)
         .style(scatter::Style::new()
-            .marker(Marker::Circle) // setting the marker to be a square
-            .colour("#0971B2")
+            .marker(Marker::Circle)
+            .colour(MARKER_COLOR)
             .size(1.2)); // and a custom colour 
     
     // The 'view' describes what set of data is drawn
