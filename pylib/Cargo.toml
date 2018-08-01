@@ -7,7 +7,7 @@ authors = ["ManifoldFR <manifoldfr@outlook.com>"]
 point_process = { path = "../" }
 
 [dependencies.pyo3]
-version = "0.4.0"
+version = "0.4.1"
 features = ["extension-module"]
 
 [lib]
