@@ -1,8 +1,8 @@
 extern crate pointprocesses;
 extern crate plotlib;
 extern crate svg;
-extern crate serde_json;
 extern crate rand;
+extern crate ndarray;
 
 use std::fs;
 
@@ -13,8 +13,9 @@ use plotlib::page;
 use plotlib::scatter;
 use plotlib::scatter::Scatter;
 
-use pointprocesses::event::Event;
 use pointprocesses::hawkes_exponential;
+
+use ndarray::prelude::*;
 
 fn main() {
     fs::create_dir("examples/images").unwrap_or_default();
@@ -30,9 +31,9 @@ fn fixed_jump() {
     let beta = 1.0;
     let lambda0 = 0.6;
 
-    let events: Vec<Event> = hawkes_exponential(tmax, beta, lambda0, &mut jumps);
+    let events: Array2<f64> = hawkes_exponential(tmax, beta, lambda0, &mut jumps);
 
-    println!("{}", serde_json::to_string_pretty(&events).unwrap());
+    println!("{:?}", events);
     
     // Kernel function. Only used for plotting.
     let kernel = |t: f64| {
@@ -43,12 +44,12 @@ fn fixed_jump() {
         }
     };
 
-    let intensity_func = |events: &[Event], t: f64| {
+    let intensity_func = |events: ArrayView2<f64>, t: f64| {
         let result: f64 = events
-            .iter()
-            .take_while(|&ev| ev.get_timestamp() < t)
+            .into_iter()
+            .take_while(|&ev| ev < &t)
             .fold(0.0, |acc, ev| {
-            acc+kernel(t - ev.get_timestamp())
+            acc+kernel(t - ev)
         });
         result + lambda0
     };
@@ -57,13 +58,11 @@ fn fixed_jump() {
     let times = (0..samples).map(|i| {
         i as f64*tmax/samples as f64
     });
-    let mut intens_data: Vec<(f64,f64)> = Vec::new();
-
-    for t in times {
-        let lam = intensity_func(&events, t);
+    let intens_data: Vec<(f64,f64)> = times.into_iter().map(|t| {
+        let lam = intensity_func(events.view(), t);
         //intens_data.push((t-0.0001/samples as f64, lam-alpha));
-        intens_data.push((t, lam));
-    };
+        (t, lam)
+    }).collect();
 
     let intens_plot = line::Line::new(&intens_data)
         .style(line::Style::new()
@@ -71,9 +70,9 @@ fn fixed_jump() {
             .colour("#0971B2")
         );
     
-    let ev_tupl: Vec<(f64,f64)> = events.into_iter()
-        .map(|e: Event| {
-            (e.get_timestamp(), e.get_intensity())
+    let ev_tupl: Vec<(f64,f64)> = events.outer_iter()
+        .map(|v| {
+            (v[0], v[1])
         }).collect();
     
     let sc = Scatter::from_slice(&ev_tupl)
@@ -109,9 +108,9 @@ fn random_jumps() {
     let beta = 1.0;
     let lambda0 = 0.9;
 
-    let events: Vec<Event> = hawkes_exponential(tmax, beta, lambda0, jumps);
+    let events: Array2<f64> = hawkes_exponential(tmax, beta, lambda0, jumps);
 
-    println!("{}", serde_json::to_string_pretty(&events).unwrap());
+    println!("{:?}", events);
     
     
     // Kernel function. Only used for plotting.
@@ -123,12 +122,12 @@ fn random_jumps() {
         }
     };
 
-    let intensity_func = |events: &[Event], t: f64| {
+    let intensity_func = |events: ArrayView2<f64>, t: f64| {
         let result: f64 = events
-            .iter()
-            .take_while(|&ev| ev.get_timestamp() < t)
+            .outer_iter()
+            .take_while(|&ev| ev[0] < t)
             .fold(0.0, |acc, ev| {
-            acc+kernel(ev.get_jump(), t - ev.get_timestamp())
+            acc+kernel(ev[2], t - ev[0])
         });
         result + lambda0
     };
@@ -140,7 +139,7 @@ fn random_jumps() {
     let mut intens_data: Vec<(f64,f64)> = Vec::new();
 
     for t in times {
-        let lam = intensity_func(&events, t);
+        let lam = intensity_func(events.view(), t);
         //intens_data.push((t-0.0001/samples as f64, lam-alpha));
         intens_data.push((t, lam));
     };
@@ -151,9 +150,9 @@ fn random_jumps() {
             .colour("#0971B2")
         );
     
-    let ev_tupl: Vec<(f64,f64)> = events.into_iter()
-        .map(|e: Event| {
-            (e.get_timestamp(), e.get_intensity())
+    let ev_tupl: Vec<(f64,f64)> = events.outer_iter()
+        .map(|ev| {
+            (ev[0], ev[1])
         }).collect();
     
     let sc = Scatter::from_slice(&ev_tupl)
