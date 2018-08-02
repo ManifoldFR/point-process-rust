@@ -109,16 +109,14 @@ fn circle_example() {
 
 
 fn variable_circle_example() {
-    let center: Array1<f64> = array![1.0,1.0];
+    let center: Array1<f64> = array![0.,0.];
     let radius = 1.0;
     let domain = Ball::new(center, radius);
 
     // the intensity function will be the distance to center
     let lambda = |v: &Array1<f64>| {
         use std::f64::consts::PI;
-        let center_copy = array![1.0,1.0];
-        let diff = v - &center_copy;
-        let distance = diff.dot(&diff).sqrt();
+        let distance = v.dot(v).sqrt();
         let x = v[0];
         let y = v[1];
         let angle = y.atan2(x);
@@ -144,8 +142,8 @@ fn variable_circle_example() {
     // The 'view' describes what set of data is drawn
     let v = view::ContinuousView::new()
         .add(&s)
-        .x_range(0., 2.)
-        .y_range(0., 2.)
+        .x_range(-1., 1.)
+        .y_range(-1., 1.)
         .x_label("x")
         .y_label("y");
     

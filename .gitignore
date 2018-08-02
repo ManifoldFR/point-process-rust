@@ -15,3 +15,12 @@ plotlib/
 
 ## Python environment
 venv/
+
+## LaTeX files
+description/*.log
+__*.tex
+*.fdb_latexmk
+*.aux
+*.xdv
+*.fls
+*.synctex.gz
