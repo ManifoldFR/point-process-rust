@@ -18,7 +18,7 @@ setup_requires = [
     'setuptools',
     'setuptools-rust>=0.10.1'
 ]
-install_requires = []
+install_requires = ['numpy']
 
 setup(
     name='pointprocesses',

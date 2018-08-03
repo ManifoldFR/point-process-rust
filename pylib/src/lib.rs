@@ -2,37 +2,23 @@
 
 extern crate pointprocesses;
 extern crate pyo3;
+extern crate numpy;
 
 use pointprocesses::*;
 
 use pyo3::prelude::*;
-
-struct EventWrapper(event::Event);
-
-impl ToPyObject for EventWrapper {
-    fn to_object(&self, py: Python) -> PyObject {
-        let res = PyDict::new(py);
-        res.set_item("timestamp", self.0.get_timestamp()).unwrap();
-        res.set_item("intensity", self.0.get_intensity()).unwrap();
-        res.into()
-    }
-}
-
-impl IntoPyObject for EventWrapper {
-    fn into_object(self, py: Python) -> PyObject {
-        self.to_object(py)
-    }
-}
+use numpy::{PyArray, PyArrayModule};
 
 /// The point process library.
 #[pymodinit]
 fn pointprocesses(py: Python, m: &PyModule) -> PyResult<()> {
 
     #[pyfn(m, "poisson_process")]
-    fn poisson_process_py(_py: Python, tmax: f64, lambda: f64) -> Vec<EventWrapper> {
-        poisson_process(tmax, lambda)
-            .into_iter()
-            .map(|ev| EventWrapper(ev)).collect()    
+    fn poisson_process_py(py: Python, tmax: f64, lambda: f64) -> PyArray<f64> {
+        let np = PyArrayModule::import(py).unwrap();
+        let arr = poisson_process(tmax, lambda);
+        let result = PyArray::from_ndarray(py, &np, arr);
+        result
     }
     
     // TODO

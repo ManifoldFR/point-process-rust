@@ -6,3 +6,5 @@ dist/
 .eggs/
 
 **/__pycache__
+
+rust-numpy/
