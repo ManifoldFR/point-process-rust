@@ -9,6 +9,8 @@ use ndarray::stack;
 use ndarray::prelude::*;
 use ndarray_parallel::prelude::*;
 
+use rayon::prelude::*;
+
 /// Simulate a homogeneous, constant-intensity Poisson process.
 /// index 0: timestamps
 pub fn poisson_process(tmax: f64, lambda: f64) -> Array1<f64> {
@@ -28,17 +30,19 @@ pub fn poisson_process(tmax: f64, lambda: f64) -> Array1<f64> {
 }
 
 /// Simulate a Poisson process with variable intensity.
-pub fn variable_poisson<F>(tmax: f64, lambda: F, max_lambda: f64) -> Array2<f64>
-where F: Fn(f64) -> f64 + Send
+pub fn variable_poisson<F>(tmax: f64, lambda: &F, max_lambda: f64) -> Array2<f64>
+where F: Fn(f64) -> f64 + Send + Sync
 {
     // Number of events before thinning
     let mut rng = thread_rng();
     let num_events = Poisson::new(tmax*max_lambda).sample(&mut rng);
 
+    let lambda = std::sync::Arc::from(lambda);
+
     // Get timestamp and intensity values of events distributed
     // according to a homogeneous Poisson process
     // and keep those who are under the intensity curve
-    let events: Vec<Array1<f64>> = (0..num_events).into_iter().filter_map(|_| {
+    let events: Vec<Array1<f64>> = (0..num_events).into_par_iter().filter_map(|_| {
         let mut rng = thread_rng();
         let ut = Uniform::new(0.0, tmax);
         let ul = Uniform::new(0.0, max_lambda);

@@ -46,7 +46,7 @@ fn pointprocesses(_py: Python, m: &PyModule) -> PyResult<()> {
         };
 
         let handle = thread::spawn(move || {
-            variable_poisson(tmax, callback, max_lambda)
+            variable_poisson(tmax, &callback, max_lambda)
         });
 
 

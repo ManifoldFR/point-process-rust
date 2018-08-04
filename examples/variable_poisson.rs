@@ -23,7 +23,7 @@ fn main() {
     let f: fn(f64) -> f64 = |t| {
         4.0*(30.0 - 0.95*t).ln()*(1.0 + 0.1*(0.5*t).sin())
     };
-    let events = variable_poisson(tmax, f, 17.0);
+    let events = variable_poisson(tmax, &f, 17.0);
 
     println!("{:?}", events);
     
