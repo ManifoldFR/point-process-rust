@@ -15,3 +15,10 @@ python setup.py install
 ```
 
 Check it works by importing it inside a Python terminal, outside of this directory, else Python will import the local `pointprocesses` module which isn't loaded with the library.
+
+```python
+import numpy as np
+import pointprocesses as pp
+```
+
+There's a working example in the `examples/` directory. If there's a problem, report it! 😄
