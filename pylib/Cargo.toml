@@ -8,7 +8,7 @@ point_process = { path = "../" }
 numpy = { git = "https://github.com/rust-numpy/rust-numpy" }
 
 [dependencies.pyo3]
-version = "0.4"
+version = "0.4.0"
 features = ["extension-module"]
 
 [lib]
