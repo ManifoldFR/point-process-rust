@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["ManifoldFR <manifoldfr@outlook.com>"]
 
 [dependencies]
-point_process = { path = "../" }
+point_process = { path = "../lib/" }
 numpy = { git = "https://github.com/rust-numpy/rust-numpy" }
 
 [dependencies.pyo3]

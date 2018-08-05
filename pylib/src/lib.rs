@@ -13,17 +13,28 @@ use numpy::{PyArray, PyArrayModule};
 #[pymodinit]
 fn pointprocesses(_py: Python, m: &PyModule) -> PyResult<()> {
 
-    /// Simulate a homogeneous, constant-intensity Poisson process.
-    /// index 0: timestamps
     #[pyfn(m, "poisson_process")]
+    /// Simulate a homogeneous, constant-intensity Poisson process.
+    /// Args:
+    ///     tmax (float): upper time bound
+    ///     lambda (float): base intensity
+    /// 
+    /// Returns:
+    ///     Process timestamps.
     fn poisson_process_py(py: Python, tmax: f64, lambda: f64) -> PyResult<PyArray<f64>> {
         let np = PyArrayModule::import(py).unwrap();
         let arr = poisson_process(tmax, lambda);
         Ok(PyArray::from_ndarray(py, &np, arr))
     }
 
-    /// A variable Poisson process on the real line.
     #[pyfn(m, "variable_poisson")]
+    /// A variable Poisson process on the real line.
+    /// Args:
+    ///     tmax (float): upper time bound
+    ///     lambda (func): intensity function object
+    ///     max_lambda (float): upper bound on the intensity
+    /// Returns:
+    ///     arr (ndarray): arr[:,0] are the timestamps, arr[:,1] are the intensities
     fn variable_poisson_py(
         py: Python, tmax: f64, lambda: PyObject,
         max_lambda: f64) -> PyResult<PyArray<f64>>
