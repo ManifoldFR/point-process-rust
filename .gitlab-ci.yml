@@ -23,7 +23,7 @@ tests:
   dependencies:
     - build
   script:
-    - cargo test -- --nocapture
+    - cargo test --all -- --nocapture
 
 
 examples:
@@ -33,6 +33,7 @@ examples:
   before_script:
     - apt-get update
   script:
+    - cd lib/
     - cargo run --example homog_time_poisson
     - cargo run --example variable_poisson
     - cargo run --example hawkes_exp
