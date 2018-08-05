@@ -15,9 +15,10 @@ fn pointprocesses(_py: Python, m: &PyModule) -> PyResult<()> {
 
     #[pyfn(m, "poisson_process")]
     /// Simulate a homogeneous, constant-intensity Poisson process.
+    /// 
     /// Args:
-    ///     tmax (float): upper time bound
-    ///     lambda (float): base intensity
+    ///     tmax (float): upper time bound.
+    ///     lambda (float): base intensity.
     /// 
     /// Returns:
     ///     Process timestamps.
@@ -29,10 +30,11 @@ fn pointprocesses(_py: Python, m: &PyModule) -> PyResult<()> {
 
     #[pyfn(m, "variable_poisson")]
     /// A variable Poisson process on the real line.
+    /// 
     /// Args:
-    ///     tmax (float): upper time bound
-    ///     lambda (func): intensity function object
-    ///     max_lambda (float): upper bound on the intensity
+    ///     tmax (float): upper time bound.
+    ///     lambda (func): intensity function object.
+    ///     max_lambda (float): upper bound on the intensity.
     /// Returns:
     ///     arr (ndarray): arr[:,0] are the timestamps, arr[:,1] are the intensities
     fn variable_poisson_py(
