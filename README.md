@@ -6,7 +6,7 @@
 
 Point processes are stochastic processes with a wide range of applications in seismology, epidemiology, or financial mathematics. They are utilized to model the arrival of random events as a function of time.
 
-![variablepoisson](examples/images/variable_poisson.png)
+![variablepoisson](lib/examples/images/variable_poisson.png)
 
 This crate provides functions to simulate point processes in [Rust](https://rust-lang.org), built on top of [`ndarray`](https://github.com/bluss/ndarray).
 
@@ -15,11 +15,11 @@ This crate provides functions to simulate point processes in [Rust](https://rust
 The following time-dependent point processes have been implemented within the `timedependent` module:
 
 * Poisson point process (homogeneous and inhomogeneous, with custom function)
-* Hawkes processes, with an exponential kernel (refer to Dassios and Zhao's 2013 paper [(1)]) ![hawkesexp](examples/images/hawkes_exp.gamma_dist.png)
+* Hawkes processes, with an exponential kernel (refer to Dassios and Zhao's 2013 paper [(1)]) ![hawkesexp](lib/examples/images/hawkes_exp.gamma_dist.png)
 
 ## n-dimensional processes
 
-![2dpoisson_circle](examples/images/2d_poisson.variable.circle.png)
+![2dpoisson_circle](lib/examples/images/2d_poisson.variable.circle.png)
 
 The `generalized` module provides functions for higher-dimensional processes.
 
