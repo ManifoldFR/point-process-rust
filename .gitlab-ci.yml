@@ -7,7 +7,8 @@ stages:
 build:
   stage: build
   script:
-    - apt-get update -qy && apt-get install git -qy
+    - apt-get update -qy
+    - apt-get install git python3-pip python3-dev -qy
     - git clone https://github.com/milliams/plotlib.git plotlib/
     - cargo build --release
   cache:
