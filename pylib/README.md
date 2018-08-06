@@ -1,6 +1,6 @@
 # Python package
 
-![Yes, this is matplotlib](examples/example.png)
+![Yes, this is matplotlib](examples/estimate.png)
 
 High level API for `pointprocesses` as a Python library.
 

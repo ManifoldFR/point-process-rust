@@ -3,6 +3,7 @@
 extern crate pointprocesses;
 extern crate pyo3;
 extern crate numpy;
+extern crate ndarray;
 
 use pointprocesses::*;
 use std::thread;
@@ -71,6 +72,30 @@ fn pointprocesses(_py: Python, m: &PyModule) -> PyResult<()> {
         let elements = handle.join().unwrap();
         let np = PyArrayModule::import(py).unwrap();
         Ok(PyArray::from_ndarray(py, &np, elements))
+    }
+
+    Ok(())
+}
+
+/// Point processes in n-dimensional space
+#[pymodinit]
+fn generalized(_py: Python, m: &PyModule) -> PyResult<()> {
+
+    #[pyfn(m, "poisson_process")]
+    fn poisson_process_py(py: Python, lambda: f64, close: &PyArray<f64>, far: &PyArray<f64>) -> PyResult<PyArray<f64>> {
+        assert_eq!(close.dims(), far.dims());
+        let close = close.as_array().unwrap()
+            .to_owned()
+            .into_dimensionality::<ndarray::Ix1>()
+            .unwrap();
+        let far = far.as_array().unwrap()
+            .to_owned()
+            .into_dimensionality::<ndarray::Ix1>()
+            .unwrap();
+        let ref domain = generalized::Rectangle::new(close, far);
+        generalized::poisson_process(lambda, domain);
+        let ref np = PyArrayModule::import(py)?;
+        Ok(PyArray::from_ndarray(py, np, generalized::poisson_process(lambda, domain)))
     }
 
     Ok(())

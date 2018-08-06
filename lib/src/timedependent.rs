@@ -42,7 +42,8 @@ where F: Fn(f64) -> f64 + Send + Sync
     // Get timestamp and intensity values of events distributed
     // according to a homogeneous Poisson process
     // and keep those who are under the intensity curve
-    let events: Vec<Array1<f64>> = (0..num_events).into_par_iter().filter_map(|_| {
+    let events: Vec<Array2<f64>> = (0..num_events)
+            .into_par_iter().filter_map(|_| {
         let mut rng = thread_rng();
         let ut = Uniform::new(0.0, tmax);
         let ul = Uniform::new(0.0, max_lambda);
@@ -50,15 +51,18 @@ where F: Fn(f64) -> f64 + Send + Sync
         let lambda_val = ul.sample(&mut rng);
 
         if lambda_val < lambda(timestamp) {
-            Some(array![timestamp, lambda_val])
+            Some(array![[timestamp, lambda_val]])
         } else {
             None
         }
     }).collect();
 
-    let events_ref: Vec<ArrayView2<f64>> = events.iter().map(|v| v.view().into_shape((1,2)).unwrap()).collect();
-
-    stack(Axis(0), events_ref.as_slice()).unwrap()
+    if events.len() > 0 {
+        let events_ref: Vec<ArrayView2<f64>> = events.iter().map(|v| v.view()).collect();
+        stack(Axis(0), events_ref.as_slice()).unwrap()
+    } else {
+        Array2::<f64>::zeros((0,2))
+    }
 }
 
 /// Simulate a time-dependent marked Hawkes process with an exponential kernel
@@ -71,7 +75,8 @@ where T: Iterator<Item = f64>
     let mut t = 0.0;
     let mut previous_t: f64;
     let mut last_lambda = lambda0;
-    let mut result = Vec::<Array2<f64>>::new();
+    let est_num_events = 5.0_f64.max(5.*lambda0*tmax) as usize;
+    let mut result = Vec::<Array2<f64>>::with_capacity(est_num_events);
 
     while t < tmax {
         // variables U_1 and S_{k+1}^(1) from the paper @DassiosZhao13
@@ -100,7 +105,10 @@ where T: Iterator<Item = f64>
         }
     }
 
-    let events: Vec<ArrayView2<f64>> = result.iter().map(|v| v.view()).collect();
-
-    stack(Axis(0), events.as_slice()).unwrap()
+    if result.len() > 0 {
+        let events: Vec<ArrayView2<f64>> = result.iter().map(|v| v.view()).collect();
+        stack(Axis(0), events.as_slice()).unwrap()
+    } else {
+        Array2::<f64>::zeros((0,3))
+    }
 }

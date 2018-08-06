@@ -24,11 +24,18 @@ setup(
     name='pointprocesses',
     version='0.1.0',
     author="ManifoldFR",
-    rust_extensions=[RustExtension(
-        'pointprocesses.pointprocesses',
-        'Cargo.toml',
-        binding=Binding.PyO3,
-        strip=Strip.Debug)],
+    rust_extensions=[
+        RustExtension(
+            'pointprocesses.pointprocesses',
+            'Cargo.toml',
+            binding=Binding.PyO3,
+            strip=Strip.Debug),
+        RustExtension(
+            'pointprocesses.generalized',
+            'Cargo.toml',
+            binding=Binding.PyO3,
+            strip=Strip.Debug),
+        ],
     packages=['pointprocesses'],
     install_requires=install_requires,
     setup_requires=setup_requires,

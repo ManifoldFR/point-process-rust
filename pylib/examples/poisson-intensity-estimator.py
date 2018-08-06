@@ -28,7 +28,6 @@ nonhomogeneous Poisson process from event count data"
     n = len(processes)
     m = len(partition) - 1
     divisors = partition[1:] - partition[:-1]
-    print("Divisors:\n", divisors)
     estimates = np.zeros((n,m))
     for i in range(n):
         events = processes[i]
@@ -37,17 +36,19 @@ nonhomogeneous Poisson process from event count data"
     return estimates.mean(axis=0)
 
 
-tmax = 10.0
-partition = np.linspace(0, tmax, 80, endpoint=True)
-intens = lambda x: 5.0*(1+np.sin(2*x))
+tmax = 8.0
+partition = np.linspace(0, tmax, 100, endpoint=True)
+intens = lambda x: 5.0*(1-np.exp(-x))*(1+0.2*np.sin(x))
 max_lbda = 10.0
-processes = [pp.variable_poisson(tmax, intens, max_lbda) for _ in range(400)]
+processes = [pp.variable_poisson(tmax, intens, max_lbda) for _ in range(500)]
 estimates = intensity_estimator(processes, partition)
 print("Partition:", partition)
 print("Intensity estimates:\n", estimates)
 
 plt.figure(figsize=(8,6))
 plt.plot(partition, intens(partition), label=r"actual intensity $\lambda(t)$")
-plt.step(partition[:-1], estimates, where='post', label=r"estimate $\hat{\lambda}(t)$")
+plt.scatter(0.5*(partition[1:]+partition[:-1]), estimates, label=r"estimate $\hat{\lambda}(t)$")
+plt.xlabel("Time $t$")
 plt.legend()
-plt.savefig("poisson-intensity-estimate.png")
+plt.tight_layout()
+plt.savefig("estimate.png")

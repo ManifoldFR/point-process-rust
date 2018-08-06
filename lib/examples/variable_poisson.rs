@@ -18,7 +18,48 @@ static LINE_COLOR: &str = "#373AC6";
 static MARKER_COLOR: &str = "#1C58CE";
 
 fn main() {
+    oscillating();
+    decrease_exp();
+}
+
+/// This example will occasionally return an empty array, which might happen
+/// for very low intensity (or negative intensity) processes.
+/// The error when stacking an empty `ndarray::Array` slice is handled.
+fn decrease_exp() {
+    let tmax = 30.0;
+    let f: fn(f64) -> f64 = |t| {
+        (-1.2*t).exp()
+    };
+    let events = variable_poisson(tmax, &f, 17.0);
+
+    println!("{:?}", events);
     
+    let intens_plot = function::Function::new(f, 0.0, tmax)
+        .style(function::Style::new().colour(LINE_COLOR).width(1.5));
+    
+    let event_data: Vec<(f64,f64)> = events.axis_iter(Axis(0))
+        .map(|ev| (ev[0], ev[1]))
+        .collect();
+
+    let s = scatter::Scatter::from_slice(&event_data)
+        .style(scatter::Style::new()
+            .size(2.5)
+            .marker(Marker::Circle)
+            .colour(MARKER_COLOR));
+    
+    let v = view::ContinuousView::new()
+        .add(&s)
+        .add(&intens_plot)
+        .x_label("Time t")
+        .y_label("Intensity λ(t)");
+    
+    fs::create_dir("examples/images").unwrap_or_default();
+    Page::single(&v)
+        .save("examples/images/variable_poisson.decexp.svg");
+}
+
+
+fn oscillating() {
     let tmax = 30.0;
     let f: fn(f64) -> f64 = |t| {
         4.0*(30.0 - 0.95*t).ln()*(1.0 + 0.1*(0.5*t).sin())
@@ -48,6 +89,6 @@ fn main() {
     
     fs::create_dir("examples/images").unwrap_or_default();
     Page::single(&v)
-        .save("examples/images/variable_poisson.svg");
+        .save("examples/images/variable_poisson.oscillating.svg");
     
 }
