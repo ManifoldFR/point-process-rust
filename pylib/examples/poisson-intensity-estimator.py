@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import pointprocesses.pointprocesses as pp
-
+import pointprocesses as pp
 
 def count_events_by_(events, partition: list) -> list:
     m = len(partition)
@@ -45,9 +44,15 @@ estimates = intensity_estimator(processes, partition)
 print("Partition:", partition)
 print("Intensity estimates:\n", estimates)
 
-plt.figure(figsize=(8,6))
+scatter_ops = {
+    "s": 32.0,
+    "linewidths": 0.8,
+    "edgecolors": "k",
+    "alpha": 0.7
+}
+
 plt.plot(partition, intens(partition), label=r"actual intensity $\lambda(t)$")
-plt.scatter(0.5*(partition[1:]+partition[:-1]), estimates, label=r"estimate $\hat{\lambda}(t)$")
+plt.scatter(0.5*(partition[1:]+partition[:-1]), estimates, label=r"estimate $\hat{\lambda}(t)$", **scatter_ops)
 plt.xlabel("Time $t$")
 plt.legend()
 plt.tight_layout()

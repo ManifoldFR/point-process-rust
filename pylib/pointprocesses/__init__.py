@@ -1,5 +1,7 @@
 """
-The Python package.
+Algorithms for simulating point processes, stochastic processes used in statistical models.
+
+Implemented in the Rust programming language.
 """
-import pointprocesses.generalized
-from .pointprocesses import *
+from .timedependent import *
+from . import generalized

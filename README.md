@@ -64,4 +64,6 @@ The examples show how to use the API.
 
 An experimental Python package built as an extension is available inside the `pylib/` directory.
 
+Accepting PRs! 😄
+
 [(1)]: http://eprints.lse.ac.uk/51370/1/Dassios_exact_simulation_hawkes.pdf "Exact simulation of Hawkes process with exponentially decaying intensity"
