@@ -47,22 +47,22 @@ Some examples require a yet unpublished version of milliams' [plotlib](https://g
 
 ```bash
 git clone https://github.com/milliams/plotlib
-cargo build --example 2d_poisson
 ```
 
 To run the examples, do for instance
 
 ```bash
+cd lib/
 cargo run --example variable_poisson
 ```
 
-Some will produce SVG image files in the `examples` directory.
+Some will produce SVG image files in the [`lib/examples`](./lib/examples) directory.
 
 The examples show how to use the API.
 
 ## Python package
 
-An experimental Python package built as an extension is available inside the `pylib/` directory.
+An experimental Python package built as an extension is available inside the [`pylib/`](./pylib) directory.
 
 Accepting PRs! 😄
 

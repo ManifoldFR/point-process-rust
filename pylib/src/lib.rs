@@ -79,6 +79,33 @@ fn timedependent(py: Python, m: &PyModule) -> PyResult<()> {
         Ok(elements.into_pyarray(py, np))
     }
 
+    #[pyfn(m, "hawkes_exp")]
+    /// A Hawkes process on the real line with an exponential kernel.
+    /// 
+    /// Args:
+    ///     tmax (float): upper time bound.
+    ///     beta (float): decay parameter.
+    ///     lambda0 (float): base, background intensity.
+    ///     jumps (`iter`:float): process jumps.
+    /// Returns:
+    ///     arr (ndarray):
+    ///         arr[:,0] are the timestamps,
+    ///         arr[:,1] are the intensities
+    ///         arr[:,2] are the marks
+    fn hawkes_exp_py(
+        py: Python, tmax: f64, beta: f64, lambda0: f64,
+        jumps: PyObject) -> PyResult<PyArray<f64>>
+    {
+        let ref np = PyArrayModule::import(py).unwrap();
+        let jumps: PyIterator = PyIterator::from_object(py, &jumps)?;
+        let mut jumps = jumps.map(|it| {
+            let x: f64 = it.unwrap().extract::<f64>().unwrap();
+            x
+        });
+        let events = timedependent::hawkes_exponential(tmax, beta, lambda0, &mut jumps);
+        Ok(events.into_pyarray(py, np))
+    }
+
     Ok(())
 }
 

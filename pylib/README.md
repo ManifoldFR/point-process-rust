@@ -2,8 +2,6 @@
 
 ![Yes, this is matplotlib](examples/estimate.png)
 
-![](examples/2d_poisson.png)
-
 High level API for `pointprocesses` as a Python library.
 
 This is a work in progress, much of the core library's functionality hasn't been ported yet and panics are not handled well.

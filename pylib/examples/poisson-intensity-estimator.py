@@ -18,7 +18,7 @@ def count_events_by_(events, partition: list) -> list:
 def intensity_estimator(processes, partition):
     """
     Inspired by Leemis (2001), "Nonparametric estimation and variate generation for a
-nonhomogeneous Poisson process from event count data"
+    nonhomogeneous Poisson process from event count data"
 
     Args:
         processes (list): set of simulated processes

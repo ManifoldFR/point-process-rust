@@ -4,6 +4,7 @@ This module implements a set of time-dependent point processes, such as Poisson 
 use rand::prelude::*;
 use rand::distributions::Uniform;
 use rand::distributions::Poisson;
+use rand::distributions::Exp;
 
 use ndarray::stack;
 use ndarray::prelude::*;
@@ -72,37 +73,31 @@ where F: Fn(f64) -> f64 + Send + Sync
 pub fn hawkes_exponential<T>(tmax: f64, beta: f64, lambda0: f64, jumps: &mut T) -> Array2<f64>
 where T: Iterator<Item = f64>
 {
-    let mut t = 0.0;
-    let mut previous_t: f64;
-    let mut last_lambda = lambda0;
-    let est_num_events = 5.0_f64.max(5.*lambda0*tmax) as usize;
-    let mut result = Vec::<Array2<f64>>::with_capacity(est_num_events);
+    let ref mut rng = thread_rng();
+    let mut result = Vec::<Array2<f64>>::new();
 
-    while t < tmax {
-        // variables U_1 and S_{k+1}^(1) from the paper @DassiosZhao13
-        let u1 = random::<f64>();
-        let s1 = -1.0/beta*u1.ln();
-        let d = if last_lambda > lambda0 {
-            1.0 + beta*u1.ln()/(last_lambda - lambda0)
-        } else { ::std::f64::NEG_INFINITY };
-        let s2 = -1.0/lambda0*random::<f64>().ln();
+    let mut expdist = Exp::new(lambda0);
+    let mut s = expdist.sample(rng);
+    result.push(array![[s, lambda0, 0.0]]);
 
-        previous_t = t;
-        t += if d < 0.0 {
-            s2
-        } else {
-            s1.min(s2)
-        };
+    while let Some(alpha) = jumps.next() {
+        let last_time = result[result.len()-1][[0,0]];
+        let last_lbda = result[result.len()-1][[0,1]];
+        
+        expdist = Exp::new(last_lbda);
+        s += expdist.sample(rng);
 
-        last_lambda = lambda0 + (last_lambda - lambda0)*(-beta*(t-previous_t)).exp();
-
-        if let Some(alpha) = jumps.next() {
-            let new_event: Array2<f64> = array![[t, last_lambda, alpha]];
-            result.push(new_event);
-            last_lambda += alpha;
-        } else {
-            panic!("Not enough marks for the Hawkes process.");
+        if s > tmax {
+            break;
         }
+
+        let candidate_lambda = alpha + lambda0 + (last_lbda-lambda0)*(-beta*(s-last_time)).exp();
+        let d = random::<f64>();
+        if d*last_lbda < candidate_lambda {
+            let new_event: Array2<f64> = array![[s, candidate_lambda, alpha]];
+            result.push(new_event);
+        }
+
     }
 
     if result.len() > 0 {
