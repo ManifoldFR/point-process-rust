@@ -94,10 +94,3 @@ pub fn variable_poisson<F, T>(lambda: F, max_lambda: f64, domain: &T) -> Array2<
 
     stack(Axis(0), &events_ref).unwrap()
 }
-
-pub fn multivariate_hawkes<T>(domain: &T) -> Array2<f64>
-where T: Set
-{
-    let bounds = domain.bounding_box();
-    Array2::<f64>::zeros((2,3))
-}

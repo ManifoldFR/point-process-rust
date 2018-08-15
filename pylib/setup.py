@@ -22,19 +22,17 @@ install_requires = ['numpy']
 
 setup(
     name='pointprocesses',
-    version='0.1.0',
+    version='0.1.1',
     author="ManifoldFR",
     rust_extensions=[
         RustExtension(
             'pointprocesses.timedependent',
             'Cargo.toml',
-            strip=Strip.No,
-            native=True),
+            strip=Strip.Debug),
         RustExtension(
             'pointprocesses.generalized',
             'Cargo.toml',
-            strip=Strip.No,
-            native=True),
+            strip=Strip.Debug),
         ],
     packages=['pointprocesses'],
     install_requires=install_requires,

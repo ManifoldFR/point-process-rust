@@ -70,32 +70,43 @@ where F: Fn(f64) -> f64 + Send + Sync
 /// by utilising the O(n) algorithm in [Dassios and Zhao's 2013 paper](http://eprints.lse.ac.uk/51370/1/Dassios_exact_simulation_hawkes.pdf).
 /// This will borrow and consume the given `jumps` iterator, and will panic if it turns up empty.
 /// index 0: timestamps, index 1: intensity, index 2: marks
-pub fn hawkes_exponential<T>(tmax: f64, beta: f64, lambda0: f64, jumps: &mut T) -> Array2<f64>
+pub fn hawkes_exponential<T>(tmax: f64, decay: f64, lambda0: f64, jumps: &mut T) -> Array2<f64>
 where T: Iterator<Item = f64>
 {
-    let ref mut rng = thread_rng();
+    let mut rng = thread_rng();
     let mut result = Vec::<Array2<f64>>::new();
-
+    // compute a first event time
     let mut expdist = Exp::new(lambda0);
-    let mut s = expdist.sample(rng);
-    result.push(array![[s, lambda0, 0.0]]);
+    let mut s: f64 = expdist.sample(&mut rng);
+    let mut prev_t = 0.0;
+    let alpha = jumps.next().unwrap();
+    result.push(array![[s, lambda0, alpha*decay]]);
+    let mut last_lbda = lambda0;
+    let mut lbda_max = lambda0 + alpha*decay;
 
     while let Some(alpha) = jumps.next() {
-        let last_time = result[result.len()-1][[0,0]];
-        let last_lbda = result[result.len()-1][[0,1]];
-        
-        expdist = Exp::new(last_lbda);
-        s += expdist.sample(rng);
-
+        expdist = Exp::new(lbda_max);
+        s += expdist.sample(&mut rng);
         if s > tmax {
             break;
         }
 
-        let candidate_lambda = alpha + lambda0 + (last_lbda-lambda0)*(-beta*(s-last_time)).exp();
-        let d = random::<f64>();
-        if d*last_lbda < candidate_lambda {
-            let new_event: Array2<f64> = array![[s, candidate_lambda, alpha]];
+        // compute new event rate at time s
+        let increment = (-decay*(s-prev_t)).exp();
+        let new_lambda = lambda0 + (last_lbda-lambda0+alpha*decay)*increment;
+
+        // uniform variable lying in [0, lbda_max]
+        let d = lbda_max*random::<f64>();
+        if d < new_lambda {
+            prev_t = s;
+            last_lbda = new_lambda;
+            let new_event: Array2<f64> = array![[s, lbda_max, alpha*decay]];
             result.push(new_event);
+            // update lbda_max with the jump
+            lbda_max = new_lambda + alpha*decay;
+        } else {
+            // in this case, use the decayed intensity
+            lbda_max = new_lambda;
         }
 
     }
