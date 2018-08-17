@@ -15,7 +15,7 @@ This crate provides functions to simulate point processes in [Rust](https://rust
 The following time-dependent point processes have been implemented within the `timedependent` module:
 
 * Poisson point process (homogeneous and inhomogeneous, with custom function)
-* Hawkes processes, with an exponential kernel (refer to Dassios and Zhao's 2013 paper [(1)]) ![hawkesexp](lib/examples/images/hawkes_exp.gamma_dist.png)
+* Exponential-kernel Hawkes processes, using a linear-time simulation algorithm.
 
 ## n-dimensional processes
 
@@ -65,5 +65,3 @@ The examples show how to use the API.
 An experimental Python package built as an extension is available inside the [`pylib/`](./pylib) directory.
 
 Accepting PRs! 😄
-
-[(1)]: http://eprints.lse.ac.uk/51370/1/Dassios_exact_simulation_hawkes.pdf "Exact simulation of Hawkes process with exponentially decaying intensity"

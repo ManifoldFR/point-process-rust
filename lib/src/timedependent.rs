@@ -66,8 +66,7 @@ where F: Fn(f64) -> f64 + Send + Sync
     }
 }
 
-/// Simulate a time-dependent marked Hawkes process with an exponential kernel
-/// by utilising the O(n) algorithm in [Dassios and Zhao's 2013 paper](http://eprints.lse.ac.uk/51370/1/Dassios_exact_simulation_hawkes.pdf).
+/// Simulate a time-dependent marked Hawkes process with an exponential kernel.
 /// This will borrow and consume the given `jumps` iterator, and will panic if it turns up empty.
 /// index 0: timestamps, index 1: intensity, index 2: marks
 pub fn hawkes_exponential<T>(tmax: f64, decay: f64, lambda0: f64, jumps: &mut T) -> Array2<f64>
