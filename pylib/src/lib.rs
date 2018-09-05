@@ -1,4 +1,4 @@
-#![feature(extern_prelude, use_extern_macros, specialization)]
+#![feature(extern_prelude, specialization)]
 
 extern crate pointprocesses;
 extern crate pyo3;
@@ -8,8 +8,7 @@ extern crate ndarray;
 use pointprocesses::*;
 use std::thread;
 use pyo3::prelude::*;
-use numpy::*;
-use ndarray::prelude::*;
+use numpy::{IntoPyArray,IntoPyResult,PyArray,PyArrayModule};
 
 /// A set of time-dependent point processes.
 #[pymodinit]
