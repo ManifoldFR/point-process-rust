@@ -8,6 +8,7 @@ extern crate ndarray;
 use pointprocesses::*;
 use std::thread;
 use pyo3::prelude::*;
+use ndarray::prelude::*;
 use numpy::{IntoPyArray,IntoPyResult,PyArray,PyArrayModule};
 
 /// A set of time-dependent point processes.
