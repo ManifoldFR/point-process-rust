@@ -12,7 +12,7 @@ except ImportError:
         print("Please install the setuptools-rust package.")
         raise SystemExit(errno)
     else:
-        from setuptools_rust import RustExtension
+        from setuptools_rust import RustExtension, Binding, Strip
 
 setup_requires = [
     'setuptools',
