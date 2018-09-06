@@ -28,10 +28,17 @@ setup(
         RustExtension(
             'pointprocesses.timedependent',
             'Cargo.toml',
+            binding=Binding.PyO3,
             strip=Strip.Debug),
         RustExtension(
             'pointprocesses.generalized',
             'Cargo.toml',
+            binding=Binding.PyO3,
+            strip=Strip.Debug),
+        RustExtension(
+            'pointprocesses.likelihood',
+            'Cargo.toml',
+            binding=Binding.PyO3,
             strip=Strip.Debug),
         ],
     packages=['pointprocesses'],

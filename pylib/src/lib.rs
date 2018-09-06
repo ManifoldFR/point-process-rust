@@ -14,9 +14,7 @@ use numpy::{IntoPyArray,IntoPyResult,PyArray,PyArrayModule};
 /// A set of time-dependent point processes.
 #[pymodinit]
 fn timedependent(py: Python, m: &PyModule) -> PyResult<()> {
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // You **must** write this sentence for PyArray type checker working correctly
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     let _np = PyArrayModule::import(py)?;
 
     #[pyfn(m, "poisson_process")]
@@ -83,10 +81,10 @@ fn timedependent(py: Python, m: &PyModule) -> PyResult<()> {
     /// A Hawkes process on the real line with an exponential kernel.
     /// 
     /// Args:
-    ///     tmax (float): upper time bound.
+    ///     tmax (float): temporal horizon.
     ///     beta (float): decay parameter.
     ///     lambda0 (float): base, background intensity.
-    ///     jumps (`iter`:float): process jumps.
+    ///     jumps (float iterator): process jumps.
     /// Returns:
     ///     arr (ndarray):
     ///         arr[:,0] are the timestamps,
@@ -112,9 +110,6 @@ fn timedependent(py: Python, m: &PyModule) -> PyResult<()> {
 /// Point processes in n-dimensional space
 #[pymodinit]
 fn generalized(py: Python, m: &PyModule) -> PyResult<()> {
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // You **must** write this sentence for PyArray type checker working correctly
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     let _np = PyArrayModule::import(py)?;
 
     #[pyfn(m, "poisson_process")]
@@ -179,6 +174,36 @@ fn generalized(py: Python, m: &PyModule) -> PyResult<()> {
 
         let elements = handle.join().unwrap();
         Ok(elements.into_pyarray(py, np))
+    }
+
+    Ok(())
+}
+
+/// Functions for computing the log-likelihood of some events under
+/// given parameters.
+#[pymodinit]
+fn likelihood(py: Python, m: &PyModule) -> PyResult<()> {
+    let _np = PyArrayModule::import(py)?;
+
+
+    #[pyfn(m, "poisson_likelihood")]
+    /// Compute the likelihood of the given data under a Poisson process
+    /// model with intensity parameter lambda.
+    /// 
+    /// Args:
+    ///     data (array): event data
+    ///         must have 2D dimensionality
+    ///     lambda (float): Poisson parameter
+    ///     tmax (float): temporal horizon.
+    fn poisson_likelihood(
+        _py: Python, data: &PyArray<f64>,
+        lambda: f64, tmax: f64) -> PyResult<f64>
+    {
+        let data: ArrayViewD<f64> = data.as_array().unwrap();
+        let data =  data.into_dimensionality::<Ix2>().unwrap();
+        let res = likelihood::poisson_likelihood(
+            data, lambda, tmax);
+        Ok(res)
     }
 
     Ok(())

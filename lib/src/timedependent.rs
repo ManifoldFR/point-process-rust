@@ -1,6 +1,7 @@
 /*!
-This module implements a set of time-dependent point processes, such as Poisson or Hawkes processes, on the real half-line [0,∞[.
-*/
+ *This module implements a set of time-dependent point processes, such as Poisson or
+ *Hawkes processes on the real half-line [0,∞[.
+ */
 use rand::prelude::*;
 use rand::distributions::Uniform;
 use rand::distributions::Poisson;

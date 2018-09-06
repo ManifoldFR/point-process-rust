@@ -11,6 +11,7 @@ extern crate ndarray_parallel;
 extern crate serde_json;
 
 pub mod generalized;
+pub mod likelihood;
 pub mod timedependent;
 
 /// Time dependent processes are available from the crate root.
