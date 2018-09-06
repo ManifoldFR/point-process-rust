@@ -187,7 +187,7 @@ fn likelihood(py: Python, m: &PyModule) -> PyResult<()> {
 
 
     #[pyfn(m, "poisson_likelihood")]
-    /// Compute the likelihood of the given data under a Poisson process
+    /// Compute the log-likelihood of the given data under a Poisson process
     /// model with intensity parameter lambda.
     /// 
     /// Args:
@@ -203,6 +203,27 @@ fn likelihood(py: Python, m: &PyModule) -> PyResult<()> {
         let data =  data.into_dimensionality::<Ix2>().unwrap();
         let res = likelihood::poisson_likelihood(
             data, lambda, tmax);
+        Ok(res)
+    }
+
+    #[pyfn(m, "hawkes_likelihood")]
+    /// Compute the log-likelihood of the given data under a Hawkes
+    /// model with the supplied parameters.
+    /// 
+    /// Args:
+    ///     data (array): event data.
+    ///     mu (float): background rate.
+    ///     alpha (float): jump parameter.
+    ///     decay (float)
+    ///     tmax (float): temporal horizon.
+    fn hawkes_likelihood(
+        _py: Python, data: &PyArray<f64>,
+        mu: f64, alpha: f64, decay: f64, tmax: f64) -> PyResult<f64> 
+    {
+        let data: ArrayViewD<f64> = data.as_array().unwrap();
+        let data = data.into_dimensionality::<Ix2>().unwrap();
+        let res = likelihood::hawkes_likelihood(
+            data, mu, alpha, decay, tmax);
         Ok(res)
     }
 

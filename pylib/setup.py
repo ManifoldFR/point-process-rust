@@ -2,6 +2,10 @@ import sys
 
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
+import toml
+
+cfg = toml.load("Cargo.toml")
+package_meta = cfg['package']
 
 try:
     from setuptools_rust import RustExtension, Binding, Strip
@@ -22,8 +26,8 @@ install_requires = ['numpy']
 
 setup(
     name='pointprocesses',
-    version='0.1.1',
-    author="ManifoldFR",
+    version=package_meta['version'],
+    author=package_meta['authors'][0],
     rust_extensions=[
         RustExtension(
             'pointprocesses.timedependent',

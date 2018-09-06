@@ -237,7 +237,7 @@ dependencies = [
 
 [[package]]
 name = "pointprocessespy"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "ndarray 0.12.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "numpy 0.3.2 (git+https://github.com/rust-numpy/rust-numpy)",
