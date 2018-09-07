@@ -1,14 +1,15 @@
-image: rustlang/rust:nightly-slim
+image: rustlang/rust:nightly
 
 stages:
   - build
   - tests
 
+before_script:
+  - apt-get update -qqy && apt-get install -qqy git python3-pip python3-dev -qy
+
 build:
   stage: build
   script:
-    - apt-get update -qy
-    - apt-get install git python3-pip python3-dev -qy
     - cargo build --release
   cache:
     paths:
@@ -23,15 +24,13 @@ tests:
   dependencies:
     - build
   script:
-    - cargo test --all -- --nocapture
+    - cargo test --all --verbose
 
 
 examples:
   stage: tests
   dependencies:
     - build
-  before_script:
-    - apt-get update
   script:
     - cd lib/
     - cargo run --example homog_time_poisson
