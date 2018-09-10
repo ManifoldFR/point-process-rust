@@ -10,13 +10,13 @@ before_script:
 build:
   stage: build
   script:
+    - git clone https://github.com/ManifoldFR/plotlib
     - cargo build --release
   cache:
     paths:
       - plotlib/
   artifacts:
     paths:
-      - plotlib/
       - target/release
 
 tests:
