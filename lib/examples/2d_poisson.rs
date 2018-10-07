@@ -68,7 +68,7 @@ fn square_example() {
     
     page::Page::single(&v)
         .dimensions(600, 600)
-        .save("examples/images/2d_poisson.rect.svg");
+        .save("examples/images/2d_poisson.rect.svg").unwrap();
 }
 
 
@@ -104,7 +104,7 @@ fn circle_example() {
 
     page::Page::single(&v)
         .dimensions(600, 600)
-        .save("examples/images/2d_poisson.circle.svg");
+        .save("examples/images/2d_poisson.circle.svg").unwrap();
 }
 
 
@@ -149,5 +149,5 @@ fn variable_circle_example() {
     
     page::Page::single(&v)
         .dimensions(600, 600)
-        .save("examples/images/2d_poisson.variable.circle.svg");
+        .save("examples/images/2d_poisson.variable.circle.svg").unwrap();
 }

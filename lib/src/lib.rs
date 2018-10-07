@@ -1,5 +1,3 @@
-#![feature(extern_prelude)]
-
 extern crate rand;
 extern crate serde;
 extern crate rayon;

@@ -89,7 +89,7 @@ fn fixed_jump() {
 
     page::Page::single(&v)
         .dimensions(900, 400)
-        .save("examples/images/hawkes_exp.fixed.svg");
+        .save("examples/images/hawkes_exp.fixed.svg").unwrap();
 }
 
 fn random_jumps() {
@@ -169,5 +169,5 @@ fn random_jumps() {
 
     page::Page::single(&v)
         .dimensions(900, 400)
-        .save("examples/images/hawkes_exp.gamma_dist.svg");
+        .save("examples/images/hawkes_exp.gamma_dist.svg").unwrap();
 }

@@ -55,7 +55,7 @@ fn decrease_exp() {
     
     fs::create_dir("examples/images").unwrap_or_default();
     Page::single(&v)
-        .save("examples/images/variable_poisson.decexp.svg");
+        .save("examples/images/variable_poisson.decexp.svg").unwrap();
 }
 
 
@@ -89,6 +89,6 @@ fn oscillating() {
     
     fs::create_dir("examples/images").unwrap_or_default();
     Page::single(&v)
-        .save("examples/images/variable_poisson.oscillating.svg");
+        .save("examples/images/variable_poisson.oscillating.svg").unwrap();
     
 }

@@ -1,5 +1,3 @@
-#![feature(extern_prelude, specialization)]
-
 extern crate pointprocesses;
 extern crate pyo3;
 extern crate numpy;
@@ -9,13 +7,13 @@ use pointprocesses::*;
 use std::thread;
 use pyo3::prelude::*;
 use ndarray::prelude::*;
-use numpy::{IntoPyArray,IntoPyResult,PyArray,PyArrayModule};
+use numpy::{IntoPyArray,IntoPyResult,PyArray,get_array_module};
 
 /// A set of time-dependent point processes.
 #[pymodinit]
 fn timedependent(py: Python, m: &PyModule) -> PyResult<()> {
     // You **must** write this sentence for PyArray type checker working correctly
-    let _np = PyArrayModule::import(py)?;
+    let _np = get_array_module(py)?;
 
     #[pyfn(m, "poisson_process")]
     /// Simulate a homogeneous, constant-intensity Poisson process.
@@ -27,9 +25,8 @@ fn timedependent(py: Python, m: &PyModule) -> PyResult<()> {
     /// Returns:
     ///     Process timestamps.
     fn poisson_process_py(py: Python, tmax: f64, lambda: f64) -> PyResult<PyArray<f64>> {
-        let np = PyArrayModule::import(py).unwrap();
         let arr = poisson_process(tmax, lambda);
-        Ok(PyArray::from_ndarray(py, &np, arr))
+        Ok(arr.into_pyarray(py).to_owned(py))
     }
 
     #[pyfn(m, "variable_poisson")]
@@ -45,7 +42,6 @@ fn timedependent(py: Python, m: &PyModule) -> PyResult<()> {
         py: Python, tmax: f64, lambda: PyObject,
         max_lambda: f64) -> PyResult<PyArray<f64>>
     {
-        let ref np = PyArrayModule::import(py).unwrap();
         let compute = |x: f64| {
             let args = (x,);
             let obj: PyObject = lambda.call1(py, args).unwrap();
@@ -74,7 +70,7 @@ fn timedependent(py: Python, m: &PyModule) -> PyResult<()> {
         });
 
         let elements = handle.join().unwrap();
-        Ok(elements.into_pyarray(py, np))
+        Ok(elements.into_pyarray(py).to_owned(py))
     }
 
     #[pyfn(m, "hawkes_exp")]
@@ -94,14 +90,13 @@ fn timedependent(py: Python, m: &PyModule) -> PyResult<()> {
         py: Python, tmax: f64, beta: f64, lambda0: f64,
         jumps: PyObject) -> PyResult<PyArray<f64>>
     {
-        let ref np = PyArrayModule::import(py).unwrap();
         let jumps: PyIterator = PyIterator::from_object(py, &jumps)?;
         let mut jumps = jumps.map(|it| {
             let x: f64 = it.unwrap().extract::<f64>().unwrap();
             x
         });
         let events = timedependent::hawkes_exponential(tmax, beta, lambda0, &mut jumps);
-        Ok(events.into_pyarray(py, np))
+        Ok(events.into_pyarray(py).to_owned(py))
     }
 
     Ok(())
@@ -110,12 +105,11 @@ fn timedependent(py: Python, m: &PyModule) -> PyResult<()> {
 /// Point processes in n-dimensional space
 #[pymodinit]
 fn generalized(py: Python, m: &PyModule) -> PyResult<()> {
-    let _np = PyArrayModule::import(py)?;
+    let _np = get_array_module(py)?;
 
     #[pyfn(m, "poisson_process")]
     fn poisson_process_py(py: Python, lambda: f64, close: &PyArray<f64>, far: &PyArray<f64>) -> PyResult<PyArray<f64>> {
         assert_eq!(close.dims(), far.dims());
-        let ref np = PyArrayModule::import(py).unwrap();
         let close = close.as_array().into_pyresult("close must be a f64 array")?;
         let close = close.to_owned()
            .into_dimensionality::<ndarray::Ix1>()
@@ -126,7 +120,7 @@ fn generalized(py: Python, m: &PyModule) -> PyResult<()> {
            .unwrap();
         let ref domain = generalized::Rectangle::new(close, far);
         let events = generalized::poisson_process(lambda, domain);
-        Ok(events.into_pyarray(py, np))
+        Ok(events.into_pyarray(py).to_owned(py))
     }
 
     #[pyfn(m, "variable_poisson")]
@@ -134,7 +128,6 @@ fn generalized(py: Python, m: &PyModule) -> PyResult<()> {
         py: Python, lambda: PyObject,
         max_lambda: f64, close: &PyArray<f64>, far: &PyArray<f64>) -> PyResult<PyArray<f64>>
     {
-        let ref np = PyArrayModule::import(py).unwrap();
         let close = close.as_array().into_pyresult("close must be a f64 array")?;
         let close = close.to_owned()
            .into_dimensionality::<ndarray::Ix1>()
@@ -168,12 +161,12 @@ fn generalized(py: Python, m: &PyModule) -> PyResult<()> {
 
 
         recver.iter().for_each(|x| {
-            let intens = compute(x.into_pyarray(py, np));
+            let intens = compute(x.into_pyarray(py).to_owned(py));
             backsnder.send(intens).unwrap();
         });
 
         let elements = handle.join().unwrap();
-        Ok(elements.into_pyarray(py, np))
+        Ok(elements.into_pyarray(py).to_owned(py))
     }
 
     Ok(())
@@ -183,7 +176,7 @@ fn generalized(py: Python, m: &PyModule) -> PyResult<()> {
 /// given parameters.
 #[pymodinit]
 fn likelihood(py: Python, m: &PyModule) -> PyResult<()> {
-    let _np = PyArrayModule::import(py)?;
+    let _np = get_array_module(py)?;
 
 
     #[pyfn(m, "poisson_likelihood")]
