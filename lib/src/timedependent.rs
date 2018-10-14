@@ -47,10 +47,8 @@ where F: Fn(f64) -> f64 + Send + Sync
     let events: Vec<Array2<f64>> = (0..num_events)
             .into_par_iter().filter_map(|_| {
         let mut rng = thread_rng();
-        let ut = Uniform::new(0.0, tmax);
-        let ul = Uniform::new(0.0, max_lambda);
-        let timestamp = ut.sample(&mut rng);
-        let lambda_val = ul.sample(&mut rng);
+        let timestamp = rng.gen::<f64>()*tmax;
+        let lambda_val = rng.gen::<f64>()*max_lambda;
 
         if lambda_val < lambda(timestamp) {
             Some(array![[timestamp, lambda_val]])
@@ -75,45 +73,45 @@ where T: Iterator<Item = f64>
 {
     let mut rng = thread_rng();
     let mut result = Vec::<Array2<f64>>::new();
-    // compute a first event time
+    let mut prev_t: f64; // previous event time
+    // compute a first event time, occuring as a standard poisson process
+    // of intensity lambda0
     let mut expdist = Exp::new(lambda0);
     let mut s: f64 = expdist.sample(&mut rng);
-    let mut prev_t = 0.0;
     let alpha = jumps.next().unwrap();
-    result.push(array![[s, lambda0, alpha*decay]]);
-    let mut last_lbda = lambda0;
-    let mut lbda_max = lambda0 + alpha*decay;
+    let mut cur_lambda = lambda0 + alpha*decay;
+    prev_t = s; // record first event time
+    result.push(array![[s, cur_lambda, alpha*decay]]);
+    let mut lbda_max = cur_lambda;
 
     while let Some(alpha) = jumps.next() {
         expdist = Exp::new(lbda_max);
+        // candidate time
         s += expdist.sample(&mut rng);
         if s > tmax {
+            // time window is over, finish simulation loop
             break;
         }
 
-        // compute new event rate at time s
+        // compute process intensity at time s
         let increment = (-decay*(s-prev_t)).exp();
-        let new_lambda = lambda0 + (last_lbda-lambda0+alpha*decay)*increment;
+        cur_lambda = lambda0 + (cur_lambda-lambda0)*increment;
 
-        // uniform variable lying in [0, lbda_max]
-        let d = lbda_max*random::<f64>();
-        if d < new_lambda {
-            prev_t = s;
-            last_lbda = new_lambda;
-            let new_event: Array2<f64> = array![[s, lbda_max, alpha*decay]];
-            result.push(new_event);
-            // update lbda_max with the jump
-            lbda_max = new_lambda + alpha*decay;
-        } else {
-            // in this case, use the decayed intensity
-            lbda_max = new_lambda;
+        // rejection sampling step
+        let d = rng.gen::<f64>();
+        if d < cur_lambda/lbda_max {
+            // there was an event
+            prev_t = s; // update last event time
+            cur_lambda = cur_lambda + alpha*decay; // boost the intensity with the jump
+            let event_vec: Array2<f64> = array![[s, cur_lambda, alpha*decay]];
+            result.push(event_vec); // add the new state vector
         }
-
+        lbda_max = cur_lambda; // update the max. intensity used for rejection sampling with the current intensity
     }
 
     if result.len() > 0 {
         let events: Vec<ArrayView2<f64>> = result.iter().map(|v| v.view()).collect();
-        stack(Axis(0), events.as_slice()).unwrap()
+        stack(Axis(0), &events).unwrap()
     } else {
         Array2::<f64>::zeros((0,3))
     }

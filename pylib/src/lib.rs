@@ -206,7 +206,7 @@ fn likelihood(py: Python, m: &PyModule) -> PyResult<()> {
     ///     data (array): event data.
     ///     mu (float): background rate.
     ///     alpha (float): jump parameter.
-    ///     decay (float)
+    ///     decay (float): decay parameter
     ///     tmax (float): temporal horizon.
     fn hawkes_likelihood(
         _py: Python, data: &PyArray2<f64>,
