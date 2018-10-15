@@ -19,9 +19,9 @@ fn integral_term(
 
 /// Log-likelihood of the given event data under the supplied parameters.
 pub fn hawkes_likelihood(
-    data: ArrayView2<f64>, mu: f64,
+    times: ArrayView1<f64>, mu: f64,
     alpha: f64, decay: f64, tmax: f64) -> f64 {
-    let times = data.slice(s![..,0]).to_owned();
+    let times = times.to_owned();
 
     // compute the matrix of differences
     let n = times.shape()[0];
