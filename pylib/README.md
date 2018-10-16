@@ -14,6 +14,15 @@ This will install the [setuptools-rust](https://github.com/PyO3/setuptools-rust)
 python setup.py install
 ```
 
+On macOS, you might need to add the following to `~/.cargo/config`, as per [PyO3's README](https://github.com/PyO3/pyo3):
+```toml
+[target.x86_64-apple-darwin]
+rustflags = [
+  "-C", "link-arg=-undefined",
+  "-C", "link-arg=dynamic_lookup",
+]
+```
+
 Check it works by importing it inside a Python terminal, outside of this directory, else Python will import the local `pointprocesses` module which isn't loaded with the library.
 
 ```python

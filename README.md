@@ -60,6 +60,36 @@ Some will produce SVG image files in the [`lib/examples`](./lib/examples) direct
 
 The examples show how to use the API.
 
+## Building locally
+
+To compile the Rust library, do
+
+```bash
+cd lib/
+cargo build
+```
+
+To compile the Python C-API library,
+
+```bash
+cd pylib/
+cargo build --release
+```
+**On macOS**, you might need to add the following to `~/.cargo/config`, as per [PyO3's README](https://github.com/PyO3/pyo3):
+```toml
+[target.x86_64-apple-darwin]
+rustflags = [
+  "-C", "link-arg=-undefined",
+  "-C", "link-arg=dynamic_lookup",
+]
+```
+or linking with the C compiler will fail.
+
+To compile both at the same time, just do
+```
+cargo build --all
+```
+
 ## Python package
 
 An experimental Python package built as an extension is available inside the [`pylib/`](./pylib) directory.
