@@ -4,6 +4,11 @@ stages:
   - build
   - tests
 
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - plotlib/
+
 before_script:
   - apt-get update -qqy && apt-get install -qqy git python3-pip python3-dev -qy
 
@@ -11,10 +16,7 @@ build:
   stage: build
   script:
     - git clone https://github.com/ManifoldFR/plotlib
-    - cargo build --release
-  cache:
-    paths:
-      - plotlib/
+    - cargo build --release  
   artifacts:
     paths:
       - target/release
