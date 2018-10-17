@@ -25,18 +25,3 @@ tests:
     - build
   script:
     - cargo test --all --verbose
-
-
-examples:
-  stage: tests
-  dependencies:
-    - build
-  script:
-    - cd lib/
-    - cargo run --example homog_time_poisson
-    - cargo run --example variable_poisson
-    - cargo run --example hawkes_exp
-    - cargo run --example 2d_poisson
-  artifacts:
-    paths:
-      - examples/images/*
