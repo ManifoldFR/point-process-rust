@@ -2,10 +2,6 @@ import sys
 
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
-import toml
-
-cfg = toml.load("Cargo.toml")
-package_meta = cfg['package']
 
 try:
     from setuptools_rust import RustExtension, Binding, Strip
@@ -17,6 +13,20 @@ except ImportError:
         raise SystemExit(errno)
     else:
         from setuptools_rust import RustExtension, Binding, Strip
+
+try:
+    import toml
+except ImportError:
+    import subprocess
+    errno = subprocess.call([sys.executable, '-m', 'pip', 'install', 'toml'])
+    if errno:
+        print("Please install the toml package.")
+        raise SystemExit(errno)
+    else:
+        import toml
+
+cfg = toml.load("Cargo.toml")
+package_meta = cfg['package']
 
 setup_requires = [
     'setuptools',

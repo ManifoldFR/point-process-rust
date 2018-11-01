@@ -6,8 +6,9 @@ extern crate ndarray;
 use pointprocesses::*;
 use std::thread;
 use pyo3::prelude::*;
+use pyo3::types::PyIterator;
 use ndarray::prelude::*;
-use numpy::{IntoPyResult,PyArray1,PyArray2,ToPyArray,get_array_module};
+use numpy::{PyArray1,PyArray2,ToPyArray,get_array_module};
 
 /// A set of time-dependent point processes.
 #[pymodinit]
@@ -110,11 +111,11 @@ fn generalized(py: Python, m: &PyModule) -> PyResult<()> {
     #[pyfn(m, "poisson_process")]
     fn poisson_process_py(py: Python, lambda: f64, close: &PyArray1<f64>, far: &PyArray1<f64>) -> PyResult<PyArray2<f64>> {
         assert_eq!(close.dims(), far.dims());
-        let close = close.as_array().into_pyresult()?;
+        let close = close.as_array();
         let close = close.to_owned()
            .into_dimensionality::<ndarray::Ix1>()
            .unwrap();
-        let far = far.as_array().into_pyresult()?;
+        let far = far.as_array();
         let far = far.to_owned()
            .into_dimensionality::<ndarray::Ix1>()
            .unwrap();
@@ -128,11 +129,11 @@ fn generalized(py: Python, m: &PyModule) -> PyResult<()> {
         py: Python, lambda: PyObject,
         max_lambda: f64, close: &PyArray1<f64>, far: &PyArray1<f64>) -> PyResult<PyArray2<f64>>
     {
-        let close = close.as_array().into_pyresult()?;
+        let close = close.as_array();
         let close = close.to_owned()
            .into_dimensionality::<ndarray::Ix1>()
            .unwrap();
-        let far = far.as_array().into_pyresult()?;
+        let far = far.as_array();
         let far = far.to_owned()
            .into_dimensionality::<ndarray::Ix1>()
            .unwrap();
@@ -192,7 +193,7 @@ fn likelihood(py: Python, m: &PyModule) -> PyResult<()> {
         _py: Python, data: &PyArray2<f64>,
         lambda: f64, tmax: f64) -> PyResult<f64>
     {
-        let data = data.as_array().unwrap();
+        let data = data.as_array();
         let res = likelihood::poisson_likelihood(
             data.view(), lambda, tmax);
         Ok(res)
@@ -212,7 +213,7 @@ fn likelihood(py: Python, m: &PyModule) -> PyResult<()> {
         _py: Python, times: &PyArray1<f64>,
         mu: f64, alpha: f64, decay: f64, tmax: f64) -> PyResult<f64> 
     {
-        let data = times.as_array().unwrap();
+        let data = times.as_array();
         let res = likelihood::hawkes_likelihood(
             data, mu, alpha, decay, tmax);
         Ok(res)
