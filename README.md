@@ -8,16 +8,18 @@ Point processes are stochastic processes with a wide range of applications in se
 
 ![variablepoisson](lib/examples/images/variable_poisson.png)
 
-This crate provides functions to simulate point processes in [Rust](https://rust-lang.org), built on top of [`ndarray`](https://github.com/bluss/ndarray).
+This crate provides functions to simulate point processes in [Rust](https://rust-lang.org), built on top of [`ndarray`](https://github.com/bluss/ndarray). There is a Rust API available through the base crate as well as a Python library crate.
 
-## Time-dependent processes
+## Overview
+
+### Time-dependent processes
 
 The following time-dependent point processes have been implemented within the `timedependent` module:
 
 * Poisson point process (homogeneous and inhomogeneous, with custom function)
 * Exponential-kernel Hawkes processes, using a linear-time simulation algorithm.
 
-## n-dimensional processes
+### n-dimensional processes
 
 ![2dpoisson_circle](lib/examples/images/2d_poisson.variable.circle.png)
 
@@ -69,13 +71,13 @@ cd lib/
 cargo build
 ```
 
-To compile the Python C-API library,
+To build the Python library,
 
 ```bash
 cd pylib/
 cargo build --release
 ```
-**On macOS**, you might need to add the following to `~/.cargo/config`, as per [PyO3's README](https://github.com/PyO3/pyo3):
+**Warning** on macOS, you might need to add the following to `~/.cargo/config` (see [PyO3's README](https://github.com/PyO3/pyo3)):
 ```toml
 [target.x86_64-apple-darwin]
 rustflags = [
