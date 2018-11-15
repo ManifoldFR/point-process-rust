@@ -41,8 +41,8 @@ intens = lambda x: 5.0*(1-np.exp(-x))*(1+0.2*np.sin(x))
 max_lbda = 10.0
 processes = [pp.variable_poisson(tmax, intens, max_lbda) for _ in range(500)]
 estimates = intensity_estimator(processes, partition)
-print("Partition:", partition)
-print("Intensity estimates:\n", estimates)
+# print("Partition:", partition)
+# print("Intensity estimates:\n", estimates)
 
 scatter_ops = {
     "s": 32.0,

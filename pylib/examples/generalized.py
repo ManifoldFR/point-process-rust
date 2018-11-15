@@ -32,7 +32,7 @@ def intensity(a: np.ndarray):
     return func(a[0], a[1])
 max_lbda = 160.0
 events = pp.generalized.variable_poisson(intensity, max_lbda, close, far)
-print(events)
+# print(events)
 scatter_opts = {
     "s": 15.0,
     "linewidths": 0.7,

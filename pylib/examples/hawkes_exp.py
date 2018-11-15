@@ -3,12 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pointprocesses as pp
 
-plt.rcParams["figure.dpi"] = 100
+plt.rcParams["figure.dpi"] = 120
 
 alpha = 0.7
 jumps = itertools.repeat(alpha)
-tmax = 30.0
-decay = 1.0
+tmax = 90.0
+decay = 1.2
 lbda0 = 1.0
 
 
@@ -32,8 +32,8 @@ intensity = np.vectorize(intensity, excluded={3})
 print("---- PLOT ----")
 
 events = pp.hawkes_exp(tmax, decay, lbda0, jumps)
-print(events)
-tarr = np.linspace(0, tmax, 400)
+# print(events)
+tarr = np.linspace(0, tmax, 500)
 yarr = intensity(tarr, lbda0, decay, events)
 
 stacked = np.stack([tarr, yarr]).T
@@ -50,13 +50,13 @@ scatter_opts = {
 }
 
 lineplot_opts = {
-    "linewidth": 1,
+    "linewidth": 0.7,
     "zorder": 1
 }
 
 fig, (ax0, ax1) = plt.subplots(2, 1, sharex=True,
                                gridspec_kw = {'height_ratios':[3, 0.5]},
-                               figsize=(9,6))
+                               figsize=(12,6))
 ax0.plot(points[:,0], points[:,1], 'k', **lineplot_opts)
 _, ymax = ax0.get_ylim()
 y_extent = abs(ymax)
@@ -70,7 +70,7 @@ fig.savefig("hawkes.exp.png")
 # plt.show()
 
 print("---- EVENT NUMBERS ----")
-size_estimate = lbda0*tmax/(1-alpha)
+size_estimate = lbda0*tmax/(1-alpha/decay)
 print("Theoretical evt. no. estimate: %f" % size_estimate)
 processes = [pp.hawkes_exp(tmax, decay, lbda0, jumps) for _ in range(1000)]
 sizes = np.array([p.shape[0] for p in processes]) # number of events in each process
