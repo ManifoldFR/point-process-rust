@@ -95,5 +95,3 @@ cargo build --all
 ## Python package
 
 An experimental Python package built as an extension is available inside the [`pylib/`](./pylib) directory.
-
-Accepting PRs! 😄

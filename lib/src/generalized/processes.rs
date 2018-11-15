@@ -4,7 +4,6 @@ use ndarray::stack;
 use ndarray::prelude::*;
 
 use rand::thread_rng;
-use rand::distributions::Range;
 use rand::distributions::Poisson;
 use rand::prelude::*;
 
@@ -34,7 +33,7 @@ pub fn poisson_process<T>(lambda: f64, domain: &T) -> Array2<f64>
         let mut ev: Array1<f64> = Array::zeros((d,));
 
         for i in 0..d {
-            ev[i] = srng.sample(Range::new(bounds[[0,i]], bounds[[1,i]]));
+            ev[i] = srng.gen_range(bounds[[0,i]], bounds[[1,i]]);
         }
 
         // if it's in, then keep it
@@ -77,7 +76,7 @@ pub fn variable_poisson<F, T>(lambda: F, max_lambda: f64, domain: &T) -> Array2<
         let intens = max_lambda*random::<f64>();
 
         for i in 0..d {
-            ev[i] = srng.sample(Range::new(bounds[[0,i]], bounds[[1,i]]));
+            ev[i] = srng.gen_range(bounds[[0,i]], bounds[[1,i]]);
         }
 
         // if it's in, then keep it

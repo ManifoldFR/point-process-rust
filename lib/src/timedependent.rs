@@ -5,7 +5,6 @@
 use rand::prelude::*;
 use rand::distributions::Uniform;
 use rand::distributions::Poisson;
-use rand::distributions::Exp;
 
 use ndarray::stack;
 use ndarray::prelude::*;
@@ -71,42 +70,39 @@ where F: Fn(f64) -> f64 + Send + Sync
 pub fn hawkes_exponential<T>(tmax: f64, decay: f64, lambda0: f64, jumps: &mut T) -> Array2<f64>
 where T: Iterator<Item = f64>
 {
-    let mut rng = thread_rng();
+    let mut rng = thread_rng(); // random no. generator
     let mut result = Vec::<Array2<f64>>::new();
-    let mut prev_t: f64; // previous event time
     // compute a first event time, occuring as a standard poisson process
     // of intensity lambda0
-    let mut expdist = Exp::new(lambda0);
-    let mut s: f64 = expdist.sample(&mut rng);
+    let mut s = -1.0/lambda0*rng.gen::<f64>().ln();
     let alpha = jumps.next().unwrap();
-    let mut cur_lambda = lambda0 + alpha*decay;
-    prev_t = s; // record first event time
-    result.push(array![[s, cur_lambda, alpha*decay]]);
+    let mut cur_lambda = lambda0 + alpha;
+    result.push(array![[s, cur_lambda, alpha]]);
     let mut lbda_max = cur_lambda;
 
     while let Some(alpha) = jumps.next() {
-        expdist = Exp::new(lbda_max);
+        let u: f64 = rng.gen();
+        let mut ds = -1.0/lbda_max*u.ln();
         // candidate time
-        s += expdist.sample(&mut rng);
         if s > tmax {
             // time window is over, finish simulation loop
             break;
         }
 
-        // compute process intensity at time s
-        let increment = (-decay*(s-prev_t)).exp();
-        cur_lambda = lambda0 + (cur_lambda-lambda0)*increment;
+        // compute process intensity at new time s + ds
+        // by decaying over the interval [s, s+ds]
+        cur_lambda = lambda0 + (cur_lambda-lambda0)*(-decay*ds).exp();
+        s += ds; // update s
 
         // rejection sampling step
-        let d = rng.gen::<f64>();
+        let d: f64 = rng.gen();
         if d < cur_lambda/lbda_max {
-            // there was an event
-            prev_t = s; // update last event time
-            cur_lambda = cur_lambda + alpha*decay; // boost the intensity with the jump
-            let event_vec: Array2<f64> = array![[s, cur_lambda, alpha*decay]];
-            result.push(event_vec); // add the new state vector
+            // accept the event
+            cur_lambda = cur_lambda + alpha; // boost the intensity with the jump
+            result.push(array![[s, cur_lambda, alpha]]); // add the new state vector
         }
-        lbda_max = cur_lambda; // update the max. intensity used for rejection sampling with the current intensity
+        // update the intensity upper bound
+        lbda_max = cur_lambda; 
     }
 
     if result.len() > 0 {
