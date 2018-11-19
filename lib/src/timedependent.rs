@@ -82,17 +82,16 @@ where T: Iterator<Item = f64>
 
     while let Some(alpha) = jumps.next() {
         let u: f64 = rng.gen();
-        let mut ds = -1.0/lbda_max*u.ln();
         // candidate time
-        if s > tmax {
-            // time window is over, finish simulation loop
-            break;
-        }
-
+        let mut ds = -1.0/lbda_max*u.ln();
         // compute process intensity at new time s + ds
         // by decaying over the interval [s, s+ds]
         cur_lambda = lambda0 + (cur_lambda-lambda0)*(-decay*ds).exp();
         s += ds; // update s
+        if s > tmax {
+            // time window is over, finish simulation loop
+            break;
+        }
 
         // rejection sampling step
         let d: f64 = rng.gen();
