@@ -2,6 +2,7 @@
 name = "pointprocessespy"
 version = "0.4.1"
 authors = ["ManifoldFR <manifoldfr@outlook.com>"]
+edition = "2018"
 
 [dependencies]
 point_process = { path = "../lib/" }

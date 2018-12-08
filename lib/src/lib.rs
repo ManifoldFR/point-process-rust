@@ -1,16 +1,6 @@
-extern crate rand;
-extern crate serde;
-extern crate rayon;
-
-#[macro_use]
-extern crate ndarray;
-extern crate ndarray_parallel;
-
-extern crate serde_json;
-
-pub mod generalized;
+pub mod spatial;
 pub mod likelihood;
 pub mod timedependent;
 
-/// Time dependent processes are available from the crate root.
-pub use timedependent::*;
+/// Time-dependent processes should be available in the crate root.
+pub use self::timedependent::*;

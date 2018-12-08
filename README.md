@@ -6,7 +6,7 @@
 
 Point processes are stochastic processes with a wide range of applications in seismology, epidemiology, or financial mathematics. They are utilized to model the arrival of random events as a function of time.
 
-![variablepoisson](lib/examples/images/variable_poisson.png)
+![variablepoisson](lib/examples/images/oscillating_poisson.svg)
 
 This crate provides functions to simulate point processes in [Rust](https://rust-lang.org), built on top of [`ndarray`](https://github.com/bluss/ndarray). There is a Rust API available through the base crate as well as a Python library crate.
 
@@ -21,7 +21,7 @@ The following time-dependent point processes have been implemented within the `t
 
 ### n-dimensional processes
 
-![2dpoisson_circle](lib/examples/images/2d_poisson.variable.circle.png)
+![2dpoisson_circle](lib/examples/images/2d_poisson.variable.circle.svg)
 
 The `generalized` module provides functions for higher-dimensional processes.
 

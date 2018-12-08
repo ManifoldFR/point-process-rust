@@ -1,7 +1,6 @@
 import sys
 
 from setuptools import setup
-from setuptools.command.test import test as TestCommand
 
 try:
     from setuptools_rust import RustExtension, Binding, Strip
@@ -45,7 +44,7 @@ setup(
             binding=Binding.PyO3,
             strip=Strip.Debug),
         RustExtension(
-            'pointprocesses.generalized',
+            'pointprocesses.spatial',
             'Cargo.toml',
             binding=Binding.PyO3,
             strip=Strip.Debug),

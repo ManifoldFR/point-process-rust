@@ -7,6 +7,7 @@ use rand::distributions::Uniform;
 use rand::distributions::Poisson;
 
 use ndarray::stack;
+use ndarray::array;
 use ndarray::prelude::*;
 use ndarray_parallel::prelude::*;
 
@@ -67,23 +68,21 @@ where F: Fn(f64) -> f64 + Send + Sync
 /// Simulate a time-dependent marked Hawkes process with an exponential kernel.
 /// This will borrow and consume the given `jumps` iterator, and will panic if it turns up empty.
 /// index 0: timestamps, index 1: intensity, index 2: marks
-pub fn hawkes_exponential<T>(tmax: f64, decay: f64, lambda0: f64, jumps: &mut T) -> Array2<f64>
-where T: Iterator<Item = f64>
+pub fn hawkes_exponential(tmax: f64, decay: f64, lambda0: f64, alpha: f64) -> Array2<f64>
 {
     let mut rng = thread_rng(); // random no. generator
     let mut result = Vec::<Array2<f64>>::new();
-    // compute a first event time, occuring as a standard poisson process
+    // compute a first event time, occurring as a standard poisson process
     // of intensity lambda0
     let mut s = -1.0/lambda0*rng.gen::<f64>().ln();
-    let alpha = jumps.next().unwrap();
     let mut cur_lambda = lambda0 + alpha;
     result.push(array![[s, cur_lambda, alpha]]);
     let mut lbda_max = cur_lambda;
 
-    while let Some(alpha) = jumps.next() {
+    while s < tmax {
         let u: f64 = rng.gen();
         // candidate time
-        let mut ds = -1.0/lbda_max*u.ln();
+        let ds = -1.0/lbda_max*u.ln();
         // compute process intensity at new time s + ds
         // by decaying over the interval [s, s+ds]
         cur_lambda = lambda0 + (cur_lambda-lambda0)*(-decay*ds).exp();

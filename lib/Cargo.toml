@@ -12,6 +12,7 @@ exclude = [
 ]
 keywords = ["mathematics", "simulation", "statistics"]
 categories = ["algorithms", "simulation", "science"]
+edition = "2018"
 
 [dependencies]
 ndarray = { version = "0.12.1", features = ["serde-1"] }
