@@ -71,9 +71,9 @@ fn timedependent(_py: Python, m: &PyModule) -> PyResult<()> {
     /// 
     /// Args:
     ///     tmax (float): temporal horizon.
+    ///     alpha (float): jump size
     ///     beta (float): decay parameter.
     ///     lambda0 (float): base, background intensity.
-    ///     jumps (float iterator): process jumps.
     /// Returns:
     ///     arr (ndarray):
     ///         arr[:,0] are the timestamps,
@@ -91,7 +91,7 @@ fn timedependent(_py: Python, m: &PyModule) -> PyResult<()> {
 
 /// Point processes in n-dimensional space
 #[pymodinit]
-fn generalized(_py: Python, m: &PyModule) -> PyResult<()> {
+fn spatial(_py: Python, m: &PyModule) -> PyResult<()> {
     #[pyfn(m, "poisson_process")]
     fn poisson_process_py(py: Python, lambda: f64, close: &PyArray1<f64>, far: &PyArray1<f64>) -> Py<PyArray2<f64>> {
         assert_eq!(close.dims(), far.dims());
