@@ -27,21 +27,11 @@ The `generalized` module provides functions for higher-dimensional processes.
 
 For now, only Poisson processes have been implemented.
 
-```rust
-fn poisson_process(lambda: f64, domain: &T)
-where T: Set -> ndarray::Array<f64, Ix2> {
-    ...
-}
 
-fn variable_poisson<F, T>(lambda: F,max_lambda: f64,domain: &T) -> Array2<f64>
-where F: Fn(&Array1<f64>) -> f64,
-      T: Set
-{
-    ...
-}
-```
+## Python package
 
-which takes a reference to a _domain_, that is a subset of n-dimensional space implemented with the `Set` trait (see API docs), and returns a 2-dimensional array which is a set of point events in d-dimensional space falling into the domain.
+An Python wrapper crate is available in the [`pylib`](./pylib) directory.
+
 
 ## Examples
 
@@ -87,11 +77,7 @@ rustflags = [
 ```
 or linking with the C compiler will fail.
 
-To compile both at the same time, just do
+To compile both crates at the same time, just do
 ```
-cargo build --all
+cargo build
 ```
-
-## Python package
-
-An experimental Python package built as an extension is available inside the [`pylib/`](./pylib) directory.

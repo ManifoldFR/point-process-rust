@@ -34,7 +34,7 @@ setup_requires = [
 install_requires = ['numpy']
 
 setup(
-    name='pointprocesses',
+    name=package_meta['name'],
     version=package_meta['version'],
     author=package_meta['authors'][0],
     rust_extensions=[

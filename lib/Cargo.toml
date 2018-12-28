@@ -19,7 +19,7 @@ ndarray = { version = "0.12.1", features = ["serde-1"] }
 ndarray-parallel = "0.9.0"
 rand = "0.6.1"
 rayon = "1.0.3"
-serde = "1.0.81"
+serde = "1.0.83"
 serde_json = "1.0.33"
 
 [lib]
@@ -27,5 +27,5 @@ name = "pointprocesses"
 path = "src/lib.rs"
 
 [dev-dependencies]
-plotlib = { path = "../plotlib/", version = "0.3.0" }
-svg = "0.5.11"
+plotlib = { git = "https://github.com/milliams/plotlib" }
+svg = "0.5.12"

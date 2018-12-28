@@ -1,12 +1,12 @@
 [package]
 name = "pointprocessespy"
-version = "0.4.2"
+version = "0.5.0"
 authors = ["ManifoldFR <manifoldfr@outlook.com>"]
 edition = "2018"
 
 [dependencies]
 point_process = { path = "../lib/" }
-numpy = { git = "https://github.com/rust-numpy/rust-numpy" }
+numpy = "0.4.0"
 ndarray = "0.12.1"
 
 [dependencies.pyo3]
