@@ -3,6 +3,7 @@
 [![Crates.io Status](https://img.shields.io/crates/v/point_process.svg)](https://crates.io/crates/point_process)
 [![Docs](https://docs.rs/point_process/badge.svg)](https://docs.rs/point_process)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/ManifoldFR/point-process-rust/master/LICENSE)
+[![Build Status](https://travis-ci.org/ManifoldFR/point-process-rust.svg?branch=master)](https://travis-ci.org/ManifoldFR/point-process-rust)
 
 Point processes are stochastic processes with a wide range of applications in seismology, epidemiology, or financial mathematics. They are utilized to model the arrival of random events as a function of time.
 
