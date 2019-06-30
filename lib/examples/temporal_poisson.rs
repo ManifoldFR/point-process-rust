@@ -1,13 +1,12 @@
 use pointprocesses::{poisson_process,variable_poisson};
-use plotlib::function;
-use plotlib::view;
-use plotlib::scatter;
+use plotlib::repr::{Function, Scatter};
 use std::fs;
+use plotlib::view;
 use plotlib::page::Page;
-use plotlib::style::Marker;
-use plotlib::style::Line;
+use plotlib::style::PointStyle;
+use plotlib::style::PointMarker;
+use plotlib::style::LineStyle;
 use ndarray::Axis;
-use plotlib::style::Point;
 
 static MARKER_COLOR: &str = "#9B2636";
 static LINE_COLOR: &str = "#2B2A2B";
@@ -34,22 +33,22 @@ fn oscillating() {
 
     println!("{:?}", events);
 
-    let intens_plot = function::Function::new(f, 0.0, tmax)
-        .style(function::Style::new().colour(LINE_COLOR).width(2.0));
+    let intens_plot = Function::new(f, 0.0, tmax)
+        .style(LineStyle::new().colour(LINE_COLOR).width(2.0));
 
     let event_data: Vec<(f64,f64)> = events.axis_iter(Axis(0))
         .map(|ev| (ev[0], ev[1]))
         .collect();
 
-    let s = scatter::Scatter::from_slice(&event_data)
-        .style(scatter::Style::new()
+    let s = Scatter::from_slice(&event_data)
+        .style(PointStyle::new()
             .size(2.5)
-            .marker(Marker::Circle)
+            .marker(PointMarker::Circle)
             .colour(MARKER_COLOR));
 
     let v = view::ContinuousView::new()
-        .add(&s)
-        .add(&intens_plot)
+        .add(s)
+        .add(intens_plot)
         .x_label("Time t")
         .y_label("Intensity λ(t)");
 
@@ -71,22 +70,22 @@ fn decrease_exp() {
 
     println!("{:?}", events);
 
-    let intens_plot = function::Function::new(f, 0.0, tmax)
-        .style(function::Style::new().colour(LINE_COLOR).width(2.0));
+    let intens_plot = Function::new(f, 0.0, tmax)
+        .style(LineStyle::new().colour(LINE_COLOR).width(2.0));
 
     let event_data: Vec<(f64,f64)> = events.axis_iter(Axis(0))
         .map(|ev| (ev[0], ev[1]))
         .collect();
 
-    let s = scatter::Scatter::from_slice(&event_data)
-        .style(scatter::Style::new()
+    let s = Scatter::from_slice(&event_data)
+        .style(PointStyle::new()
             .size(2.5)
-            .marker(Marker::Circle)
+            .marker(PointMarker::Circle)
             .colour(MARKER_COLOR));
 
     let v = view::ContinuousView::new()
-        .add(&s)
-        .add(&intens_plot)
+        .add(s)
+        .add(intens_plot)
         .x_label("Time t")
         .y_label("Intensity λ(t)");
 

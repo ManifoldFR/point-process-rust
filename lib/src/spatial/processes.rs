@@ -1,11 +1,11 @@
 use super::domains::Domain;
 
+use rand::prelude::*;
+use rand::rngs::SmallRng;
+use rand_distr::{Poisson, Distribution};
+
 use ndarray::stack;
 use ndarray::prelude::*;
-
-use rand::thread_rng;
-use rand::distributions::Poisson;
-use rand::prelude::*;
 
 static XORSHIFT_ERR: &str = "Unable to create XorShift rng from thread local rng";
 
@@ -24,9 +24,10 @@ pub fn poisson_process(lambda: f64, domain: &Domain) -> Array2<f64>
 
     // get number of events to generate
     // events outside of the set will be rejected
-    let num_events = Poisson::new(lambda*area).sample(rng) as usize;
-
-    let mut srng = rand::rngs::SmallRng::from_rng(rng).expect(XORSHIFT_ERR);
+    let fish = Poisson::new(lambda*area).unwrap();
+    let num_events: u64 = fish.sample(rng);
+    
+    let mut srng = SmallRng::from_rng(rng).expect(XORSHIFT_ERR);
 
     let events: Vec<Array2<f64>> = (0..num_events).map(|_| {
         // generate a point inside the bounding box
@@ -62,8 +63,9 @@ pub fn variable_poisson<F>(lambda: F, max_lambda: f64, domain: &Domain) -> Array
     // get number of events to generate
     // events outside of the set will be rejected
     let ref mut rng = thread_rng();
-    let num_events = Poisson::new(max_lambda*area).sample(rng) as usize;
-
+    let fish = Poisson::new(max_lambda*area).unwrap();
+    let num_events: u64 = fish.sample(rng);
+    
     let mut srng = rand::rngs::SmallRng::from_rng(rng).expect(XORSHIFT_ERR);
 
     let events: Vec<Array2<f64>> = (0..num_events).filter_map(|_| {

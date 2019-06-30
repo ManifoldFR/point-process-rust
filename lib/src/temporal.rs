@@ -1,10 +1,11 @@
 /*!
- *This module implements a set of time-dependent point processes, such as Poisson or
- *Hawkes processes on the real half-line [0,∞[.
+ *This module implements a set of temporal point processes
+ *on the real half-line [0,∞[, such as Poisson or
+ *Hawkes processes.
  */
 use rand::prelude::*;
 use rand::distributions::Uniform;
-use rand::distributions::Poisson;
+use rand_distr::{Poisson, Distribution};
 
 use ndarray::stack;
 use ndarray::array;
@@ -15,12 +16,12 @@ use rayon::prelude::*;
 
 /// Simulate a homogeneous, constant-intensity Poisson process.
 /// index 0: timestamps
-pub fn poisson_process(tmax: f64, lambda: f64) -> Array1<f64> {
-    /// A poisson process cannot have negative intensity.
-    assert!(lambda > 0.0);
+pub fn poisson_process(tmax: f64, lambda: f64) -> Array1<f64>
+{
     let mut rng = thread_rng();
-    let num_events = Poisson::new(tmax*lambda).sample(&mut rng) as usize;
-    let mut events = Array1::<f64>::zeros((num_events,));
+    let fish = Poisson::new(tmax * lambda).unwrap();
+    let num_events: u64 = fish.sample(&mut rng);
+    let mut events = Array1::<f64>::zeros((num_events as usize,));
     
     events.par_mapv_inplace(|_| {
         // get reference to local thread rng
@@ -35,10 +36,9 @@ pub fn poisson_process(tmax: f64, lambda: f64) -> Array1<f64> {
 pub fn variable_poisson<F>(tmax: f64, lambda: &F, max_lambda: f64) -> Array2<f64>
 where F: Fn(f64) -> f64 + Send + Sync
 {
-    // Number of events before thinning
     let mut rng = thread_rng();
-    let num_events = Poisson::new(tmax*max_lambda).sample(&mut rng);
-
+    let fish = Poisson::new(tmax*max_lambda).unwrap();
+    let num_events: u64 = fish.sample(&mut rng);
     let lambda = std::sync::Arc::from(lambda);
 
     // Get timestamp and intensity values of events distributed
@@ -66,7 +66,6 @@ where F: Fn(f64) -> f64 + Send + Sync
 }
 
 /// Simulate a time-dependent marked Hawkes process with an exponential kernel.
-/// This will borrow and consume the given `jumps` iterator, and will panic if it turns up empty.
 /// index 0: timestamps, index 1: intensity, index 2: marks
 pub fn hawkes_exponential(tmax: f64, decay: f64, lambda0: f64, alpha: f64) -> Array2<f64>
 {

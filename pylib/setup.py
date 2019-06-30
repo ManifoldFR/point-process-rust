@@ -39,7 +39,7 @@ setup(
     author=package_meta['authors'][0],
     rust_extensions=[
         RustExtension(
-            'pointprocesses.timedependent',
+            'pointprocesses.temporal',
             'Cargo.toml',
             binding=Binding.PyO3,
             strip=Strip.Debug),

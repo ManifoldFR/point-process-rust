@@ -1,11 +1,12 @@
 use std::fs;
 
-use plotlib::style::{Point, Marker, Line};
+use plotlib::style::{
+    PointStyle, PointMarker, 
+    LineStyle
+    };
+use plotlib::page::Page;
 use plotlib::view;
-use plotlib::line;
-use plotlib::page;
-use plotlib::scatter;
-use plotlib::scatter::Scatter;
+use plotlib::repr::{Line, Scatter};
 
 use pointprocesses::hawkes_exponential;
 use ndarray::prelude::*;
@@ -58,8 +59,8 @@ fn fixed_jump() {
         (t, lam)
     }).collect();
 
-    let intens_plot = line::Line::new(&intens_data)
-        .style(line::Style::new()
+    let intens_plot = Line::new(intens_data)
+        .style(LineStyle::new()
             .width(1.2)
             .colour("#0971B2")
         );
@@ -70,19 +71,20 @@ fn fixed_jump() {
         }).collect();
     
     let sc = Scatter::from_slice(&ev_tupl)
-        .style(scatter::Style::new().size(1.2)
+        .style(PointStyle::new()
+            .size(1.2)
             .colour("#FF0000")
-            .marker(Marker::Circle)
+            .marker(PointMarker::Cross)
         );
 
     let v = view::ContinuousView::new()
         .x_label("Time t")
         .y_label("Intensity λ(t)")
-        .add(&intens_plot)
-        .add(&sc);
+        .add(intens_plot)
+        .add(sc);
 
     let save_path = [IMAGES_DIR, "hawkes_exp.svg"].join("/");
-    page::Page::single(&v)
+    Page::single(&v)
         .dimensions(900, 400)
         .save(save_path).unwrap();
 }

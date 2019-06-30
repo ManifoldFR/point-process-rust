@@ -1,6 +1,6 @@
 pub mod spatial;
 pub mod likelihood;
-pub mod timedependent;
+pub mod temporal;
 
 /// Time-dependent processes should be available in the crate root.
-pub use self::timedependent::*;
+pub use self::temporal::*;

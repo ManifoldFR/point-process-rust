@@ -1,16 +1,19 @@
 [package]
 name = "pointprocessespy"
-version = "0.5.0"
+version = "0.7.0-alpha.0"
 authors = ["ManifoldFR <manifoldfr@outlook.com>"]
+repository = "https://github.com/ManifoldFR/point-process-rust/tree/master/pylib"
+keywords = ["mathematics", "simulation", "statistics"]
+categories = ["algorithms", "simulation", "science"]
 edition = "2018"
 
 [dependencies]
 point_process = { path = "../lib/" }
-numpy = "0.4.0"
+numpy = "0.6.0"
 ndarray = "0.12.1"
 
 [dependencies.pyo3]
-version = "0.5.2"
+version = "0.7.0"
 features = ["extension-module"]
 
 [lib]

@@ -7,11 +7,10 @@ extern crate ndarray;
 
 use std::fs;
 
-use plotlib::style::{Point, Marker};
+use plotlib::style::{PointStyle, PointMarker};
 use plotlib::view;
 use plotlib::page;
-use plotlib::scatter;
-use plotlib::scatter::Scatter;
+use plotlib::repr::Scatter;
 
 use ndarray::{Array1, Array2};
 
@@ -54,13 +53,13 @@ fn square_example() {
 
     // We create our scatter plot from the data$
     let s1 = Scatter::from_slice(&data)
-        .style(scatter::Style::new()
-            .marker(Marker::Circle) // setting the marker to be a square
+        .style(PointStyle::new()
+            .marker(PointMarker::Circle) // setting the marker to be a square
             .colour(MARKER_COLOR)
             .size(2.5)); // and a custom colour 
     
     let v = view::ContinuousView::new()
-        .add(&s1)
+        .add(s1)
         .x_range(0., 1.)
         .y_range(0., 1.)
         .x_label("x")
@@ -104,14 +103,14 @@ fn variable_circle_example() {
 
     // We create our scatter plot from the data
     let s = Scatter::from_slice(&data)
-        .style(scatter::Style::new()
-            .marker(Marker::Circle)
+        .style(PointStyle::new()
+            .marker(PointMarker::Circle)
             .colour(MARKER_COLOR)
             .size(1.2)); // and a custom colour
 
     // The 'view' describes what set of data is drawn
     let v = view::ContinuousView::new()
-        .add(&s)
+        .add(s)
         .x_range(0., 1.)
         .y_range(0., 1.)
         .x_label("x")
