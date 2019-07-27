@@ -42,17 +42,20 @@ partition = np.arange(0, tmax+bandwidth, bandwidth)
 
 def intens(x):
     """Intensity function"""
-    return 5.0*(1-np.exp(-x))*(1+0.2*np.sin(1.4*x))
+    return 5.0*(1-0.9*np.exp(-x))*(1+0.2*np.sin(1.4*x)) + \
+        1.0 * np.exp(0.2*x)
 
 max_lbda = 10.0
-processes = [variable_poisson(tmax, intens, max_lbda) for _ in range(500)]
+num_proc_samples = 400
+processes = [variable_poisson(tmax, intens, max_lbda) for _ in range(num_proc_samples)]
 estimates = intensity_estimator(processes, partition)
 # print("Partition:", partition)
 # print("Intensity estimates:\n", estimates)
 
 scatter_ops = {
-    "s": 32.0,
-    "linewidths": 0.8,
+    "s": 26.0,
+    "color": "r",
+    "linewidths": 0.5,
     "edgecolors": "k",
     "alpha": 0.7
 }
@@ -62,6 +65,7 @@ plt.plot(partition, intens(partition),
     label="actual intensity $\\lambda(t)$")
 plt.scatter(0.5*(partition[1:]+partition[:-1]), estimates,
     label="estimate $\\hat{\\lambda}(t)$", **scatter_ops)
+
 plt.xlabel("Time $t$")
 plt.legend()
 plt.tight_layout()
