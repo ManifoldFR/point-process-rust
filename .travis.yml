@@ -1,6 +1,6 @@
 language: rust
 rust:
-  - beta
+  #- beta won't work cuz pyo3 is nightly
   - nightly
 cache: cargo
 script:
