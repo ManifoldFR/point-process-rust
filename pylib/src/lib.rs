@@ -33,7 +33,7 @@ fn temporal(_py: Python, m: &PyModule) -> PyResult<()> {
     ///     arr (ndarray): arr[:,0] are the timestamps, arr[:,1] are the intensities
     fn variable_poisson_py(
         py: Python, tmax: f64, lambda: PyObject,
-        max_lambda: f64) -> Py<PyArray2<f64>>
+        max_lambda: f64) -> (Py<PyArray1<f64>>,Py<PyArray1<f64>>)
     {
         let compute = |x: f64| {
             let args = (x,);
@@ -56,14 +56,17 @@ fn temporal(_py: Python, m: &PyModule) -> PyResult<()> {
             variable_poisson(tmax, &callback, max_lambda)
         });
 
-
         recver.iter().for_each(|x| {
             let intens = compute(x);
             backsnder.send(intens).unwrap();
         });
 
         let elements = handle.join().unwrap();
-        elements.to_pyarray(py).to_owned()
+        let times: Array1<f64> = elements.0;
+        let inten: Array1<f64> = elements.1;
+        let times = times.to_pyarray(py).to_owned();
+        let inten = inten.to_pyarray(py).to_owned();
+        (times, inten)
     }
 
     #[pyfn(m, "hawkes_exp")]

@@ -6,7 +6,6 @@ use plotlib::page::Page;
 use plotlib::style::PointStyle;
 use plotlib::style::PointMarker;
 use plotlib::style::LineStyle;
-use ndarray::Axis;
 
 static MARKER_COLOR: &str = "#9B2636";
 static LINE_COLOR: &str = "#2B2A2B";
@@ -29,16 +28,20 @@ fn oscillating() {
     let f: fn(f64) -> f64 = |t| {
         4.0*(30.0 - 0.95*t).ln()*(1.0 + 0.1*(0.5*t).sin())
     };
-    let events = variable_poisson(tmax, &f, 17.0);
+    let events_tup = variable_poisson(tmax, &f, 17.0);
+    let events = events_tup.0;
+    let intens = events_tup.1;
 
     println!("{:?}", events);
 
+
+    let event_data: Vec<(f64,f64)> = events.into_iter()
+        .zip(intens.into_iter())
+        .map(|(t, l)| (*t, *l))
+        .collect();
+
     let intens_plot = Function::new(f, 0.0, tmax)
         .style(LineStyle::new().colour(LINE_COLOR).width(2.0));
-
-    let event_data: Vec<(f64,f64)> = events.axis_iter(Axis(0))
-        .map(|ev| (ev[0], ev[1]))
-        .collect();
 
     let s = Scatter::from_slice(&event_data)
         .style(PointStyle::new()
@@ -66,16 +69,19 @@ fn decrease_exp() {
     let f: fn(f64) -> f64 = |t| {
         (-0.6 * t).exp() * 5.0
     };
-    let events = variable_poisson(tmax, &f, 5.0);
+    let events_tup = variable_poisson(tmax, &f, 5.0);
+    let events = events_tup.0;
+    let intens = events_tup.1;
 
     println!("{:?}", events);
 
+    let event_data: Vec<(f64,f64)> = events.into_iter()
+        .zip(intens.into_iter())
+        .map(|(t, l)| (*t, *l))
+        .collect();
+
     let intens_plot = Function::new(f, 0.0, tmax)
         .style(LineStyle::new().colour(LINE_COLOR).width(2.0));
-
-    let event_data: Vec<(f64,f64)> = events.axis_iter(Axis(0))
-        .map(|ev| (ev[0], ev[1]))
-        .collect();
 
     let s = Scatter::from_slice(&event_data)
         .style(PointStyle::new()
