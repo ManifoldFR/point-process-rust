@@ -1,43 +1,43 @@
 import numpy as np
+import numba
 import matplotlib.pyplot as plt
 import pointprocesses as pp
 from pointprocesses.temporal import variable_poisson
 
 
-def count_events_by_(events, partition) -> list:
+@numba.jit("double[:],double[:]", cache=True)
+def count_events_by_(events, partition):
     m = len(partition)
-    counts = np.zeros((m-1,), dtype=np.int)
-    if events.ndim >= 2:
-        events = events[:,0]
+    counts = np.zeros((m-1,))
     for i in range(m-1):
         low = partition[i]
         high = partition[i+1]
-        res = np.sum((events < high) & (events > low))
-        counts[i] = res
+        counts[i] = np.sum((low < events) &(events < high))
     return counts
 
 
-def intensity_estimator(processes, partition) -> np.ndarray:
+def intensity_estimator(data, partition) -> np.ndarray:
     """
     Inspired by Leemis (2001), "Nonparametric estimation and variate generation for a
     nonhomogeneous Poisson process from event count data"
 
     Args:
-        processes (list): set of simulated processes
+        data (list): set of simulated processes
         partition (list): partition of the overarching time interval
     """
-    n = len(processes)
+    n = len(data)
     m = len(partition) - 1
     bandwidth = partition[1] - partition[0]
     estimates = np.zeros((n,m))
     for i in range(n):
-        events = processes[i]
-        estimates[i,:] = count_events_by_(events, partition) / bandwidth
+        seq = data[i]  # i-th batch
+        estimates[i,:] = count_events_by_(seq[0], partition) / bandwidth
     return estimates.mean(axis=0)
 
 
 tmax = 8.0
-bandwidth = 0.2
+trange = np.linspace(0, tmax, 201)
+bandwidth = 0.1
 partition = np.arange(0, tmax+bandwidth, bandwidth)
 
 def intens(x):
@@ -45,22 +45,22 @@ def intens(x):
     return 5.0*(1-0.9*np.exp(-x))*(1+0.2*np.sin(1.4*x)) + \
         1.0 * np.exp(0.2*x)
 
+# max_lbda = np.max(1.01*intens(np.linspace(0, tmax, 200)))
 max_lbda = 10.0
-num_proc_samples = 400
-processes = [variable_poisson(tmax, intens, max_lbda) for _ in range(num_proc_samples)]
-estimates = intensity_estimator(processes, partition)
-# print("Partition:", partition)
-# print("Intensity estimates:\n", estimates)
+num_proc_samples = 500
+# Simulated samples
+data = [variable_poisson(tmax, intens, max_lbda) for _ in range(num_proc_samples)]
+estimates = intensity_estimator(data, partition)
 
 scatter_ops = {
-    "s": 26.0,
+    "s": 18.0,
     "color": "r",
     "linewidths": 0.5,
     "edgecolors": "k",
     "alpha": 0.7
 }
 
-plt.plot(partition, intens(partition),
+plt.plot(trange, intens(trange),
     linestyle='--',
     label="actual intensity $\\lambda(t)$")
 plt.scatter(0.5*(partition[1:]+partition[:-1]), estimates,
