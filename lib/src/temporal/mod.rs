@@ -33,8 +33,7 @@ where F: Fn(f64) -> f64 + Send + Sync
 }
 
 /// Simulate a time-dependent marked Hawkes process with an exponential kernel.
-/// index 0: timestamps, index 1: intensity, index 2: marks
-pub fn hawkes_exponential(tmax: f64, decay: f64, lambda0: f64, alpha: f64) -> TimeProcessResult
+pub fn hawkes_exponential(tmax: f64, alpha: f64, decay: f64, lambda0: f64) -> TimeProcessResult
 {
     use hawkes::ExpHawkes;
     let model: ExpHawkes = ExpHawkes::new(alpha, decay, lambda0);

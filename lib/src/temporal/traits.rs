@@ -8,7 +8,7 @@ pub struct TimeProcessResult {
 }
 
 
-/// Time-dependent point process.
+/// Time-dependent point process model.
 pub trait TemporalProcess {
     /// Sample a sequence of events of the process.
     /// Returns: event timestamps and intensity process.
