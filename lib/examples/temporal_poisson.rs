@@ -29,14 +29,14 @@ fn oscillating() {
         4.0*(30.0 - 0.95*t).ln()*(1.0 + 0.1*(0.5*t).sin())
     };
     let events_tup = variable_poisson(tmax, &f, 17.0);
-    let events = events_tup.0;
-    let intens = events_tup.1;
+    let timestamps = events_tup.timestamps;
+    let intensities = events_tup.intensities;
 
-    println!("{:?}", events);
+    println!("{:?}", timestamps);
 
 
-    let event_data: Vec<(f64,f64)> = events.into_iter()
-        .zip(intens.into_iter())
+    let event_data: Vec<(f64,f64)> = timestamps.into_iter()
+        .zip(intensities.into_iter())
         .map(|(t, l)| (*t, *l))
         .collect();
 
@@ -70,12 +70,12 @@ fn decrease_exp() {
         (-0.6 * t).exp() * 5.0
     };
     let events_tup = variable_poisson(tmax, &f, 5.0);
-    let events = events_tup.0;
-    let intens = events_tup.1;
+    let timestamps = events_tup.timestamps;
+    let intens = events_tup.intensities;
 
-    println!("{:?}", events);
+    println!("{:?}", timestamps);
 
-    let event_data: Vec<(f64,f64)> = events.into_iter()
+    let event_data: Vec<(f64,f64)> = timestamps.into_iter()
         .zip(intens.into_iter())
         .map(|(t, l)| (*t, *l))
         .collect();

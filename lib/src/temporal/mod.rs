@@ -5,21 +5,22 @@
  */
 mod traits;
 pub mod poisson;
+pub mod cox;
+pub mod hawkes;
+pub mod utils;
+
 
 use traits::*;
+pub use traits::TimeProcessResult;
 use poisson::*;
 
-use ndarray::stack;
-use ndarray::array;
 use ndarray::prelude::*;
-
-use rand::prelude::*;
 
 
 pub fn poisson_process(tmax: f64, lambda: f64) -> Array1<f64>
 {
     let process = PoissonProcess::new(lambda);
-    process.sample(tmax).0
+    process.sample(tmax).timestamps
 }
 
 /// Simulate a Poisson process with variable intensity.
@@ -33,45 +34,9 @@ where F: Fn(f64) -> f64 + Send + Sync
 
 /// Simulate a time-dependent marked Hawkes process with an exponential kernel.
 /// index 0: timestamps, index 1: intensity, index 2: marks
-pub fn hawkes_exponential(tmax: f64, decay: f64, lambda0: f64, alpha: f64) -> Array2<f64>
+pub fn hawkes_exponential(tmax: f64, decay: f64, lambda0: f64, alpha: f64) -> TimeProcessResult
 {
-    let mut rng = thread_rng(); // random no. generator
-    let mut result = Vec::<Array2<f64>>::new();
-    // compute a first event time, occurring as a standard poisson process
-    // of intensity lambda0
-    let mut s = -1.0/lambda0*rng.gen::<f64>().ln();
-    let mut cur_lambda = lambda0 + alpha;
-    result.push(array![[s, cur_lambda, alpha]]);
-    let mut lbda_max = cur_lambda;
-
-    while s < tmax {
-        let u: f64 = rng.gen();
-        // candidate time
-        let ds = -1.0/lbda_max*u.ln();
-        // compute process intensity at new time s + ds
-        // by decaying over the interval [s, s+ds]
-        cur_lambda = lambda0 + (cur_lambda-lambda0)*(-decay*ds).exp();
-        s += ds; // update s
-        if s > tmax {
-            // time window is over, finish simulation loop
-            break;
-        }
-
-        // rejection sampling step
-        let d: f64 = rng.gen();
-        if d < cur_lambda/lbda_max {
-            // accept the event
-            cur_lambda = cur_lambda + alpha; // boost the intensity with the jump
-            result.push(array![[s, cur_lambda, alpha]]); // add the new state vector
-        }
-        // update the intensity upper bound
-        lbda_max = cur_lambda; 
-    }
-
-    if result.len() > 0 {
-        let events: Vec<ArrayView2<f64>> = result.iter().map(|v| v.view()).collect();
-        stack(Axis(0), &events).unwrap()
-    } else {
-        Array2::<f64>::zeros((0,3))
-    }
+    use hawkes::ExpHawkes;
+    let model: ExpHawkes = ExpHawkes::new(alpha, decay, lambda0);
+    model.sample(tmax)
 }

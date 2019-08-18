@@ -62,8 +62,8 @@ fn temporal(_py: Python, m: &PyModule) -> PyResult<()> {
         });
 
         let elements = handle.join().unwrap();
-        let times: Array1<f64> = elements.0;
-        let inten: Array1<f64> = elements.1;
+        let times: Array1<f64> = elements.timestamps;
+        let inten: Array1<f64> = elements.intensities;
         let times = times.to_pyarray(py).to_owned();
         let inten = inten.to_pyarray(py).to_owned();
         (times, inten)
@@ -82,10 +82,15 @@ fn temporal(_py: Python, m: &PyModule) -> PyResult<()> {
     ///         arr[:,0] are the timestamps,
     ///         arr[:,1] are the intensities
     ///         arr[:,2] are the marks
-    fn hawkes_exp_py(py: Python, tmax: f64, alpha: f64, beta: f64, lambda0: f64) -> Py<PyArray2<f64>>
+    fn hawkes_exp_py(
+        py: Python, tmax: f64,
+        alpha: f64, beta: f64, lambda0: f64
+        ) -> (Py<PyArray1<f64>>, Py<PyArray1<f64>>)
     {
         let events = temporal::hawkes_exponential(tmax, beta, lambda0, alpha);
-        events.to_pyarray(py).to_owned()
+        let timestamps = events.timestamps.to_pyarray(py);
+        let intensities = events.intensities.to_pyarray(py);
+        (timestamps.to_owned(), intensities.to_owned())
     }
 
     Ok(())

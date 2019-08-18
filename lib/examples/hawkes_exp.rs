@@ -9,7 +9,8 @@ use plotlib::view;
 use plotlib::repr::{Line, Scatter};
 
 use pointprocesses::hawkes_exponential;
-use ndarray::prelude::*;
+use pointprocesses::TimeProcessResult;
+
 
 static IMAGES_DIR: &str = "lib/examples/images";
 
@@ -26,7 +27,10 @@ fn fixed_jump() {
     let beta = 1.0;
     let lambda0 = 0.6;
 
-    let events: Array2<f64> = hawkes_exponential(tmax, beta, lambda0, alpha);
+    let events: TimeProcessResult = hawkes_exponential(tmax, beta, lambda0, alpha);
+    let timestamps = &events.timestamps;
+    let intensities = &events.intensities;
+    let n_events: usize = timestamps.len();
 
     println!("{:?}", events);
     
@@ -39,8 +43,8 @@ fn fixed_jump() {
         }
     };
 
-    let intensity_func = |events: ArrayView2<f64>, t: f64| {
-        let result: f64 = events
+    let intensity_func = |events: &TimeProcessResult, t: f64| {
+        let result: f64 = events.timestamps
             .into_iter()
             .take_while(|&ev| ev < &t)
             .fold(0.0, |acc, ev| {
@@ -54,7 +58,7 @@ fn fixed_jump() {
         i as f64*tmax/samples as f64
     });
     let intens_data: Vec<(f64,f64)> = times.into_iter().map(|t| {
-        let lam = intensity_func(events.view(), t);
+        let lam = intensity_func(&events, t);
         //intens_data.push((t-0.0001/samples as f64, lam-alpha));
         (t, lam)
     }).collect();
@@ -65,10 +69,12 @@ fn fixed_jump() {
             .colour("#0971B2")
         );
     
-    let ev_tupl: Vec<(f64,f64)> = events.outer_iter()
-        .map(|v| {
-            (v[0], v[1])
-        }).collect();
+    let mut ev_tupl: Vec<(f64,f64)> = Vec::new();
+    for i in 0..n_events {
+        ev_tupl.push(
+            (timestamps[i], intensities[i])
+        );
+    }
     
     let sc = Scatter::from_slice(&ev_tupl)
         .style(PointStyle::new()
@@ -79,12 +85,12 @@ fn fixed_jump() {
 
     let v = view::ContinuousView::new()
         .x_label("Time t")
-        .y_label("Intensity λ(t)")
+        .y_label("λ(t)")
         .add(intens_plot)
         .add(sc);
 
     let save_path = [IMAGES_DIR, "hawkes_exp.svg"].join("/");
     Page::single(&v)
-        .dimensions(900, 400)
+        .dimensions(600, 300)
         .save(save_path).unwrap();
 }

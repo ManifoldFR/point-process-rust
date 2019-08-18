@@ -1,7 +1,6 @@
-use crate::temporal::traits::*;
+use super::traits::*;
 use rand::prelude::*;
-use rand::distributions::Uniform;
-use rand_distr::{Poisson, Distribution};
+use rand_distr::{Uniform, Poisson, Distribution};
 
 use ndarray::array;
 use ndarray::prelude::*;
@@ -61,37 +60,42 @@ where F: Fn(f64) -> f64 + Send + Sync
 
 
 impl TemporalProcess for PoissonProcess {
-    fn sample(self, tmax: f64) -> TimeProcessResult {
+    fn sample(&self, tmax: f64) -> TimeProcessResult {
         let lambda = self.lambda;
         let mut rng = thread_rng();
         let fish = Poisson::new(tmax * lambda).unwrap();
         let num_events: u64 = fish.sample(&mut rng);
-        let mut events = Array1::<f64>::zeros((num_events as usize,));
+        let num_events = num_events as usize;
         
-        events.par_mapv_inplace(|_| {
-            // get reference to local thread rng
-            let mut rng = thread_rng();
-            let u = Uniform::new(0.0, tmax);
-            u.sample(&mut rng)
-        });
+        let mut events_vec: Vec<_> = (0..num_events).into_par_iter()
+            .map(|_| {
+                // get reference to local thread rng
+                let mut rng = thread_rng();
+                let u = Uniform::new(0.0, tmax);
+                u.sample(&mut rng)
+        }).collect();
+        events_vec.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        let timestamps = Array1::<f64>::from_vec(events_vec);
         let mut intensities = Array1::<f64>::zeros(num_events as usize);
         for i in 0..num_events as usize {
             intensities[i] = lambda;
         }
-        (events, intensities)
+        TimeProcessResult {
+            timestamps, intensities
+        }
     }
 }
 
 impl<F> TemporalProcess for VariablePoissonProcess<F>
 where F: Fn(f64) -> f64 + Send + Sync
 {
-    fn sample(self, tmax: f64) -> TimeProcessResult {
+    fn sample(&self, tmax: f64) -> TimeProcessResult {
         // Parallelized, multithreaded algorithm for sampling
         // from the process.
 
         let mut rng = thread_rng();
         let max_lambda = self.max_lambda;
-        let lambda = self.lambda;
+        let lambda = &self.lambda;
         let fish = Poisson::new(tmax*max_lambda).unwrap();
         let num_events: u64 = fish.sample(&mut rng);
         let num_events = num_events as usize;
@@ -100,32 +104,31 @@ where F: Fn(f64) -> f64 + Send + Sync
         // Get timestamp and intensity values of events distributed
         // according to a homogeneous Poisson process
         // and keep those who are under the intensity curve
-        let events: Vec<Array1<f64>> = (0..num_events)
+        let mut events: Vec<Array1<f64>> = (0..num_events)
                 .into_par_iter().filter_map(|_| {
             let mut rng = thread_rng();
             let timestamp = rng.gen::<f64>()*tmax;
             let lambda_val = rng.gen::<f64>()*max_lambda;
 
             if lambda_val < lambda(timestamp) {
-                Some(array![timestamp, lambda_val])
+                Some(array![timestamp, lambda(timestamp)])
             } else {
                 None
             }
         }).collect();
+        events.sort_by(|a, b| a[0].partial_cmp(&b[0]).unwrap());
 
         let num_events = events.len();
 
+        let mut timestamps = Array1::<f64>::zeros(num_events);
+        let mut intensities = Array1::<f64>::zeros(num_events);
         if num_events > 0 {
-            let mut evnts = Array1::<f64>::zeros(num_events);
-            let mut intens = Array1::<f64>::zeros(num_events);
             for i in 0..num_events {
-                evnts[i] = events[i][0];
-                intens[i] = events[i][1];
+                timestamps[i] = events[i][0];
+                intensities[i] = events[i][1];
 
             }
-            (evnts, intens)
-        } else {
-            (Array1::<f64>::zeros((0,)), Array1::<f64>::zeros((0,)))
         }
+        TimeProcessResult { timestamps, intensities }
     }
 }
