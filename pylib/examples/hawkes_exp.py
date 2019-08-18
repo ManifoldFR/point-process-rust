@@ -4,7 +4,6 @@ This module illustrates how to
 import numpy as np
 import matplotlib.pyplot as plt
 import pointprocesses as pp
-from pointprocesses.temporal import hawkes_exp
 
 plt.rcParams["figure.dpi"] = 120
 
@@ -29,10 +28,14 @@ def intensity(t: float, lbda0: float, decay: float, evts):
 # Vectorize the function for higher performance.
 intensity = np.vectorize(intensity, excluded={3})
 
+numsamples = 1000
+
+processes = pp.temporal.batch_hawkes_exp(
+    tmax, alpha, decay, lbda0, numsamples)
 
 print("---- PLOT ----")
 
-events = hawkes_exp(tmax, alpha, decay, lbda0)
+events = processes[0]
 
 tarr = np.linspace(0, tmax, 500)
 yarr = intensity(tarr, lbda0, decay, events)
@@ -74,6 +77,6 @@ plt.show()
 print("---- EVENT NUMBERS ----")
 size_estimate = lbda0*tmax/(1-alpha/decay)
 print("Theoretical evt. no. estimate: %f" % size_estimate)
-processes = [hawkes_exp(tmax, alpha, decay, lbda0) for _ in range(1000)]
+
 sizes = np.array([p[0].shape[0] for p in processes]) # number of events in each process
 print("Empirical evt. no. estimate: %f" % sizes.mean())

@@ -1,15 +1,18 @@
 //! Wrappers for the `pointprocesses::temporal` module.
 use pointprocesses::*;
-use std::thread;
 use pyo3::prelude::*;
-use ndarray::prelude::*;
+use pyo3::wrap_pymodule;
+use std::thread;
 use numpy::{PyArray1,ToPyArray};
+use ndarray::prelude::*;
+
 
 
 #[pymodule]
 /// Time-dependent point processes.
-fn temporal(_py: Python, m: &PyModule) -> PyResult<()> {
-    #[pyfn(m, "poisson_process")]
+fn temporal(_py: Python, module: &PyModule) -> PyResult<()> {
+    
+    #[pyfn(module, "poisson_process")]
     /// Simulate a homogeneous, constant-intensity Poisson process.
     /// 
     /// Args:
@@ -23,7 +26,7 @@ fn temporal(_py: Python, m: &PyModule) -> PyResult<()> {
         arr.to_pyarray(py).to_owned()
     }
 
-    #[pyfn(m, "variable_poisson")]
+    #[pyfn(module, "variable_poisson")]
     /// A variable Poisson process on the real line.
     /// 
     /// Args:
@@ -71,7 +74,7 @@ fn temporal(_py: Python, m: &PyModule) -> PyResult<()> {
         (times, inten)
     }
 
-    #[pyfn(m, "hawkes_exp")]
+    #[pyfn(module, "hawkes_exp")]
     /// A Hawkes process on the real line with an exponential kernel.
     /// 
     /// Args:
@@ -80,7 +83,7 @@ fn temporal(_py: Python, m: &PyModule) -> PyResult<()> {
     ///     beta (float): decay parameter.
     ///     lambda0 (float): base, background intensity.
     /// Returns:
-    ///     events (Tuple[ndarray]):
+    ///     events (Tuple[ndarray,ndarray]):
     ///         events[0] are the timestamps,
     ///         events[1] are the intensities
     fn hawkes_exp_py(
@@ -95,5 +98,34 @@ fn temporal(_py: Python, m: &PyModule) -> PyResult<()> {
         (timestamps.to_owned(), intensities.to_owned())
     }
 
+ 
+    use pyo3::types::PyList;
+    /// Simulate a batch of Hawkes-exponential trajectories.
+    /// 
+    /// Args:
+    ///     num_samples: number of samples
+    #[pyfn(module, "batch_hawkes_exp")]
+    fn batch_hawkes_exp(
+        py: Python,
+        tmax: f64, 
+        alpha: f64, beta: f64, lambda0: f64,
+        num_samples: usize) -> &PyList
+    {
+        let mut trajs = Vec::with_capacity(num_samples);
+        for _i in 0..num_samples {
+            let evts = temporal::hawkes_exponential(
+                tmax, alpha, beta, lambda0);
+            let timestamps = evts.timestamps.to_pyarray(py);
+            let intensities = evts.intensities.to_pyarray(py);
+            trajs.push(
+                (timestamps.to_owned(), intensities.to_owned())
+            )
+        }
+        let res = PyList::new(py, trajs);
+        res
+    }
+
     Ok(())
 }
+
+

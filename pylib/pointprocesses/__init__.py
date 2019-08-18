@@ -4,4 +4,3 @@ Implemented in the Rust programming language.
 """
 from . import temporal
 from . import spatial
-from . import likelihood
