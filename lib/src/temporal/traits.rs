@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 use ndarray::prelude::*;
 
 /// Result type for temporal processes.
@@ -13,6 +14,16 @@ pub trait TemporalProcess {
     /// Sample a sequence of events of the process.
     /// Returns: event timestamps and intensity process.
     fn sample(&self, tmax: f64) -> TimeProcessResult;
+
+    /// Batch-sample sequences from the model.
+    fn batch_sample(&self, tmax: f64, num_batch: usize) -> Vec<TimeProcessResult>
+    where Self: std::marker::Sync
+    {
+        let range = 0..num_batch;
+        range.into_par_iter().map(|_| {
+            self.sample(tmax)
+        }).collect()
+    }
 }
 
 use std::fmt;

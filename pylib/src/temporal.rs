@@ -1,7 +1,8 @@
 //! Wrappers for the `pointprocesses::temporal` module.
-use pointprocesses::*;
+use pointprocesses::temporal::*;
+use traits::TemporalProcess;
 use pyo3::prelude::*;
-use pyo3::wrap_pymodule;
+use pyo3::types::PyList;
 use std::thread;
 use numpy::{PyArray1,ToPyArray};
 use ndarray::prelude::*;
@@ -91,7 +92,7 @@ fn temporal(_py: Python, module: &PyModule) -> PyResult<()> {
         alpha: f64, beta: f64, lambda0: f64
         ) -> (Py<PyArray1<f64>>, Py<PyArray1<f64>>)
     {
-        let events = temporal::hawkes_exponential(
+        let events = hawkes_exponential(
             tmax, alpha, beta, lambda0);
         let timestamps = events.timestamps.to_pyarray(py);
         let intensities = events.intensities.to_pyarray(py);
@@ -99,11 +100,15 @@ fn temporal(_py: Python, module: &PyModule) -> PyResult<()> {
     }
 
  
-    use pyo3::types::PyList;
     /// Simulate a batch of Hawkes-exponential trajectories.
+    /// Use this instead of a Python loop.
     /// 
     /// Args:
-    ///     num_samples: number of samples
+    ///     tmax (float): temporal horizon.
+    ///     alpha (float): jump size
+    ///     beta (float): decay parameter.
+    ///     lambda0 (float): base, background intensity.
+    ///     num_samples (int): number of samples
     #[pyfn(module, "batch_hawkes_exp")]
     fn batch_hawkes_exp(
         py: Python,
@@ -111,21 +116,26 @@ fn temporal(_py: Python, module: &PyModule) -> PyResult<()> {
         alpha: f64, beta: f64, lambda0: f64,
         num_samples: usize) -> &PyList
     {
-        let mut trajs = Vec::with_capacity(num_samples);
-        for _i in 0..num_samples {
-            let evts = temporal::hawkes_exponential(
-                tmax, alpha, beta, lambda0);
-            let timestamps = evts.timestamps.to_pyarray(py);
-            let intensities = evts.intensities.to_pyarray(py);
-            trajs.push(
-                (timestamps.to_owned(), intensities.to_owned())
-            )
-        }
-        let res = PyList::new(py, trajs);
-        res
+        let model = hawkes::ExpHawkes::new(alpha, beta, lambda0);
+        let trajs: Vec<TimeProcessResult> = model.batch_sample(tmax, num_samples);
+        convert_vec_results_to_pyarray_list(py, trajs)
     }
 
     Ok(())
 }
 
+fn convert_vec_results_to_pyarray_list(py: Python, results: Vec<TimeProcessResult>) -> &PyList
+{
+    let n: usize = results.len();
+    let mut res_arrays = Vec::with_capacity(n);
 
+    for i in 0..n {
+        let evts = &results[i];
+        let timestamps = evts.timestamps.to_pyarray(py);
+        let intensities = evts.intensities.to_pyarray(py);
+        res_arrays.push(
+            (timestamps.to_owned(), intensities.to_owned())
+        );
+    }
+    PyList::new(py, res_arrays)
+}

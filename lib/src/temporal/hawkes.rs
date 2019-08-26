@@ -7,7 +7,16 @@ use ndarray::prelude::*;
 
 
 
-pub trait Kernel {}
+pub trait Kernel {
+    fn eval(&self, t: f64) -> f64;
+}
+
+
+pub struct Hawkes<T, K: Kernel> {
+    background: T,
+    kernel: K
+}
+
 
 
 /// Exponential kernel for the Hawkes process,
@@ -17,16 +26,42 @@ pub struct ExpKernel {
     beta: f64
 }
 
+impl Kernel for ExpKernel {
+    fn eval(&self, t: f64) -> f64 {
+        self.alpha * (-self.beta * t).exp()
+    }
+}
+
+/// Power law kernel
+/// of the form `g(t) = alpha / pow(t, beta)`
+pub struct PowerLawKernel {
+    alpha: f64,
+    beta: f64,
+    delta: f64
+}
+
+impl Kernel for PowerLawKernel {
+    fn eval(&self, t: f64) -> f64 {
+        self.alpha / (self.delta + t).powf(self.beta)
+    }
+}
+
+impl<T> Hawkes<T, PowerLawKernel> {
+    pub fn new(alpha: f64, beta: f64, delta: f64, bk: T) -> Self {
+        let kernel = PowerLawKernel {
+            alpha, beta, delta
+        };
+        Self {
+            background: bk, kernel
+        }
+    }
+}
+
+// EXPONENTIAL HAWKES
+
 /// Constant background intensity
 pub struct ConstBackground(f64);
 
-
-impl Kernel for ExpKernel {}
-
-pub struct Hawkes<T, K: Kernel> {
-    background: T,
-    kernel: K
-}
 
 /// Hawkes model with an exponential kernel.
 pub type ExpHawkes = Hawkes<ConstBackground, ExpKernel>;
@@ -61,7 +96,6 @@ fn simulate_hawkes_exp(model: &ExpHawkes, tmax: f64) -> TimeProcessResult {
     let lambda0 = model.background.0;
     
     let mut rng = thread_rng(); // random no. generator
-    let mut result = Vec::<Array2<f64>>::new();
     let mut timestamps = Vec::new();
     let mut intensities = Vec::new();
     // compute a first event time, occurring as a standard poisson process
@@ -90,7 +124,6 @@ fn simulate_hawkes_exp(model: &ExpHawkes, tmax: f64) -> TimeProcessResult {
             cur_lambda = cur_lambda + alpha; // boost the intensity with the jump
             timestamps.push(s);
             intensities.push(cur_lambda);
-            result.push(array![[s, cur_lambda, alpha]]); // add the new state vector
         }
         // update the intensity upper bound
         lbda_max = cur_lambda; 

@@ -3,7 +3,7 @@
  *on the real half-line [0,∞[, such as Poisson or
  *Hawkes processes.
  */
-mod traits;
+pub mod traits;
 pub mod poisson;
 pub mod cox;
 pub mod hawkes;
