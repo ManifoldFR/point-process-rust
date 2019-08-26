@@ -39,7 +39,7 @@ impl fmt::Debug for TimeProcessResult {
 
 /// Indicates the point process has a deterministic intensity process.
 pub trait DeterministicIntensity {
-    fn intensity(self, t: f64) -> f64;
+    fn intensity(&self, t: f64) -> f64;
 }
 
 /// Indicates the process has a stochastic intensity process;

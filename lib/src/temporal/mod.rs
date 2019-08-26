@@ -9,9 +9,9 @@ pub mod cox;
 pub mod hawkes;
 pub mod utils;
 
+/// Reexport traits 
+pub use traits::*;
 
-use traits::*;
-pub use traits::TimeProcessResult;
 use poisson::*;
 
 use ndarray::prelude::*;
@@ -33,9 +33,9 @@ where F: Fn(f64) -> f64 + Send + Sync
 }
 
 /// Simulate a time-dependent marked Hawkes process with an exponential kernel.
-pub fn hawkes_exponential(tmax: f64, alpha: f64, decay: f64, lambda0: f64) -> TimeProcessResult
+pub fn hawkes_exponential(tmax: f64, alpha: f64, beta: f64, lambda0: f64) -> TimeProcessResult
 {
     use hawkes::ExpHawkes;
-    let model: ExpHawkes = ExpHawkes::new(alpha, decay, lambda0);
+    let model: ExpHawkes = ExpHawkes::new(alpha, beta, lambda0);
     model.sample(tmax)
 }

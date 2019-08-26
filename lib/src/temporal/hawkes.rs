@@ -2,11 +2,10 @@
 use super::traits::*;
 use rand::prelude::*;
 
-use ndarray::array;
 use ndarray::prelude::*;
 
 
-
+/// Kernel for the Hawkes process.
 pub trait Kernel {
     fn eval(&self, t: f64) -> f64;
 }
@@ -17,6 +16,38 @@ pub struct Hawkes<T, K: Kernel> {
     kernel: K
 }
 
+impl<T, K: Kernel> Hawkes<T, K> {
+    pub fn get_kernel(&self) -> &K {
+        &self.kernel
+    }
+    pub fn get_background(&self) -> &T {
+        &self.background
+    }
+}
+
+/// Constant background intensity for the Hawkes process.
+pub struct ConstBackground(f64);
+
+impl DeterministicIntensity for ConstBackground {
+    fn intensity(&self, _t: f64) -> f64 {
+        self.0
+    }
+}
+
+/// Deterministic background intensity
+/// Holds 
+pub struct DeterministicBackground<F>
+where F: Fn(f64) -> f64 {
+    max_lbda0: f64,
+    func: F
+}
+
+impl<F> DeterministicIntensity for DeterministicBackground<F>
+where F: Fn(f64) -> f64 {
+    fn intensity(&self, t: f64) -> f64 {
+        (self.func)(t)
+    }
+}
 
 
 /// Exponential kernel for the Hawkes process,
@@ -32,6 +63,8 @@ impl Kernel for ExpKernel {
     }
 }
 
+// POWER LAW HAWKES
+
 /// Power law kernel
 /// of the form `g(t) = alpha / pow(t, beta)`
 pub struct PowerLawKernel {
@@ -46,22 +79,22 @@ impl Kernel for PowerLawKernel {
     }
 }
 
-impl<T> Hawkes<T, PowerLawKernel> {
-    pub fn new(alpha: f64, beta: f64, delta: f64, bk: T) -> Self {
+pub type PowerLawHawkes = Hawkes<ConstBackground, PowerLawKernel>;
+
+impl PowerLawHawkes {
+    /// Create a new power law Hawkes model instance.
+    pub fn new(alpha: f64, beta: f64, delta: f64, lambda0: f64) -> Self {
+        // Set the kernel.
         let kernel = PowerLawKernel {
             alpha, beta, delta
         };
         Self {
-            background: bk, kernel
+            background: ConstBackground(lambda0), kernel
         }
     }
 }
 
 // EXPONENTIAL HAWKES
-
-/// Constant background intensity
-pub struct ConstBackground(f64);
-
 
 /// Hawkes model with an exponential kernel.
 pub type ExpHawkes = Hawkes<ConstBackground, ExpKernel>;
@@ -81,7 +114,28 @@ impl ExpHawkes {
 
 impl TemporalProcess for ExpHawkes {
     fn sample(&self, tmax: f64) -> TimeProcessResult {
-        simulate_hawkes_exp(self, tmax)
+        simulate_hawkes_exp_const_bk(self, tmax)
+    }
+}
+
+impl<F> Hawkes<DeterministicBackground<F>, ExpKernel>
+where F: Fn(f64) -> f64 {
+    pub fn new(alpha: f64, beta: f64, func: F, max_lbda0: f64) -> Self {
+        let kernel = ExpKernel { alpha, beta };
+        let background = DeterministicBackground {
+            max_lbda0,
+            func
+        };
+        Self {
+            background, kernel
+        }
+    }
+}
+
+impl<F> TemporalProcess for Hawkes<DeterministicBackground<F>, ExpKernel>
+where F: Fn(f64) -> f64 {
+    fn sample(&self, tmax: f64) -> TimeProcessResult {
+        simulate_hawkes_exp_var_bk(self, tmax)
     }
 }
 
@@ -89,7 +143,8 @@ impl TemporalProcess for ExpHawkes {
 
 /// Simulate a trajectory of an exponential kernel Hawkes jump process,
 /// using Ogata's algorithm (1982).
-fn simulate_hawkes_exp(model: &ExpHawkes, tmax: f64) -> TimeProcessResult {
+/// Variant for constant background intensity.
+fn simulate_hawkes_exp_const_bk(model: &ExpHawkes, tmax: f64) -> TimeProcessResult {
     let kernel = &model.kernel;
     let alpha = kernel.alpha;
     let decay = kernel.beta;
@@ -127,6 +182,66 @@ fn simulate_hawkes_exp(model: &ExpHawkes, tmax: f64) -> TimeProcessResult {
         }
         // update the intensity upper bound
         lbda_max = cur_lambda; 
+    }
+
+    let timestamps = Array1::from_vec(timestamps);
+    let intensities = Array1::from_vec(intensities);
+
+    TimeProcessResult {
+        timestamps, intensities
+    }
+}
+
+fn simulate_hawkes_exp_var_bk<F>(model: &Hawkes<DeterministicBackground<F>, ExpKernel>, tmax: f64)
+-> TimeProcessResult
+where F: Fn(f64) -> f64 {
+    let kernel = &model.kernel;
+    let alpha = kernel.alpha;
+    let beta = kernel.beta;
+    let lambda0 = &model.background;  // background intensity
+    let max_lbda0 = model.background.max_lbda0;
+
+    let mut rng = thread_rng(); // random no. generator
+    let mut timestamps = Vec::new();
+    let mut intensities = Vec::new();
+
+    // Algorithm: we compute the intensity for each candidate time
+    // by updating the background intensity and excited parts separately
+
+    // Running maximum process used to sample before
+    // acception-rejection step
+    let mut max_lbda = max_lbda0;
+    let mut s = 0.;
+    let mut cur_slbda = 0.;  // current self-exciting intensity
+
+    while s < tmax {
+        let u: f64 = rng.gen();
+        // candidate next event time
+        let ds = -1./max_lbda * u.ln();
+        s += ds;
+        // background intensity
+        let cur_blbda = lambda0.intensity(s);
+        // decay the self-exciting part
+        cur_slbda = cur_slbda * (-beta * ds).exp();
+        let cur_lbda = cur_blbda + cur_slbda;  // total intensity
+        
+        if s > tmax {
+            // end sampling
+            break;
+        }
+
+        // rejection sampling step
+        let acceptance = cur_lbda / max_lbda;
+        let d: f64 = rng.gen();
+        if d < acceptance {
+            // accept the candidate event time.
+            cur_slbda += alpha; // add jump to self-exciting intens
+            max_lbda = max_lbda0 + cur_slbda;  // update max intensity
+            // record event time and intensity
+            let cur_lbda = cur_blbda + cur_slbda;
+            timestamps.push(s);
+            intensities.push(cur_lbda);
+        }
     }
 
     let timestamps = Array1::from_vec(timestamps);

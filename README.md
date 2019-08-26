@@ -18,9 +18,9 @@ This crate provides functions to simulate point processes in [Rust](https://rust
 The following time-dependent point processes have been implemented within the `timedependent` module:
 
 * Poisson point process (homogeneous and inhomogeneous, with custom function)
-* Exponential-kernel Hawkes processes, using a linear-time simulation algorithm.
+* Exponential-kernel Hawkes processes, using a linear-time simulation algorithm (both constant and variable background intensities supported)
 
-### n-dimensional processes
+### Spatial processes
 
 ![2dpoisson_circle](lib/examples/images/2d_poisson.variable.circle.svg)
 

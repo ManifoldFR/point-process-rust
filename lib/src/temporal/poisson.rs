@@ -24,7 +24,7 @@ impl PoissonProcess {
 }
 
 impl DeterministicIntensity for PoissonProcess {
-    fn intensity(self, _t: f64) -> f64 {
+    fn intensity(&self, _t: f64) -> f64 {
         self.lambda
     }
 }
@@ -35,15 +35,15 @@ where F: Fn(f64) -> f64 + Send + Sync
 {
     /// Upper bound on the intensity function of the process.
     max_lambda: f64,
+    /// Process intensity function.
     lambda: F
 }
 
 impl<F> DeterministicIntensity for VariablePoissonProcess<F>
 where F: Fn(f64) -> f64 + Send + Sync
 {
-    fn intensity(self, t: f64) -> f64 {
-        let func = self.lambda;
-        func(t)
+    fn intensity(&self, t: f64) -> f64 {
+        (self.lambda)(t)
     }
 }
 

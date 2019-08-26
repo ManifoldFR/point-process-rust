@@ -63,7 +63,11 @@ fig, (ax0, ax1) = plt.subplots(
     gridspec_kw = {'height_ratios':[3, 0.5]},
     figsize=(8, 4))
 
-ax0.plot(points[:,0], points[:,1], 'k', **lineplot_opts)
+ax0.plot(points[:,0], points[:,1], 'k',
+    **lineplot_opts)
+ax0.plot(points[:, 0], np.ones_like(points[:,0])*lbda0, 'r', 
+    ls='--', lw=0.8, label="Background $\\lambda_0$")
+ax0.legend()
 ax0.set_ylabel(r"Intensity $\lambda(t)$")
 
 ax1.scatter(events[0], [0. for _ in events[0]], **scatter_opts)
