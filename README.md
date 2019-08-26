@@ -20,6 +20,8 @@ The following time-dependent point processes have been implemented within the `t
 * Poisson point process (homogeneous and inhomogeneous, with custom function)
 * Exponential-kernel Hawkes processes, using a linear-time simulation algorithm (both constant and variable background intensities supported)
 
+![cos_bg_exphawkes](lib/examples/images/hawkes_exp_cos_bg.svg)
+
 ### Spatial processes
 
 ![2dpoisson_circle](lib/examples/images/2d_poisson.variable.circle.svg)
