@@ -28,5 +28,8 @@ name = "pointprocesses"
 path = "src/lib.rs"
 
 [dev-dependencies]
-plotlib = { git = "https://github.com/milliams/plotlib" }
+plotlib = "0.4"
 svg = "0.5.12"
+
+[patch.crates-io]
+plotlib = { git = "https://github.com/milliams/plotlib" }
