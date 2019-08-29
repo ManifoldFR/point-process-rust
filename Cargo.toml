@@ -3,3 +3,6 @@ members = [
     "lib",
     "pylib"
 ]
+
+[patch.crates-io]
+plotlib = { git = "https://github.com/milliams/plotlib" }

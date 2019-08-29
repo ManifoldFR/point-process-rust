@@ -30,6 +30,3 @@ path = "src/lib.rs"
 [dev-dependencies]
 plotlib = "0.4"
 svg = "0.5.12"
-
-[patch.crates-io]
-plotlib = { git = "https://github.com/milliams/plotlib" }

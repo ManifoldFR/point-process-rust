@@ -63,6 +63,26 @@ impl Kernel for ExpKernel {
     }
 }
 
+/// Kernel of sums of exponentials,
+/// of the form `g(t) = sum(alpha_i * exp(-beta_i * t))`
+pub struct SumExpKernel {
+    num_exp: usize,
+    alphas: Vec<f64>,
+    betas: Vec<f64>
+}
+
+impl Kernel for SumExpKernel {
+    fn eval(&self, t: f64) -> f64 {
+        let alphabetazip = self.alphas.iter().zip(self.betas.iter());
+        let mut res = 0.;
+        for (alpha,beta) in alphabetazip {
+            res += alpha * (-beta*t).exp();
+        }
+        res
+    }
+}
+
+
 // POWER LAW HAWKES
 
 /// Power law kernel
@@ -236,12 +256,12 @@ where F: Fn(f64) -> f64 {
         if d < acceptance {
             // accept the candidate event time.
             cur_slbda += alpha; // add jump to self-exciting intens
-            max_lbda = max_lbda0 + cur_slbda;  // update max intensity
             // record event time and intensity
             let cur_lbda = cur_blbda + cur_slbda;
             timestamps.push(s);
             intensities.push(cur_lbda);
         }
+        max_lbda = max_lbda0 + cur_slbda;  // update max intensity
     }
 
     let timestamps = Array1::from_vec(timestamps);
