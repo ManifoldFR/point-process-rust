@@ -4,7 +4,7 @@ use std::fs;
 
 use plotters::prelude::*;
 
-
+static IMG_SIZE: (u32, u32) = (720, 360);
 static TITLE_FONT: &str = "Arial";
 static MARKER_COLOR: &str = "#9B2636";
 static LINE_COLOR: &str = "#2B2A2B";
@@ -32,12 +32,12 @@ fn oscillating() {
     fs::create_dir("examples/images").unwrap_or_default();
     let root = BitMapBackend::new(
         "lib/examples/images/poisson_oscillating.png",
-        TITLE_FONT).into_drawing_area();
+        IMG_SIZE).into_drawing_area();
     root.fill(&WHITE).unwrap();
 
     let caption = "Poisson process intensity";
     let mut chart = ChartBuilder::on(&root)
-        .caption(caption, ("Arial", 20).into_font())
+        .caption(caption, (TITLE_FONT, 20).into_font())
         .margin(5)
         .x_label_area_size(30)
         .y_label_area_size(30)
@@ -78,12 +78,12 @@ fn decrease_exp() {
     fs::create_dir("examples/images").unwrap_or_default();
     let root = BitMapBackend::new(
         "lib/examples/images/poisson_exponential.png",
-        TITLE_FONT.into_drawing_area();
+        IMG_SIZE).into_drawing_area();
     root.fill(&WHITE).unwrap();
 
     let caption = "Poisson process intensity";
     let mut chart = ChartBuilder::on(&root)
-        .caption(caption, ("Arial", 20).into_font())
+        .caption(caption, (TITLE_FONT, 20).into_font())
         .margin(5)
         .x_label_area_size(30)
         .y_label_area_size(30)

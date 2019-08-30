@@ -591,7 +591,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "plotlib"
 version = "0.4.0"
-source = "git+https://github.com/milliams/plotlib#027bd14623047476313b78feb52efe0db198fc4c"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "svg 0.5.12 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -632,7 +632,7 @@ version = "0.12.1-alpha.0"
 dependencies = [
  "ndarray 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray-parallel 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "plotlib 0.4.0 (git+https://github.com/milliams/plotlib)",
+ "plotlib 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "plotters 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand_distr 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1229,7 +1229,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum palette 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)" = "6cd2b5f49faa585c1416e35717fc04328a4c353b368c3ad6e8b34e743bd7cae1"
 "checksum palette_derive 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)" = "76bc2c163e12167b6b7cf3f76a94c2abf8f87086a2d03efbe07d12b0f792189e"
 "checksum pkg-config 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)" = "a7c1d2cfa5a714db3b5f24f0915e74fcdf91d09d496ba61329705dda7774d2af"
-"checksum plotlib 0.4.0 (git+https://github.com/milliams/plotlib)" = "<none>"
+"checksum plotlib 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "32dc0fc74917a0c3a9895205db329cfe33f0db6b63f612e3dca16fbbd66670f7"
 "checksum plotters 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "15890fe7e04616aa4c8fb6dd005dcaa9a98defa96196f80647a5dfce8593246e"
 "checksum png 0.14.1 (registry+https://github.com/rust-lang/crates.io-index)" = "63daf481fdd0defa2d1d2be15c674fbfa1b0fd71882c303a91f9a79b3252c359"
 "checksum ppv-lite86 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)" = "e3cbf9f658cdb5000fcf6f362b8ea2ba154b9f146a61c7a20d647034c6b6561b"

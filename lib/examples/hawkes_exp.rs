@@ -1,13 +1,5 @@
 use std::fs;
 
-use plotlib::style::{
-    PointStyle, PointMarker, 
-    LineStyle
-    };
-use plotlib::page::Page;
-use plotlib::view;
-use plotlib::repr::{Line, Scatter};
-
 use plotters::prelude::*;
 
 use pointprocesses::hawkes_exponential;

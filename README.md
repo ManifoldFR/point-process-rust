@@ -38,14 +38,7 @@ An Python wrapper crate is available in the [`pylib`](./pylib) directory.
 
 ## Examples
 
-Some examples require a yet unpublished version of milliams' [plotlib](https://github.com/milliams/plotlib) graphing library. To build them, you'll need to checkout plotlib locally:
-
-```bash
-git clone https://github.com/milliams/plotlib
-```
-
-To run the examples, do for instance
-
+Run the examples with for instance
 ```bash
 cd lib/
 cargo run --example variable_poisson
@@ -54,6 +47,8 @@ cargo run --example variable_poisson
 Some will produce SVG image files in the [`lib/examples`](./lib/examples) directory.
 
 The examples show how to use the API.
+
+They require the [`plotters` crate](`https://github.com/38/plotters`) for plotting.
 
 ## Building locally
 
