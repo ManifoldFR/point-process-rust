@@ -4,12 +4,13 @@ use rand::prelude::*;
 
 use ndarray::prelude::*;
 
+use crate::poisson::{PoissonProcess, VariablePoissonProcess};
+
 
 /// Kernel for the Hawkes process.
 pub trait Kernel {
     fn eval(&self, t: f64) -> f64;
 }
-
 
 pub struct Hawkes<T, K: Kernel> {
     background: T,
@@ -17,37 +18,26 @@ pub struct Hawkes<T, K: Kernel> {
 }
 
 impl<T, K: Kernel> Hawkes<T, K> {
+    /// Get Hawkes kernel object.
     pub fn get_kernel(&self) -> &K {
         &self.kernel
     }
+
+    /// Get Hawkes background intensity.
     pub fn get_background(&self) -> &T {
         &self.background
     }
 }
 
-/// Constant background intensity for the Hawkes process.
-pub struct ConstBackground(f64);
 
-impl DeterministicIntensity for ConstBackground {
-    fn intensity(&self, _t: f64) -> f64 {
-        self.0
-    }
-}
+// BACKGROUND INTENSITIES
+
+/// Constant background intensity for the Hawkes process.
+pub type ConstBackground = PoissonProcess;
+
 
 /// Deterministic background intensity
-/// Holds 
-pub struct DeterministicBackground<F>
-where F: Fn(f64) -> f64 {
-    max_lbda0: f64,
-    func: F
-}
-
-impl<F> DeterministicIntensity for DeterministicBackground<F>
-where F: Fn(f64) -> f64 {
-    fn intensity(&self, t: f64) -> f64 {
-        (self.func)(t)
-    }
-}
+pub type DeterministicBackground<F> = VariablePoissonProcess<F>;
 
 
 /// Exponential kernel for the Hawkes process,
@@ -63,12 +53,28 @@ impl Kernel for ExpKernel {
     }
 }
 
-/// Kernel of sums of exponentials,
+// SUM OF EXPONENTIALS KERNEL
+
+/// Sum-of-exponentials kernel,
 /// of the form `g(t) = sum(alpha_i * exp(-beta_i * t))`
 pub struct SumExpKernel {
     num_exp: usize,
     alphas: Vec<f64>,
     betas: Vec<f64>
+}
+
+impl SumExpKernel {
+    /// Create a new SumExpKernel.
+    pub fn new(alphas: Vec<f64>, betas: Vec<f64>) -> Self {
+        // Sanity check
+        assert_eq!(alphas.len(), betas.len());
+        
+        SumExpKernel {
+            num_exp: alphas.len(),
+            alphas,
+            betas
+        }
+    }
 }
 
 impl Kernel for SumExpKernel {
@@ -109,7 +115,7 @@ impl PowerLawHawkes {
             alpha, beta, delta
         };
         Self {
-            background: ConstBackground(lambda0), kernel
+            background: ConstBackground::new(lambda0), kernel
         }
     }
 }
@@ -124,7 +130,7 @@ impl ExpHawkes {
         let kernel = ExpKernel {
             alpha, beta
         };
-        let background = ConstBackground(lambda0);
+        let background = ConstBackground::new(lambda0);
         
         Self {
             background, kernel
@@ -139,13 +145,10 @@ impl TemporalProcess for ExpHawkes {
 }
 
 impl<F> Hawkes<DeterministicBackground<F>, ExpKernel>
-where F: Fn(f64) -> f64 {
+where F: Fn(f64) -> f64 + Send + Sync {
     pub fn new(alpha: f64, beta: f64, func: F, max_lbda0: f64) -> Self {
         let kernel = ExpKernel { alpha, beta };
-        let background = DeterministicBackground {
-            max_lbda0,
-            func
-        };
+        let background = DeterministicBackground::new(func, max_lbda0);
         Self {
             background, kernel
         }
@@ -153,7 +156,7 @@ where F: Fn(f64) -> f64 {
 }
 
 impl<F> TemporalProcess for Hawkes<DeterministicBackground<F>, ExpKernel>
-where F: Fn(f64) -> f64 {
+where F: Fn(f64) -> f64 + Send + Sync {
     fn sample(&self, tmax: f64) -> TimeProcessResult {
         simulate_hawkes_exp_var_bk(self, tmax)
     }
@@ -168,7 +171,7 @@ fn simulate_hawkes_exp_const_bk(model: &ExpHawkes, tmax: f64) -> TimeProcessResu
     let kernel = &model.kernel;
     let alpha = kernel.alpha;
     let decay = kernel.beta;
-    let lambda0 = model.background.0;
+    let lambda0 = &model.background.intensity(0.);
     
     let mut rng = thread_rng(); // random no. generator
     let mut timestamps = Vec::new();
@@ -212,14 +215,16 @@ fn simulate_hawkes_exp_const_bk(model: &ExpHawkes, tmax: f64) -> TimeProcessResu
     }
 }
 
-fn simulate_hawkes_exp_var_bk<F>(model: &Hawkes<DeterministicBackground<F>, ExpKernel>, tmax: f64)
--> TimeProcessResult
-where F: Fn(f64) -> f64 {
+fn simulate_hawkes_exp_var_bk<F>(
+    model: &Hawkes<DeterministicBackground<F>, ExpKernel>, 
+    tmax: f64
+) -> TimeProcessResult where F: Fn(f64) -> f64 + Send + Sync
+{
     let kernel = &model.kernel;
     let alpha = kernel.alpha;
     let beta = kernel.beta;
     let lambda0 = &model.background;  // background intensity
-    let max_lbda0 = model.background.max_lbda0;
+    let max_lbda0 = model.background.get_max_lambda();
 
     let mut rng = thread_rng(); // random no. generator
     let mut timestamps = Vec::new();

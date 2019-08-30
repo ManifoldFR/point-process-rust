@@ -1,22 +1,16 @@
-use pointprocesses::{poisson_process,variable_poisson};
-use plotlib::repr::{Function, Scatter};
-use std::fs;
-use plotlib::view;
-use plotlib::page::Page;
-use plotlib::style::PointStyle;
-use plotlib::style::PointMarker;
-use plotlib::style::LineStyle;
+use pointprocesses::{variable_poisson};
 
+use std::fs;
+
+use plotters::prelude::*;
+
+
+static TITLE_FONT: &str = "Arial";
 static MARKER_COLOR: &str = "#9B2636";
 static LINE_COLOR: &str = "#2B2A2B";
 
 
 fn main() {
-    let tmax = 10.0;
-    let lambda = 3.0;
-    let events = poisson_process(tmax, lambda);
-    println!("{:?}", events);
-
     println!("Oscillating intensity:");
     oscillating();
     println!("Decreasing exponential intensity:");
@@ -25,78 +19,91 @@ fn main() {
 
 fn oscillating() {
     let tmax = 30.0;
+    
     let f: fn(f64) -> f64 = |t| {
         4.0*(30.0 - 0.95*t).ln()*(1.0 + 0.1*(0.5*t).sin())
     };
-    let events_tup = variable_poisson(tmax, &f, 17.0);
+
+    let max_lbda = 17.0;
+    let events_tup = variable_poisson(tmax, &f, max_lbda);
     let timestamps = events_tup.timestamps;
     let intensities = events_tup.intensities;
 
-    println!("{:?}", timestamps);
-
-
-    let event_data: Vec<(f64,f64)> = timestamps.into_iter()
-        .zip(intensities.into_iter())
-        .map(|(t, l)| (*t, *l))
-        .collect();
-
-    let intens_plot = Function::new(f, 0.0, tmax)
-        .style(LineStyle::new().colour(LINE_COLOR).width(2.0));
-
-    let s = Scatter::from_slice(&event_data)
-        .style(PointStyle::new()
-            .size(2.5)
-            .marker(PointMarker::Circle)
-            .colour(MARKER_COLOR));
-
-    let v = view::ContinuousView::new()
-        .add(s)
-        .add(intens_plot)
-        .x_label("Time t")
-        .y_label("Intensity λ(t)");
-
     fs::create_dir("examples/images").unwrap_or_default();
-    Page::single(&v)
-        .save("lib/examples/images/oscillating_poisson.svg").unwrap();
+    let root = BitMapBackend::new(
+        "lib/examples/images/poisson_oscillating.png",
+        TITLE_FONT).into_drawing_area();
+    root.fill(&WHITE).unwrap();
+
+    let caption = "Poisson process intensity";
+    let mut chart = ChartBuilder::on(&root)
+        .caption(caption, ("Arial", 20).into_font())
+        .margin(5)
+        .x_label_area_size(30)
+        .y_label_area_size(30)
+        .build_ranged(0.0..tmax, 0.0..max_lbda).unwrap();
+
+
+    chart.configure_mesh().draw().unwrap();
+
+
+    let dt = tmax / 100.;
+    let time_arr = (0..101)
+        .map(|i| dt * i as f64);
+
+
+    let intensity_t = time_arr
+        .map(|t| (t, f(t)));
+
+    let series = LineSeries::new(
+        intensity_t, &RED);
+
+    chart
+        .draw_series(series).unwrap();
 
 }
 
-/// This example will occasionally return an empty array, which might happen
-/// for very low intensity (or negative intensity) processes.
-/// The error when stacking an empty `ndarray::Array` slice is handled.
 fn decrease_exp() {
     let tmax = 30.0;
+    
     let f: fn(f64) -> f64 = |t| {
         (-0.6 * t).exp() * 5.0
     };
-    let events_tup = variable_poisson(tmax, &f, 5.0);
+
+    let max_lbda = 5.0;
+    let events_tup = variable_poisson(tmax, &f, max_lbda);
     let timestamps = events_tup.timestamps;
     let intens = events_tup.intensities;
 
-    println!("{:?}", timestamps);
-
-    let event_data: Vec<(f64,f64)> = timestamps.into_iter()
-        .zip(intens.into_iter())
-        .map(|(t, l)| (*t, *l))
-        .collect();
-
-    let intens_plot = Function::new(f, 0.0, tmax)
-        .style(LineStyle::new().colour(LINE_COLOR).width(2.0));
-
-    let s = Scatter::from_slice(&event_data)
-        .style(PointStyle::new()
-            .size(2.5)
-            .marker(PointMarker::Circle)
-            .colour(MARKER_COLOR));
-
-    let v = view::ContinuousView::new()
-        .add(s)
-        .add(intens_plot)
-        .x_label("Time t")
-        .y_label("Intensity λ(t)");
-
     fs::create_dir("examples/images").unwrap_or_default();
-    Page::single(&v)
-        .save("lib/examples/images/exponential_poisson.svg").unwrap();
+    let root = BitMapBackend::new(
+        "lib/examples/images/poisson_exponential.png",
+        TITLE_FONT.into_drawing_area();
+    root.fill(&WHITE).unwrap();
+
+    let caption = "Poisson process intensity";
+    let mut chart = ChartBuilder::on(&root)
+        .caption(caption, ("Arial", 20).into_font())
+        .margin(5)
+        .x_label_area_size(30)
+        .y_label_area_size(30)
+        .build_ranged(0.0..tmax, 0.0..max_lbda).unwrap();
+
+
+    chart.configure_mesh().draw().unwrap();
+
+    let dt = tmax / 100.;
+    let time_arr = (0..101)
+        .map(|i| dt * i as f64);
+
+    let intensity_t = time_arr
+        .map(|t| (t, f(t)));
+
+    let series = LineSeries::new(
+        intensity_t, &RED);
+
+    chart
+        .draw_series(series).unwrap();
+
 }
 

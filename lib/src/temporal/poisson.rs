@@ -36,25 +36,30 @@ where F: Fn(f64) -> f64 + Send + Sync
     /// Upper bound on the intensity function of the process.
     max_lambda: f64,
     /// Process intensity function.
-    lambda: F
+    func: F
+}
+
+impl<F> VariablePoissonProcess<F>
+where F: Fn(f64) -> f64 + Send + Sync
+{
+    pub fn new(func: F, max_lambda: f64) -> Self {
+        VariablePoissonProcess {
+            max_lambda,
+            func
+        }
+    }
+
+    /// Get the max_lambda upper bound on the intensity.
+    pub fn get_max_lambda(&self) -> f64 {
+        self.max_lambda
+    }
 }
 
 impl<F> DeterministicIntensity for VariablePoissonProcess<F>
 where F: Fn(f64) -> f64 + Send + Sync
 {
     fn intensity(&self, t: f64) -> f64 {
-        (self.lambda)(t)
-    }
-}
-
-impl<F> VariablePoissonProcess<F>
-where F: Fn(f64) -> f64 + Send + Sync
-{
-    pub fn new(lambda: F, max_lambda: f64) -> Self {
-        VariablePoissonProcess {
-            max_lambda,
-            lambda
-        }
+        (self.func)(t)
     }
 }
 
@@ -95,7 +100,7 @@ where F: Fn(f64) -> f64 + Send + Sync
 
         let mut rng = thread_rng();
         let max_lambda = self.max_lambda;
-        let lambda = &self.lambda;
+        let lambda = &self.func;
         let fish = Poisson::new(tmax*max_lambda).unwrap();
         let num_events: u64 = fish.sample(&mut rng);
         let num_events = num_events as usize;
