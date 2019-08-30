@@ -24,7 +24,7 @@ The following time-dependent point processes have been implemented within the `t
 
 ### Spatial processes
 
-![2dpoisson_circle](lib/examples/images/2d_2d_poisson_circle.png)
+![2dpoisson_circle](lib/examples/images/2d_poisson_circle.png)
 
 The `generalized` module provides functions for higher-dimensional processes.
 
