@@ -12,6 +12,7 @@ pub trait Kernel {
     fn eval(&self, t: f64) -> f64;
 }
 
+#[derive(Debug)]
 pub struct Hawkes<T, K: Kernel> {
     background: T,
     kernel: K
@@ -42,9 +43,10 @@ pub type DeterministicBackground<F> = VariablePoissonProcess<F>;
 
 /// Exponential kernel for the Hawkes process,
 /// of the form `g(t) = alpha * exp(-beta*t)`
+#[derive(Debug)]
 pub struct ExpKernel {
-    alpha: f64,
-    beta: f64
+    pub alpha: f64,
+    pub beta: f64
 }
 
 impl Kernel for ExpKernel {
@@ -57,6 +59,7 @@ impl Kernel for ExpKernel {
 
 /// Sum-of-exponentials kernel,
 /// of the form `g(t) = sum(alpha_i * exp(-beta_i * t))`
+#[derive(Debug)]
 pub struct SumExpKernel {
     num_exp: usize,
     alphas: Vec<f64>,
@@ -93,6 +96,7 @@ impl Kernel for SumExpKernel {
 
 /// Power law kernel
 /// of the form `g(t) = alpha / pow(t, beta)`
+#[derive(Debug)]
 pub struct PowerLawKernel {
     alpha: f64,
     beta: f64,
@@ -242,7 +246,7 @@ fn simulate_hawkes_exp_var_bk<F>(
     while s < tmax {
         let u: f64 = rng.gen();
         // candidate next event time
-        let ds = -1./max_lbda * u.ln();
+        let ds = -u.ln()/max_lbda;
         s += ds;
         // background intensity
         let cur_blbda = lambda0.intensity(s);

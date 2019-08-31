@@ -10,6 +10,7 @@ use rayon::prelude::*;
 
 
 /// Homogeneous, constant intensity Poisson process.
+#[derive(Debug)]
 pub struct PoissonProcess {
     /// Process intensity.
     lambda: f64
@@ -30,6 +31,7 @@ impl DeterministicIntensity for PoissonProcess {
 }
 
 /// Poisson process with variable intensity.
+#[derive(Debug)]
 pub struct VariablePoissonProcess<F>
 where F: Fn(f64) -> f64 + Send + Sync
 {

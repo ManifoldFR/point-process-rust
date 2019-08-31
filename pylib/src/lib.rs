@@ -25,11 +25,15 @@ fn likelihood(_py: Python, module: &PyModule) -> PyResult<()> {
     fn hawkes_likelihood(
         _py: Python,
         event_times: &PyArray1<f64>,
-        mu: f64, alpha: f64, decay: f64, tmax: f64) -> f64 
+        lbda0: f64,
+        alpha: f64, beta: f64,
+        tmax: f64) -> f64 
     {
         let times = event_times.as_array();
+        use pointprocesses::hawkes::ExpHawkes;
+        let model = ExpHawkes::new(alpha, beta, lbda0);
         let res = likelihood::hawkes_likelihood(
-            times, mu, alpha, decay, tmax);
+            times, &model, tmax);
         res
     }
 
