@@ -1,0 +1,10 @@
+lib/examples/images/2d_poisson_rect.png filter=lfs diff=lfs merge=lfs -text
+lib/examples/images/hawkes_exp_constbg.png filter=lfs diff=lfs merge=lfs -text
+lib/examples/images/hawkes_exp_sine_bg.png filter=lfs diff=lfs merge=lfs -text
+lib/examples/images/poisson_exponential.png filter=lfs diff=lfs merge=lfs -text
+lib/examples/images/poisson_oscillating.png filter=lfs diff=lfs merge=lfs -text
+lib/examples/images/2d_poisson_circle.png filter=lfs diff=lfs merge=lfs -text
+pylib/examples/2d_poisson.png filter=lfs diff=lfs merge=lfs -text
+pylib/examples/estimate.png filter=lfs diff=lfs merge=lfs -text
+pylib/examples/hawkes.exp.png filter=lfs diff=lfs merge=lfs -text
+pylib/examples/hawkes.likelihood_exp.png filter=lfs diff=lfs merge=lfs -text

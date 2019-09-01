@@ -37,8 +37,6 @@ z_lhood_vals = lhood_func(
     beta_grid,
     tmax)
 
-print(z_lhood_vals)
-
 idx_max = np.argmax(z_lhood_vals, axis=None)
 idx_max = np.unravel_index(idx_max, z_lhood_vals.shape)
 
