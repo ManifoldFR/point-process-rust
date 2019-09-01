@@ -1,6 +1,7 @@
 # Python package
 
 ![Yes, this is matplotlib](examples/estimate.png)
+![](examples/hawkes.likelihood_exp.png)
 
 High level API for `pointprocesses` as a Python library.
 
