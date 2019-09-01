@@ -51,7 +51,7 @@ fn compute_log_intensities(
         }).sum()
 }
 
-/// Log-likelihood of the given event data under the supplied model.
+/// Log-likelihood of the given event data under the Hawkes model.
 pub fn hawkes_likelihood(
     times: ArrayView1<f64>,
     model: &ExpHawkes,

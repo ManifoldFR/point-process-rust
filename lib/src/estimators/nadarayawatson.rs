@@ -89,3 +89,11 @@ impl<T: RegKernel> NadWatEstimator<T> {
 }
 
 
+pub fn nonparametric_variable_poisson_estimator(
+    event_times: ArrayView1<f64>,
+    bandwidth: f64,
+    tmax: f64)
+{
+    
+}
+
