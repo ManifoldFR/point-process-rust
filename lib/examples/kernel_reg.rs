@@ -14,12 +14,20 @@ fn main() {
     use nadarayawatson::*;
     use std::f64::consts::PI;
 
-
+    // Actual regression function
     let func = |x: &f64| {
         (2. * PI * x + 0.1).sin() + 1.5 * x + 1.0 * x * x
     };
 
-    let x_arr = Array1::linspace(0., 1., 20);
+    // Noisy regression data
+
+    use ndarray::{Axis, stack};
+    let x_arr_init = Array1::linspace(0., 1., 20);
+    let mut x_arr = x_arr_init.clone();
+    for _ in 0..5 {
+        x_arr = stack![Axis(0), x_arr, x_arr_init];
+    }
+
     let ref mut rng = thread_rng();
     let normal = rand_distr::StandardNormal;
     let sigma = 0.4;
@@ -30,9 +38,6 @@ fn main() {
         y + sigma * eps
     });
 
-    let x_dense_arr = Array1::linspace(0., 1., 50);
-    let y_arr = x_dense_arr.map(func);
-
     // Setup chart
 
     fs::create_dir("examples/images").unwrap_or_default();
@@ -41,13 +46,13 @@ fn main() {
         IMG_SIZE).into_drawing_area();
     root.fill(&WHITE).unwrap();
 
-    let caption = "";
+    let caption = "Nadaraya-Watson estimator (Gaussian kernel)";
     let mut chart = ChartBuilder::on(&root)
         .caption(caption, (TITLE_FONT, 20).into_font())
         .margin(10)
         .x_label_area_size(30)
         .y_label_area_size(30)
-        .build_ranged(0.0..1.0, -0.5..3.0)
+        .build_ranged(-0.05..1.05, -1.0..3.5)
         .unwrap();
 
 
@@ -62,6 +67,12 @@ fn main() {
                 Circle::new((*x, *y), size, RED.filled())
             })
     ).unwrap();
+
+
+    // Reference function
+
+    let x_dense_arr = Array1::linspace(0., 1., 50);
+    let y_arr = x_dense_arr.map(func);
 
     let data_reference_func = x_dense_arr.iter().zip(y_arr.iter()).map(
         |(x,y)| {
