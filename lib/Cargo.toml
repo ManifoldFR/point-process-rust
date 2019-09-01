@@ -28,6 +28,9 @@ name = "pointprocesses"
 path = "src/lib.rs"
 
 [dev-dependencies]
-plotlib = "0.4.0"
 svg = "0.5.12"
 plotters = "0.2.3"
+
+[package.metadata.docs.rs]
+rustdoc-args = [ "--html-in-header", "katex-header.html" ]
+

@@ -1,9 +1,9 @@
-# Python package
+# The `pointprocesses` Python package
 
 ![Yes, this is matplotlib](examples/estimate.png)
 ![](examples/hawkes.likelihood_exp.png)
 
-High level API for `pointprocesses` as a Python library.
+This crate provides a high-level Python API for the `point_process` crate.
 
 This is a work in progress, much of the core library's functionality hasn't been ported yet.
 

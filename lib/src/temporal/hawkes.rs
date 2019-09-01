@@ -7,11 +7,15 @@ use ndarray::prelude::*;
 use crate::poisson::{PoissonProcess, VariablePoissonProcess};
 
 
-/// Kernel for the Hawkes process.
+/// Kernel $g$ for the Hawkes process.
 pub trait Kernel {
     fn eval(&self, t: f64) -> f64;
 }
 
+/// The Hawkes process is a self-exciting point process:
+/// the intensity process is stochastic and defined by
+/// $$ \lambda_t = \lambda_0(t) + \int_0^t g(t-s) dN_s $$
+/// where $g$ is called the *kernel* of the Hawkes process.
 #[derive(Debug)]
 pub struct Hawkes<T, K: Kernel> {
     background: T,
@@ -33,16 +37,16 @@ impl<T, K: Kernel> Hawkes<T, K> {
 
 // BACKGROUND INTENSITIES
 
-/// Constant background intensity for the Hawkes process.
+/// Constant background intensity $\lambda_0$ for the Hawkes process.
 pub type ConstBackground = PoissonProcess;
 
 
-/// Deterministic background intensity
+/// Deterministic background intensity $\lambda_0(t)$
 pub type DeterministicBackground<F> = VariablePoissonProcess<F>;
 
 
-/// Exponential kernel for the Hawkes process,
-/// of the form `g(t) = alpha * exp(-beta*t)`
+/// Exponential kernel for the Hawkes process, of the form 
+/// $$g(t) = \alpha \exp(-\beta t)$$
 #[derive(Debug)]
 pub struct ExpKernel {
     pub alpha: f64,
@@ -57,8 +61,8 @@ impl Kernel for ExpKernel {
 
 // SUM OF EXPONENTIALS KERNEL
 
-/// Sum-of-exponentials kernel,
-/// of the form `g(t) = sum(alpha_i * exp(-beta_i * t))`
+/// Sum-of-exponentials kernel, has the form: 
+/// $$g(t) = \sum_{j=1}^p \alpha_j  \exp(-\beta_j t)$$
 #[derive(Debug)]
 pub struct SumExpKernel {
     num_exp: usize,
@@ -94,8 +98,8 @@ impl Kernel for SumExpKernel {
 
 // POWER LAW HAWKES
 
-/// Power law kernel
-/// of the form `g(t) = alpha / pow(t, beta)`
+/// The power law kernel for the Hawkes process has the form
+/// $$ g(t) = \frac{\alpha}{(\delta + t)^\beta}$$
 #[derive(Debug)]
 pub struct PowerLawKernel {
     alpha: f64,
