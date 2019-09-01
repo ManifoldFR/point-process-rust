@@ -29,7 +29,6 @@ fn const_background(img_size: (u32, u32)) {
         tmax, alpha, beta, lambda0);
     let timestamps = &events.timestamps;
     let intensities = &events.intensities;
-    let n_events: usize = timestamps.len();
     
     // Kernel function. Only used for plotting.
     let kernel = |t: f64| {
@@ -123,8 +122,7 @@ fn variable_background(img_size: (u32, u32)) {
     let events: TimeProcessResult = model.sample(tmax);
     let timestamps = &events.timestamps;
     let intensities = &events.intensities;
-    let n_events: usize = timestamps.len();
-
+    
     // Kernel function. Only used for plotting.
     let intensity_func = |events: &TimeProcessResult, t: f64| {
         let auto_intens: f64 = events.timestamps

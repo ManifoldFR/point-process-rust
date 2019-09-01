@@ -1,3 +1,4 @@
+//! Poisson processes.
 use super::traits::*;
 use rand::prelude::*;
 use rand_distr::{Uniform, Poisson, Distribution};
@@ -10,6 +11,12 @@ use rayon::prelude::*;
 
 
 /// Homogeneous, constant intensity Poisson process.
+/// The intensity of the process is given by the average
+/// number of events between two instants:
+/// $$
+/// \lambda = \lim_{h\to 0}
+/// \frac{\mathbb E[N_{t+h} - N_t]}{h}
+/// $$
 #[derive(Debug)]
 pub struct PoissonProcess {
     /// Process intensity.
@@ -31,6 +38,8 @@ impl DeterministicIntensity for PoissonProcess {
 }
 
 /// Poisson process with variable intensity.
+/// The average number of events between $t$ and $t+dt$ is
+/// $$ \mathbb{E}[ dN_t ] = \lambda(t) dt $$
 #[derive(Debug)]
 pub struct VariablePoissonProcess<F>
 where F: Fn(f64) -> f64 + Send + Sync

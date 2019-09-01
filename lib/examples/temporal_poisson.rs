@@ -6,8 +6,6 @@ use plotters::prelude::*;
 
 static IMG_SIZE: (u32, u32) = (720, 360);
 static TITLE_FONT: &str = "Arial";
-static MARKER_COLOR: &str = "#9B2636";
-static LINE_COLOR: &str = "#2B2A2B";
 
 
 fn main() {

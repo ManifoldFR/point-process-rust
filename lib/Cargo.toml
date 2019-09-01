@@ -14,6 +14,9 @@ keywords = ["mathematics", "simulation", "statistics"]
 categories = ["algorithms", "simulation", "science"]
 edition = "2018"
 
+[package.metadata.docs.rs]
+rustdoc-args = [ "--html-in-header", "katex-header.html" ]
+
 [dependencies]
 ndarray = { version = "0.12.1", features = ["serde-1"] }
 ndarray-parallel = "0.9.0"
@@ -30,7 +33,4 @@ path = "src/lib.rs"
 [dev-dependencies]
 svg = "0.5.12"
 plotters = "0.2.3"
-
-[package.metadata.docs.rs]
-rustdoc-args = [ "--html-in-header", "katex-header.html" ]
 

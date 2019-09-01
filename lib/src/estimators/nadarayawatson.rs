@@ -2,13 +2,12 @@
 //! Useful for estimating the intensity of a non-homogeneous Poisson process.
 use ndarray::prelude::*;
 
-use rayon::prelude::*;
 
 /// Homogeneous fixed-bandwidth Gaussian kernel,
 /// of the form
 /// $$
-///     K_h(x, y) = \exp\left(
-///     -\frac{(x-x_i)^2}{2h^2}
+///     K_h(x, x') = \exp\left(
+///     -\frac{(x-x')^2}{2h^2}
 ///     \right)
 /// $$
 #[derive(Debug,Clone,Copy)]
@@ -22,39 +21,54 @@ impl GaussianKernel {
     }
 }
 
-/// Traits for Nadararya-Watson estimator kernels, of the form
+/// Non-parametric regression kernel, of the form
 /// $$
-///     K_h(x, y) = D\left(\frac{|x-y|}{h}\right)
+///     K_h(x, x') = D\left(\frac{|x-x'|}{h}\right)
 /// $$
-pub trait NWKernel {
+pub trait RegKernel {
     fn eval(&self, x: f64, xi: f64) -> f64;
 }
 
-impl NWKernel for GaussianKernel {
+impl RegKernel for GaussianKernel {
     fn eval(&self, x: f64, xi: f64) -> f64 {
         let z = (x - xi) / self.bandwidth;
         (-z * z / 2.).exp()
     }
 }
 
-/// Return a prediction of the function at `x0`:
+
+/// Nadaraya-Watson nonparametric estimator using a weighted
+/// kernel average.
+/// The predictor at a point $x_0$ is given by:
 /// $$
 /// \hat y_0 = 
 /// \frac{\sum_{i=1}^p K_h(x_i, x_0) y_i}
 /// {\sum_{i=1}^p K_h(x_i, x_0)}
 /// $$
-pub struct NWEstimator<T: NWKernel> {
+pub struct NadWatEstimator<T: RegKernel> {
     kernel: T,
     x_i: Option<Array1<f64>>,
-    priors: Option<Array1<f64>>
+    y_i: Option<Array1<f64>>
 }
 
-impl<T: NWKernel> NWEstimator<T> {
+
+impl<T: RegKernel> NadWatEstimator<T> {
+    /// Return a new Nadaraya-Watson estimator.
+    pub fn new(kernel: T) -> Self {
+        Self { kernel, x_i: None, y_i: None }
+    }
+
+    pub fn fit(mut self, x_i: &Array1<f64>, y_i: &Array1<f64>) -> Self {
+        self.x_i.get_or_insert(x_i.clone());
+        self.y_i.get_or_insert(y_i.clone());
+        self
+    }
+
     /// Perform prediction at `x0`.
     pub fn predict(&self, x0: f64) -> f64
     {
         let x_arr: &Array1<f64> = self.x_i.as_ref().expect("Regressor was not fitted.");
-        let y_arr: &Array1<f64> = self.priors.as_ref().expect("Regressor was not fitted.");
+        let y_arr: &Array1<f64> = self.y_i.as_ref().expect("Regressor was not fitted.");
 
         let kernel = &self.kernel;
 

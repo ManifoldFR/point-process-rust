@@ -1,6 +1,6 @@
 /*!
- *This module implements a set of temporal point processes
- *on the real half-line [0,∞[, such as Poisson or
+ *Temporal point processes
+ *on the real half-line $[0,\infty[$, such as Poisson or
  *Hawkes processes.
  */
 pub mod traits;
@@ -12,11 +12,12 @@ pub mod utils;
 /// Reexport traits 
 pub use traits::*;
 
-use poisson::*;
+pub use poisson::*;
+pub use utils::simulate_brownian;
 
 use ndarray::prelude::*;
 
-
+/// Simulate a Poisson process with constant intensity $\lambda$.
 pub fn poisson_process(tmax: f64, lambda: f64) -> Array1<f64>
 {
     let process = PoissonProcess::new(lambda);
@@ -32,7 +33,7 @@ where F: Fn(f64) -> f64 + Send + Sync
     result
 }
 
-/// Simulate a time-dependent marked Hawkes process with an exponential kernel.
+/// Simulate a Hawkes process with an exponential kernel and constant background intensity.
 pub fn hawkes_exponential(tmax: f64, alpha: f64, beta: f64, lambda0: f64) -> TimeProcessResult
 {
     use hawkes::ExpHawkes;

@@ -4,7 +4,7 @@ use rand_distr::DistIter;
 use rand_distr::StandardNormal;
 
 
-/// Simulate a brownian motion with a time step of h.
+/// Simulate a brownian motion $(B_t)$ with a time step of $h$.
 pub fn simulate_brownian(h: f64, n: usize) -> Vec<f64> {
     let sqr_h = h.sqrt();
     let ref mut rng = thread_rng();

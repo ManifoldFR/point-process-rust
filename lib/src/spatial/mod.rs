@@ -1,3 +1,4 @@
+//! Spatial point process models.
 pub mod domains;
 pub mod processes;
 
