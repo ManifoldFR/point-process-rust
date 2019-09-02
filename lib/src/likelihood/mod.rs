@@ -3,17 +3,17 @@
 //! $$
 //!     \ell(\Theta) = \sum_i \log(\lambda_{t_i}) - \int_0^T \lambda_t dt
 //! $$
-pub mod hawkes;
+mod hawkes;
 
-pub use self::hawkes::hawkes_likelihood;
+pub use hawkes::{hawkes_likelihood,HawkesLikelihood};
 
 use ndarray::prelude::*;
 
 use crate::temporal::{PoissonProcess, DeterministicIntensity};
 
 /// Log-likelihood of the data under the given Poisson model
-/// $$ \ell(\lambda) = \log P(t_1 < \cdots < t_N < T \mid \lambda) 
-///    = N\ln\lambda - \lambda T
+/// $$ \ell(\lambda) =
+///    N\ln\lambda - \lambda T
 /// $$
 pub fn poisson_likelihood(
     times: ArrayView1<f64>,

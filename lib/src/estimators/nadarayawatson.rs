@@ -3,6 +3,14 @@
 use ndarray::prelude::*;
 
 
+/// Trait for non-parametric regression kernels of the form
+/// $$
+///     K_h(x, x') = D\left(\frac{|x-x'|}{h}\right)
+/// $$
+pub trait RegKernel {
+    fn eval(&self, x: f64, xi: f64) -> f64;
+}
+
 /// Homogeneous fixed-bandwidth Gaussian kernel,
 /// of the form
 /// $$
@@ -21,18 +29,34 @@ impl GaussianKernel {
     }
 }
 
-/// Non-parametric regression kernel, of the form
-/// $$
-///     K_h(x, x') = D\left(\frac{|x-x'|}{h}\right)
-/// $$
-pub trait RegKernel {
-    fn eval(&self, x: f64, xi: f64) -> f64;
-}
-
 impl RegKernel for GaussianKernel {
     fn eval(&self, x: f64, xi: f64) -> f64 {
         let z = (x - xi) / self.bandwidth;
         (-z * z / 2.).exp()
+    }
+}
+
+/// Fixed-bandwidth nearest-neighbor kernel,
+/// $$
+///     K_h(x, x') = \mathbf{1}_{|x - x'| < h}
+/// $$
+pub struct NearestNeighborKernel {
+    bandwidth: f64
+}
+
+impl NearestNeighborKernel {
+    pub fn new(bandwidth: f64) -> Self {
+        NearestNeighborKernel { bandwidth }
+    }
+}
+
+impl RegKernel for NearestNeighborKernel {
+    fn eval(&self, x: f64, xi: f64) -> f64 {
+        if (x - xi).abs() < self.bandwidth {
+            1.0
+        } else {
+            0.0
+        }
     }
 }
 
@@ -94,6 +118,6 @@ pub fn nonparametric_variable_poisson_estimator(
     bandwidth: f64,
     tmax: f64)
 {
-    
+
 }
 
