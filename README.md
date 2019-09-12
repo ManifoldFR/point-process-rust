@@ -34,7 +34,7 @@ For now, only Poisson processes have been implemented.
 
 The `estimators` module provides estimator routines for point process statistics such as the intensity.
 
-![polyexp_poisson_estimation](lib/../../../examples/images/poisson_poly_exp.png)
+![polyexp_poisson_estimation](lib/examples/images/poisson_poly_exp.png)
 
 
 ## Python package
