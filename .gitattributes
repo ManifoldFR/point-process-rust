@@ -8,3 +8,5 @@ pylib/examples/2d_poisson.png filter=lfs diff=lfs merge=lfs -text
 pylib/examples/estimate.png filter=lfs diff=lfs merge=lfs -text
 pylib/examples/hawkes.exp.png filter=lfs diff=lfs merge=lfs -text
 pylib/examples/hawkes.likelihood_exp.png filter=lfs diff=lfs merge=lfs -text
+lib/examples/images/nadwat_estimator.png filter=lfs diff=lfs merge=lfs -text
+lib/examples/images/poisson_poly_exp.png filter=lfs diff=lfs merge=lfs -text

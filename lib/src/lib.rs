@@ -1,3 +1,5 @@
+//! A crate for modelling, simulation and statistical inference
+//! of point processes.
 pub mod spatial;
 pub mod likelihood;
 pub mod temporal;

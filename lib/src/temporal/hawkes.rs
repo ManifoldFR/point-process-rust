@@ -1,4 +1,4 @@
-//! Implements the Hawkes jump process.
+//! Implements the Hawkes self-exciting jump process.
 use super::traits::*;
 use rand::prelude::*;
 
@@ -113,6 +113,7 @@ impl Kernel for PowerLawKernel {
     }
 }
 
+/// Hawkes model with a power-law kernel and constant background intensity.
 pub type PowerLawHawkes = Hawkes<ConstBackground, PowerLawKernel>;
 
 impl PowerLawHawkes {

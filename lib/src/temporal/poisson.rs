@@ -40,6 +40,7 @@ impl DeterministicIntensity for PoissonProcess {
 /// Poisson process with variable intensity.
 /// The average number of events between $t$ and $t+dt$ is
 /// $$ \mathbb{E}[ dN_t ] = \lambda(t) dt $$
+/// where $\lambda(t)$ is a deterministic process.
 #[derive(Debug)]
 pub struct VariablePoissonProcess<F>
 where F: Fn(f64) -> f64 + Send + Sync

@@ -1,4 +1,5 @@
 use pointprocesses::estimators::nadarayawatson;
+use pointprocesses::estimators::kernels;
 use rand::prelude::*;
 
 use std::fs;
@@ -12,6 +13,7 @@ static IMG_SIZE: (u32, u32) = (640, 480);
 
 fn main() {
     use nadarayawatson::*;
+    use kernels::*;
     use std::f64::consts::PI;
 
     // Actual regression function

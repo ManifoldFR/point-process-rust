@@ -2,67 +2,11 @@
 //! Useful for estimating the intensity of a non-homogeneous Poisson process.
 use ndarray::prelude::*;
 
-
-/// Trait for non-parametric regression kernels of the form
-/// $$
-///     K_h(x, x') = D\left(\frac{|x-x'|}{h}\right)
-/// $$
-pub trait RegKernel {
-    fn eval(&self, x: f64, xi: f64) -> f64;
-}
-
-/// Homogeneous fixed-bandwidth Gaussian kernel,
-/// of the form
-/// $$
-///     K_h(x, x') = \exp\left(
-///     -\frac{(x-x')^2}{2h^2}
-///     \right)
-/// $$
-#[derive(Debug,Clone,Copy)]
-pub struct GaussianKernel {
-    bandwidth: f64
-}
-
-impl GaussianKernel {
-    pub fn new(bandwidth: f64) -> Self {
-        GaussianKernel { bandwidth }
-    }
-}
-
-impl RegKernel for GaussianKernel {
-    fn eval(&self, x: f64, xi: f64) -> f64 {
-        let z = (x - xi) / self.bandwidth;
-        (-z * z / 2.).exp()
-    }
-}
-
-/// Fixed-bandwidth nearest-neighbor kernel,
-/// $$
-///     K_h(x, x') = \mathbf{1}_{|x - x'| < h}
-/// $$
-pub struct NearestNeighborKernel {
-    bandwidth: f64
-}
-
-impl NearestNeighborKernel {
-    pub fn new(bandwidth: f64) -> Self {
-        NearestNeighborKernel { bandwidth }
-    }
-}
-
-impl RegKernel for NearestNeighborKernel {
-    fn eval(&self, x: f64, xi: f64) -> f64 {
-        if (x - xi).abs() < self.bandwidth {
-            1.0
-        } else {
-            0.0
-        }
-    }
-}
+use super::kernels::*;
 
 
-/// Nadaraya-Watson nonparametric estimator using a weighted
-/// kernel average.
+/// Nadaraya-Watson nonparametric estimator for functions using
+/// a weighted kernel average.
 /// The predictor at a point $x_0$ is given by:
 /// $$
 /// \hat y_0 = 
@@ -112,12 +56,59 @@ impl<T: RegKernel> NadWatEstimator<T> {
     }
 }
 
-
-pub fn nonparametric_variable_poisson_estimator(
-    event_times: ArrayView1<f64>,
-    bandwidth: f64,
-    tmax: f64)
-{
-
+/// Estimate the intensity function of an event sequence under a
+/// variable Poisson model using a kernel smoother 
+/// (see _A kernel method for smoothing point process data_ by P. Diggle).
+/// The regressor is given by
+/// $$
+///     \hat\lambda(t) = e_h(t)^{-1}
+///     \sum_i K_h(t - t_i)
+/// $$
+/// where $e_h(t) = \int_0^T K_h(t - u)\\, du$ is an edge-correction term.
+pub struct SmoothingKernelIntensity<K: RegKernel> {
+    event_times: Vec<Array1<f64>>,
+    kernel: K
 }
 
+/// Intensity kernel estimator using a uniform kernel.
+pub type UniformKernelIntensity = SmoothingKernelIntensity<NearestNeighborKernel>;
+
+impl UniformKernelIntensity {
+    pub fn new(bandwidth: f64) -> Self {
+        let kernel = NearestNeighborKernel::new(bandwidth);
+        let event_times = Vec::new();
+        Self {
+            event_times,
+            kernel
+        }
+    }
+
+    pub fn fit<T>(mut self, evts: Vec<T>) -> Self
+    where T: Into<Array1<f64>> {
+        self.event_times.reserve(evts.len());
+        for e in evts {
+            self.event_times.push(e.into())
+        }
+
+        self
+    }
+
+    pub fn predict(&self, x0: f64, tmax: f64) -> f64 {
+        let kernel = &self.kernel;
+
+        let edge_correct = 1. /  kernel.eval_mass(x0, 0., tmax);
+        let num_seq = self.event_times.len();
+
+        let sum: f64 = self.event_times.iter()
+            .map(|seq| {
+                seq.into_iter()
+                    .fold(0., |acc, xi| {
+                        acc + kernel.eval(x0, *xi)
+                    })
+            }).sum();
+
+
+        edge_correct * sum / num_seq as f64
+    }
+
+}

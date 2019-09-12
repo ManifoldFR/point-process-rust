@@ -9,11 +9,11 @@ edition = "2018"
 
 [dependencies]
 point_process = { path = "../lib/" }
-numpy = "0.6.0"
+numpy = "0.7.0"
 ndarray = "0.12.1"
 
 [dependencies.pyo3]
-version = "0.7.0"
+version = "0.8.0"
 features = ["extension-module"]
 
 [lib]

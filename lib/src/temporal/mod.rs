@@ -28,8 +28,8 @@ pub fn poisson_process(tmax: f64, lambda: f64) -> Array1<f64>
 pub fn variable_poisson<F>(tmax: f64, lambda: &F, max_lambda: f64) -> TimeProcessResult
 where F: Fn(f64) -> f64 + Send + Sync
 {
-    let process = VariablePoissonProcess::new(lambda, max_lambda);
-    let result = process.sample(tmax);
+    let model = VariablePoissonProcess::new(lambda, max_lambda);
+    let result = model.sample(tmax);
     result
 }
 
