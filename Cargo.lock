@@ -642,7 +642,7 @@ dependencies = [
 
 [[package]]
 name = "point_process"
-version = "0.12.1-alpha.0"
+version = "0.13.0"
 dependencies = [
  "ndarray 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray-parallel 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -661,7 +661,7 @@ version = "0.7.0-alpha.0"
 dependencies = [
  "ndarray 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "numpy 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "point_process 0.12.1-alpha.0",
+ "point_process 0.13.0",
  "pyo3 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
