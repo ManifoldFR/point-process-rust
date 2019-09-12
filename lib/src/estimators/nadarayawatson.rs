@@ -70,19 +70,9 @@ pub struct SmoothingKernelIntensity<K: RegKernel> {
     kernel: K
 }
 
-/// Intensity kernel estimator using a uniform kernel.
-pub type UniformKernelIntensity = SmoothingKernelIntensity<NearestNeighborKernel>;
 
-impl UniformKernelIntensity {
-    pub fn new(bandwidth: f64) -> Self {
-        let kernel = NearestNeighborKernel::new(bandwidth);
-        let event_times = Vec::new();
-        Self {
-            event_times,
-            kernel
-        }
-    }
-
+impl<K> SmoothingKernelIntensity<K> 
+where K: RegKernelMass {
     pub fn fit<T>(mut self, evts: Vec<T>) -> Self
     where T: Into<Array1<f64>> {
         self.event_times.reserve(evts.len());
@@ -112,3 +102,18 @@ impl UniformKernelIntensity {
     }
 
 }
+
+/// Intensity kernel estimator using a uniform kernel.
+pub type UniformKernelIntensity = SmoothingKernelIntensity<NearestNeighborKernel>;
+
+impl UniformKernelIntensity {
+    pub fn new(bandwidth: f64) -> Self {
+        let kernel = NearestNeighborKernel::new(bandwidth);
+        let event_times = Vec::new();
+        Self {
+            event_times,
+            kernel
+        }
+    }
+}
+
