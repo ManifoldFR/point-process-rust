@@ -74,10 +74,10 @@ fn polynom_exp() {
     let tmax = 10.0;
     
     let f: fn(f64) -> f64 = |t| {
-        (1.4 * t * t + 0.6 * t + 4.5) * (-0.4 * t).exp()
+        2. * (3.0 * t * t + 1.2 * t + 9.) * (-0.5 * t).exp()
     };
 
-    let max_lbda = 7.0;
+    let max_lbda = 25.0;
     let events_tup = variable_poisson(tmax, &f, max_lbda);
     let timestamps = events_tup.timestamps;
     let intensities = events_tup.intensities;
@@ -133,7 +133,7 @@ fn polynom_exp() {
     // Get a bunch of event sequence samples
     let model = VariablePoissonProcess::new(&f, max_lbda);
 
-    let num_samples = 150usize;
+    let num_samples = 80usize;
     let event_sequences: Vec<_> = model
         .batch_sample(tmax, num_samples)
         .into_iter()
@@ -143,7 +143,7 @@ fn polynom_exp() {
 
     use nadarayawatson::UniformKernelIntensity;
 
-    let bandwidth = 0.5;
+    let bandwidth = 0.4;
     // Define and fit
     let estimator = UniformKernelIntensity::new(bandwidth)
         .fit(event_sequences);
